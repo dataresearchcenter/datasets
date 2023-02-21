@@ -8,6 +8,10 @@ from nomenklatura.entity import CE
 from zavod import Zavod, init_context
 
 URL = "https://www.abgeordnetenwatch.de/api/v2"
+class EntityType(Enum):
+    SIDEJOB = "Sidejob"
+    POLITICIAN = "Politician"
+    ORGANIZATION = "Organization"
 
 
 def make_employment(
@@ -63,21 +67,11 @@ def make_membership(
 # TODO: This is copied from lobbyregister. Adjust if needed or remove.
 def make_address(context: Zavod, data) -> CE:
     proxy = context.make("Address")
-    city = data["field_city"]
-    country = data["field_country"]
+    city = data["field_city"].pop("label")
+    country = data["field_country"].pop("label")
     proxy.add("city", city)
     proxy.add("country", country)
-    if data["type"] == "FOREIGN":
-        street = data["internationalAdditional1"]
-        proxy.add("full", ", ".join((street, city, country)))
-    elif data["type"] == "POSTBOX":
-        zipCode = data["zipCode"]
-        proxy.add("postalCode", zipCode)
-    else:
-        street = data["street"] + " " + data["streetNumber"]
-        zipCode = data["zipCode"]
-        proxy.add("full", ", ".join((street, zipCode, city, country)))
-        proxy.add("postalCode", zipCode)
+    proxy.add("full", ", ".join((city, country)))
     proxy.id = context.make_slug("addr", make_entity_id(fp(proxy.caption)))
     return proxy
 
@@ -100,6 +94,21 @@ def make_person(context: Zavod, org_ident: str, data: dict[str, Any]) -> CE:
         proxy.add("email", email)
     ident = make_entity_id(fp(proxy.caption), org_ident)
     proxy.id = context.make_slug("person", ident)
+    return proxy
+
+def make_organization(context: Zavod, data: dict[str, Any]) -> CE:
+    proxy = context.make("Organization")
+    proxy.add("name", data.pop("label"))
+
+    addr = make_address(context, data)
+    context.emit(addr)
+
+    proxy.add("addressEntity", addr)
+    proxy.add("address", addr.caption)
+
+    # TODO: Use other property to save topics (Dip21)?
+    proxy.add("keywords", [k.get("de") for k in data.pop("field_topics")])
+
     return proxy
 
 
@@ -172,7 +181,7 @@ def parse_sidejob(context: Zavod, record: dict[str, Any]):
     proxy_data = record
 
     mandates = record.pop("mandates")
-    politician = parse_organization(context, mandates[0].pop('politician'))
+    politician = parse_politician(context, mandates[0].pop('politician'))
     organization = parse_organization(context, record.pop('sidejob_organization'))
 
     label = record.pop("label")
@@ -203,18 +212,17 @@ def parse_politician(context: Zavod, record: dict[str, Any]):
 
 def parse_organization(context: Zavod, record: dict[str, Any]):
     proxy_data = record
-    # Just use context.make("organization")?
-    proxy = make_organization(context, "", proxy_data)
+    proxy = make_organization(context, proxy_data)
 
     return proxy
 
 
 def parse_record(context: Zavod, record: dict[str, Any], type: str):
-    if type == "sidejob":
+    if type == EntityType.SIDEJOB:
         proxy = parse_sidejob(context, record)
-    elif type == "politician":
+    elif type == EntityType.POLITICIAN:
         proxy = parse_politician(context, record)
-    elif type == "organization":
+    elif type == EntityType.ORGANIZATION:
         proxy = parse_organization(context, record)
 
     proxy.id = context.make_slug(record.pop("id"))
@@ -351,7 +359,7 @@ def parse(context: Zavod):
                     if mandate["id"] == mandateRecord["id"]:
                         sideJobRecord["mandates"][im] = mandateRecord
                         break;
-        parse_sidejob(context, sideJobRecord)
+        parse_record(context, sideJobRecord, EntityType.SIDEJOB)
         if ix and ix % 1_000 == 0:
             context.log.info("Parse sidejob record %d ..." % ix)
     if ix:
