@@ -1,0 +1,19 @@
+name: de_abgeordnetenwatch
+title: abgeordnetenwatch.de
+prefix: de_aw
+country: de
+summary: |
+  This platform enables citizens to ask questions to members of parliament
+  at the federal and European level and in all 16 German state parliaments. 
+  In addition, abgeordnetenwatch.de documents the voting behavior and 
+  committee memberships of members of parliament as well as the additional 
+  income (side jobs) of members of the Bundestag.
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/de_abgeordnetenwatch/entities.ftm.json
+    mime_type: application/json+ftm
+publisher:
+  name: Parlamentwatch e.V.
+  description: The non-profit association Parlamentwatch e.V.
+  url: https://www.abgeordnetenwatch.de/
+
