@@ -307,52 +307,50 @@ def parse_record_old(context: Zavod, record: dict[str, Any]):
 
 def parse(context: Zavod):
     # TODO: This won't collect all entities. Use options and loop to fetch all.
-    sideJobsData_fp = context.fetch_resource("source_sidejobs.json", URL + "/sidejobs")
+    sideJobsData = fetchAll("/sidejobs")
     # The API doesn't return related data. 
     # To get the relevant entities and minimize the number of requests,
     # we collect their IDs, load them and merge the data before parsing.
     relatedMandateIds = set()
     relatedOrganizationIds = set()
-    with open(sideJobsData_fp) as f:
-        sideJobsData = orjson.loads(f.read())
-        for sideJob in sideJobsData["data"]:
-            for mandate in sideJob["mandates"]:
-                relatedMandateIds.add(mandate["id"])
-            relatedOrganizationIds.add(sideJob["sidejob_organization"]["id"])
+    for sideJob in sideJobsData:
+        for mandate in sideJob["mandates"]:
+            relatedMandateIds.add(mandate["id"])
+        relatedOrganizationIds.add(sideJob["sidejob_organization"]["id"])
 
     if (len(relatedMandateIds) > 0):
-        mandates_url = URL + '/candidacies-mandates?current_on=all&id[in]=[' + ','.join(str(mid) for mid in relatedMandateIds) + ']'
-        mandatesData_fp = context.fetch_resource("source_mandates.json", mandates_url)
+        mandatesQueryParams = {
+            'current_on': 'all',
+            'id[in]': '[' + ','.join(str(id) for id in relatedMandateIds) + ']',
+        }
+        mandatesData = fetchAll('/candidacies-mandates', mandatesQueryParams)
         relatedPoliticianIds = set()
-        with open(mandatesData_fp) as f:
-            mandatesData = orjson.loads(f.read())
-            for mandate in mandatesData["data"]:
-                relatedPoliticianIds.add(mandate['politician']['id'])
+        for mandate in mandatesData:
+            relatedPoliticianIds.add(mandate['politician']['id'])
 
         if (len(relatedPoliticianIds) > 0):
-            politicians_url = URL + '/politicians?id[in]=[' + ','.join(str(pid) for pid in relatedPoliticianIds) + ']'
-            politiciansData_fp = context.fetch_resource("source_politicians.json", politicians_url)
-            with open(politiciansData_fp) as f:
-                politiciansData = orjson.loads(f.read())
-                # Attach politician to mandate record.
-                for mandatesRecord in mandatesData["data"]:
-                    for politiciansRecord in politiciansData["data"]:
-                        if mandatesRecord["politician"]["id"] == politiciansRecord["id"]:
-                            mandatesRecord["politician"] = copy.deepcopy(politiciansRecord)
-                            break;
+            politiciansQueryParams = {
+                'id[in]': '[' + ','.join(str(id) for id in relatedPoliticianIds) + ']',
+            }
+            politiciansData = fetchAll('/politicians', politiciansQueryParams)
+            for mandatesRecord in mandatesData:
+                for politiciansRecord in politiciansData:
+                    if mandatesRecord["politician"]["id"] == politiciansRecord["id"]:
+                        mandatesRecord["politician"] = copy.deepcopy(politiciansRecord)
+                        break;
 
     if (len(relatedOrganizationIds) > 0):
         # Load organizations for all sidejobs.
-        organizations_url = URL + '/sidejob-organizations?id[in]=[' + ','.join(str(mid) for mid in relatedOrganizationIds) + ']'
-        data_fp = context.fetch_resource("source_sidejob_organizations.json", organizations_url)
-        with open(data_fp) as f:
-            organizationsData = orjson.loads(f.read())
+        organizationsQueryParams = {
+            'id[in]': '[' + ','.join(str(id) for id in relatedOrganizationIds) + ']',
+        }
+        organizationsData = fetchAll('/sidejob-organizations', organizationsQueryParams)
 
     ix = 0
-    for ix, sideJobRecord in enumerate(sideJobsData["data"]):
+    for ix, sideJobRecord in enumerate(sideJobsData):
         if organizationsData:
             # Attach organization to sidejob record.
-            for organizationRecord in organizationsData["data"]:
+            for organizationRecord in organizationsData:
                 if sideJobRecord["sidejob_organization"]["id"] == organizationRecord["id"]:
                     sideJobRecord["sidejob_organization"] = copy.deepcopy(organizationRecord)
                     break;
@@ -360,7 +358,7 @@ def parse(context: Zavod):
             # Attach mandates including its politician to sidejob record.
             im = 0
             for im, mandate in enumerate(sideJobRecord['mandates']):
-                for mandateRecord in mandatesData["data"]:
+                for mandateRecord in mandatesData:
                     if mandate["id"] == mandateRecord["id"]:
                         sideJobRecord["mandates"][im] = copy.deepcopy(mandateRecord)
                         break;
@@ -368,14 +366,23 @@ def parse(context: Zavod):
         if ix and ix % 1_000 == 0:
             context.log.info("Parse sidejob record %d ..." % ix)
     if ix:
-        context.log.info("Parsed %d sidejob records." % (ix + 1), fp=data_fp.name)
+        context.log.info("Parsed %d sidejob records." % (ix + 1))
 
-def fetchAll(path):
+def fetchAll(path, queryParams = {}):
+    ix = 0
     range_start = 0
     dataAll = []
+    limit = 100 # max API limit
+    query = "?range_end=" + str(limit)
+    for key, value in queryParams.items():
+        query = query + "&" + key + "=" + value
+
+    # Fetch all entities with multiple requests (AW API has limit per request)
     while (range_start >= 0):
-        # TODO json file name should be unique or according to path and options.
-        data_fp = context.fetch_resource("source.json", URL + path)
+        ix+1
+        queryHash = hash("query")
+        sourceFileSuffix = "_" + "".join(x for x in path if x.isalnum()) + '_' + str(queryHash)
+        data_fp = context.fetch_resource("source" + sourceFileSuffix + ".json", URL + path + query)
         with open(data_fp) as f:
             data = orjson.loads(f.read())
             meta = data["meta"]
@@ -394,6 +401,6 @@ def fetchAll(path):
 
 if __name__ == "__main__":
     # TODO: Had to change path to metadata.yml to make vscode debugging work. Fix this in launch.json
-    with init_context("metadata.yml") as context:
+    with init_context("datasets/de_abgeordnetenwatch/metadata.yml") as context:
         context.export_metadata("export/index.json")
         parse(context)
