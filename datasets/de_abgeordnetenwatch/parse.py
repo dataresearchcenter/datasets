@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any
 
-import orjson
+import orjson, copy
 from fingerprints import generate as fp
 from followthemoney.util import make_entity_id
 from nomenklatura.entity import CE
@@ -54,7 +54,7 @@ def make_membership(
     jobTitleExtra = data.pop("job_title_extra")
     additionalInformation = data.pop("additional_information")
     dataChangeDate = data.pop("data_change_date")
-    ident = make_entity_id(director.id, organization.id, label)
+    ident = make_entity_id(member.id, organization.id, label)
     rel.id = context.make_slug("directorship", ident)
     rel.add("member", member)
     rel.add("organization", organization)
@@ -100,14 +100,16 @@ def make_organization(context: Zavod, data: dict[str, Any]) -> CE:
     proxy = context.make("Organization")
     proxy.add("name", data.pop("label"))
 
-    addr = make_address(context, data)
-    context.emit(addr)
+    if (data['field_country']):
+        addr = make_address(context, data)
+        context.emit(addr)
+        proxy.add("addressEntity", addr)
+        proxy.add("address", addr.caption)
 
-    proxy.add("addressEntity", addr)
-    proxy.add("address", addr.caption)
-
-    # TODO: Use other property to save topics (Dip21)?
-    proxy.add("keywords", [k.get("de") for k in data.pop("field_topics")])
+    topics = data.pop("field_topics")
+    if (topics):
+        # TODO: Use other property to save topics (Dip21)?
+        proxy.add("keywords", [k.get("label") for k in topics])
 
     return proxy
 
@@ -180,11 +182,10 @@ def wrangle_organization(context: Zavod, proxy: CE, data: dict[str, Any]) -> CE:
 def parse_sidejob(context: Zavod, record: dict[str, Any]):
     proxy_data = record
 
-    mandates = record.pop("mandates")
-    politician = parse_politician(context, mandates[0].pop('politician'))
-    organization = parse_organization(context, record.pop('sidejob_organization'))
+    politician = parse_record(context, record["mandates"][0]['politician'], EntityType.POLITICIAN)
+    organization = parse_record(context, record['sidejob_organization'], EntityType.ORGANIZATION)
 
-    label = record.pop("label")
+    label = record["label"]
 
     # Choose proxy type by record label. 
     # TODO: Find a more reliable way. 
@@ -193,9 +194,11 @@ def parse_sidejob(context: Zavod, record: dict[str, Any]):
     elif label.startswith(("Vorstand", "Stellv.")):
         proxy = make_directorship(context, politician, organization, proxy_data)
     else:
+        # TODO: Use suitable type for other (this doesn't fit in general, e.g. for "Reisekosten")
         proxy = make_employment(context, organization, politician, proxy_data)
 
-    proxy.add("notes", record.pop("income_level", "Unbekanntes Einkommen"))
+    # TODO: Where to save income?
+    # proxy.add("notes", record.pop("income_level", "Unbekanntes Einkommen"))
 
     return proxy
     
@@ -229,6 +232,8 @@ def parse_record(context: Zavod, record: dict[str, Any], type: str):
     proxy.add("sourceUrl", record.pop("api_url"))
     # TODO: publisher?
     # TODO: publisherUrl?
+    context.emit(proxy)
+    return proxy
 
 
 # TODO Remove
@@ -333,7 +338,7 @@ def parse(context: Zavod):
                 for mandatesRecord in mandatesData["data"]:
                     for politiciansRecord in politiciansData["data"]:
                         if mandatesRecord["politician"]["id"] == politiciansRecord["id"]:
-                            mandatesRecord["politician"] = politiciansRecord
+                            mandatesRecord["politician"] = copy.deepcopy(politiciansRecord)
                             break;
 
     if (len(relatedOrganizationIds) > 0):
@@ -349,7 +354,7 @@ def parse(context: Zavod):
             # Attach organization to sidejob record.
             for organizationRecord in organizationsData["data"]:
                 if sideJobRecord["sidejob_organization"]["id"] == organizationRecord["id"]:
-                    sideJobRecord["sidejob_organization"] = organizationRecord
+                    sideJobRecord["sidejob_organization"] = copy.deepcopy(organizationRecord)
                     break;
         if mandatesData:
             # Attach mandates including its politician to sidejob record.
@@ -357,7 +362,7 @@ def parse(context: Zavod):
             for im, mandate in enumerate(sideJobRecord['mandates']):
                 for mandateRecord in mandatesData["data"]:
                     if mandate["id"] == mandateRecord["id"]:
-                        sideJobRecord["mandates"][im] = mandateRecord
+                        sideJobRecord["mandates"][im] = copy.deepcopy(mandateRecord)
                         break;
         parse_record(context, sideJobRecord, EntityType.SIDEJOB)
         if ix and ix % 1_000 == 0:
@@ -389,6 +394,6 @@ def fetchAll(path):
 
 if __name__ == "__main__":
     # TODO: Had to change path to metadata.yml to make vscode debugging work. Fix this in launch.json
-    with init_context("datasets/de_abgeordnetenwatch/metadata.yml") as context:
+    with init_context("metadata.yml") as context:
         context.export_metadata("export/index.json")
         parse(context)
