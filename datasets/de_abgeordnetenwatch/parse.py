@@ -264,6 +264,6 @@ def fetchAll(path, queryParams = {}):
 
 if __name__ == "__main__":
     # TODO: Had to change path to datasets/de_abgeordnetenwatch/metadata.yml to make vscode debugging work. Fix this in launch.json
-    with init_context("datasets/de_abgeordnetenwatch/metadata.yml") as context:
+    with init_context("metadata.yml") as context:
         context.export_metadata("export/index.json")
         parse(context)
