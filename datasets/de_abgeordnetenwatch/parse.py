@@ -126,10 +126,10 @@ def parse_sidejob(context: Zavod, record: dict[str, Any]):
     # TODO: Find a more reliable way. 
     if label.startswith("Mitglied"):
         proxy = make_membership(context, politician, organization, proxy_data)
-    elif label.startswith(("Vorstand", "Stellv.")):
+    elif label.startswith(("Fraktionsvorsitzender", "Vorsitzende", "Vorsitzender", "Vorstand", "Stellv.", "Erste Vorsitzende", "Erster Vorsitzender")):
         proxy = make_directorship(context, politician, organization, proxy_data)
     else:
-        # TODO: Use suitable type for other (this doesn't fit in general, e.g. for "Reisekosten")
+        # TODO: Use suitable type for other (this doesn't fit in general, e.g. for "Beteiligung" or "Reisekosten")
         proxy = make_employment(context, organization, politician, proxy_data)
     # TODO: Find other suitable models. What about Interval, Other link or Payment?
 
