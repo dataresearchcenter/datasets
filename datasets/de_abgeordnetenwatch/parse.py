@@ -236,9 +236,9 @@ def parse(context: Zavod):
 
 
 def fetchByIds(context: Zavod, path, ids = {}, queryParams = {}):
-    chunkSize = 500
+    # Fetch by IDs using chunks/batch to prevent too long URLs or bad gateway response.
+    chunkSize = 150 # maximum number of IDs to request without failure
     data = []
-    # Fetch by IDs using chunks/batch to prevent to long URLs.
     for idChunk in [list(ids)[i:i+chunkSize] for i in range(0, len(ids), chunkSize)]:
         queryParams["id[in]"] = "[" + ",".join(str(id) for id in idChunk) + "]"
         data += fetchAll(context, path, queryParams)
