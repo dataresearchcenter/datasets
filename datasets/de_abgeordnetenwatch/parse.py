@@ -1,10 +1,12 @@
 from enum import Enum
+import os
 from typing import Any
 
 import orjson, copy, urllib
 from fingerprints import generate as fp
 from followthemoney.util import make_entity_id
 from nomenklatura.entity import CE
+from os.path import dirname, join
 from zavod import Zavod, init_context
 
 URL = "https://www.abgeordnetenwatch.de/api/v2"
@@ -277,7 +279,7 @@ def fetchAll(context: Zavod, path, queryParams = {}):
 
 
 if __name__ == "__main__":
-    # TODO: Had to change path to datasets/de_abgeordnetenwatch/metadata.yml to make vscode debugging work. Fix this in launch.json
+    print(os.path.abspath('.'))
     with init_context("metadata.yml") as context:
         context.export_metadata("export/index.json")
         parse(context)
