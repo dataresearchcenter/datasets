@@ -55,7 +55,7 @@ def make_membership(
     additionalInformation = data.pop("additional_information")
     dataChangeDate = data.pop("data_change_date")
     ident = make_entity_id(member.id, organization.id, label)
-    rel.id = context.make_slug("directorship", ident)
+    rel.id = context.make_slug("membership", ident)
     rel.add("member", member)
     rel.add("organization", organization)
     rel.add("role", label)
@@ -94,7 +94,7 @@ def make_person(context: Zavod, org_ident: str, data: dict[str, Any]) -> CE:
     proxy.add("phone", data.pop("phoneNumber", None))
     for email in data.pop("organizationMemberEmails", []):
         proxy.add("email", email)
-    ident = make_entity_id(fp(proxy.caption), org_ident)
+    ident = make_entity_id(data['id'], fp(proxy.caption), org_ident)
     proxy.id = context.make_slug("person", ident)
     return proxy
 
@@ -114,6 +114,8 @@ def make_organization(context: Zavod, data: dict[str, Any]) -> CE:
         # TODO: Use other property to save topics (Dip21)?
         proxy.add("keywords", [k.get("label") for k in topics])
 
+    ident = make_entity_id(data['id'], fp(proxy.caption))
+    proxy.id = context.make_slug("organization", ident)
     return proxy
 
 
@@ -167,7 +169,8 @@ def parse_record(context: Zavod, record: dict[str, Any], type: str):
         proxy = parse_organization(context, record)
 
     if (proxy):
-        proxy.id = context.make_slug(record.pop("id"))
+        if (not proxy.id and record['id']):
+            proxy.id = context.make_slug(record['id'])
         proxy.add("sourceUrl", record.pop("api_url"))
         # TODO: publisher?
         # TODO: publisherUrl?
