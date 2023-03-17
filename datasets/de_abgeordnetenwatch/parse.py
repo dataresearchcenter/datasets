@@ -12,6 +12,7 @@ class EntityType(Enum):
     SIDEJOB = "Sidejob"
     POLITICIAN = "Politician"
     ORGANIZATION = "Organization"
+    PARTY = "Party"
 
 
 def make_employment(
@@ -50,18 +51,19 @@ def make_membership(
     context: Zavod, member: CE, organization: CE, data: dict[str, Any]
 ) -> CE:
     rel = context.make("Membership")
-    label = data.pop("label")
-    jobTitleExtra = data.pop("job_title_extra")
-    additionalInformation = data.pop("additional_information")
-    dataChangeDate = data.pop("data_change_date")
-    ident = make_entity_id(member.id, organization.id, label)
-    rel.id = context.make_slug("membership", ident)
     rel.add("member", member)
     rel.add("organization", organization)
-    rel.add("role", label)
-    rel.add("description", jobTitleExtra)
-    rel.add("modifiedAt", dataChangeDate)
-    rel.add("summary", additionalInformation)
+    if (data):
+        label = data.pop("label")
+        rel.add("role", label)
+        rel.add("description", data.pop("job_title_extra"))
+        rel.add("modifiedAt", data.pop("data_change_date"))
+        rel.add("summary", data.pop("additional_information"))
+        ident = make_entity_id(member.id, organization.id, label)
+    else:
+        ident = make_entity_id(member.id, organization.id)
+
+    rel.id = context.make_slug("membership", ident)
     return rel
 
 def make_address(context: Zavod, data) -> CE:
@@ -103,16 +105,15 @@ def make_organization(context: Zavod, data: dict[str, Any]) -> CE:
     proxy = context.make("Organization")
     proxy.add("name", data.pop("label"))
 
-    if (data["field_country"]):
+    if ("field_country" in data and data["field_country"]):
         addr = make_address(context, data)
         context.emit(addr)
         proxy.add("addressEntity", addr)
         proxy.add("address", addr.caption)
 
-    topics = data.pop("field_topics")
-    if (topics):
+    if ("topics" in data and data["topics"]):
         # TODO: Use other property to save topics (Dip21)?
-        proxy.add("keywords", [k.get("label") for k in topics])
+        proxy.add("keywords", [k.get("label") for k in data['topics']])
 
     ident = make_entity_id(data['id'], fp(proxy.caption))
     proxy.id = context.make_slug("organization", ident)
@@ -150,7 +151,10 @@ def parse_politician(context: Zavod, record: dict[str, Any]):
     proxy_data = record
     proxy = make_person(context, "", proxy_data)
     proxy.add("notes", "Politiker") # TODO: Is there a better way to mark politicians?
-    # TODO: Make party \o/ and relate it to politician.
+    # TODO: Is there a better way to make party \o/?
+    party = parse_record(context, proxy_data["party"], EntityType.PARTY)
+    membership = make_membership(context, proxy, party, None)
+    context.emit(membership)
     return proxy
 
 
@@ -165,7 +169,7 @@ def parse_record(context: Zavod, record: dict[str, Any], type: str):
         proxy = parse_sidejob(context, record)
     elif type == EntityType.POLITICIAN:
         proxy = parse_politician(context, record)
-    elif type == EntityType.ORGANIZATION:
+    elif type == EntityType.ORGANIZATION or type == EntityType.PARTY:
         proxy = parse_organization(context, record)
 
     if (proxy):
