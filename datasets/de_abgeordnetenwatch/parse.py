@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any
 
-import orjson, copy
+import orjson, copy, urllib
 from fingerprints import generate as fp
 from followthemoney.util import make_entity_id
 from nomenklatura.entity import CE
@@ -176,7 +176,7 @@ def parse_record(context: Zavod, record: dict[str, Any], type: str):
 
 
 def parse(context: Zavod):
-    sideJobsData = fetchAll("/sidejobs")
+    sideJobsData = fetchAll(context, "/sidejobs", {"range_end": 1000})
     # The API doesn't return related data. 
     # To get the relevant entities and minimize the number of requests,
     # we collect their IDs, load them and merge the data before parsing.
@@ -189,20 +189,13 @@ def parse(context: Zavod):
             relatedOrganizationIds.add(sideJob["sidejob_organization"]["id"])
 
     if (len(relatedMandateIds) > 0):
-        mandatesQueryParams = {
-            "current_on": "all",
-            "id[in]": "[" + ",".join(str(id) for id in relatedMandateIds) + "]",
-        }
-        mandatesData = fetchAll("/candidacies-mandates", mandatesQueryParams)
+        mandatesData = fetchByIds(context, "/candidacies-mandates", relatedMandateIds, {"current_on": "all"})
         relatedPoliticianIds = set()
         for mandate in mandatesData:
             relatedPoliticianIds.add(mandate["politician"]["id"])
 
         if (len(relatedPoliticianIds) > 0):
-            politiciansQueryParams = {
-                "id[in]": "[" + ",".join(str(id) for id in relatedPoliticianIds) + "]",
-            }
-            politiciansData = fetchAll("/politicians", politiciansQueryParams)
+            politiciansData = fetchByIds(context, "/politicians", relatedPoliticianIds)
             for mandatesRecord in mandatesData:
                 for politiciansRecord in politiciansData:
                     if mandatesRecord["politician"]["id"] == politiciansRecord["id"]:
@@ -210,11 +203,7 @@ def parse(context: Zavod):
                         break;
 
     if (len(relatedOrganizationIds) > 0):
-        # Load organizations for all sidejobs.
-        organizationsQueryParams = {
-            "id[in]": "[" + ",".join(str(id) for id in relatedOrganizationIds) + "]",
-        }
-        organizationsData = fetchAll("/sidejob-organizations", organizationsQueryParams)
+        organizationsData = fetchByIds(context, "/sidejob-organizations", relatedOrganizationIds)
 
     ix = 0
     for ix, sideJobRecord in enumerate(sideJobsData):
@@ -239,29 +228,39 @@ def parse(context: Zavod):
         context.log.info("Parsed %d sidejob records." % (ix + 1))
 
 
-def fetchAll(path, queryParams = {}):
+def fetchByIds(context: Zavod, path, ids = {}, queryParams = {}):
+    chunkSize = 500
+    data = []
+    # Fetch by IDs using chunks/batch to prevent to long URLs.
+    for idChunk in [list(ids)[i:i+chunkSize] for i in range(0, len(ids), chunkSize)]:
+        queryParams["id[in]"] = "[" + ",".join(str(id) for id in idChunk) + "]"
+        data += fetchAll(context, path, queryParams)
+    return data
+
+
+def fetchAll(context: Zavod, path, queryParams = {}):
     ix = 0
-    range_start = 0
+    range_start =  0
+    range_end = 1000 # aka limit, default is 100, max. is 1.000
     dataAll = []
-    limit = 100 # max API limit
-    query = "?range_end=" + str(limit)
-    for key, value in queryParams.items():
-        query = query + "&" + key + "=" + value
 
     # Fetch all entities with multiple requests (AW API has limit per request)
     while (range_start >= 0):
         ix+1
-        queryHash = hash("query")
+        queryParams["range_start"] = range_start
+        queryParams["range_end"] = range_end
+        query = urllib.parse.urlencode(queryParams)
+        queryHash = hash(query)
         sourceFileSuffix = "_" + "".join(x for x in path if x.isalnum()) + "_" + str(queryHash)
-        data_fp = context.fetch_resource("source" + sourceFileSuffix + ".json", URL + path + query)
+        data_fp = context.fetch_resource("source" + sourceFileSuffix + ".json", URL + path + "?" + query)
         with open(data_fp) as f:
             data = orjson.loads(f.read())
             meta = data["meta"]
 
             total = int(meta["result"]["total"])
-            limit = int(meta["result"]["range_end"])
-            if (total > (range_start + limit)):
-                range_start = range_start + limit
+            range_end = int(meta["result"]["range_end"])
+            if (total > (range_start + range_end)):
+                range_start = range_start + range_end
             else:
                 range_start = -1
 
