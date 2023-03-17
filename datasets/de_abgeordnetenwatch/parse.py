@@ -66,11 +66,14 @@ def make_membership(
 
 def make_address(context: Zavod, data) -> CE:
     proxy = context.make("Address")
-    city = data["field_city"].pop("label")
     country = data["field_country"].pop("label")
-    proxy.add("city", city)
     proxy.add("country", country)
-    proxy.add("full", ", ".join((city, country)))
+    if (data["field_city"]):
+        city = data["field_city"].pop("label")
+        proxy.add("city", city)
+        proxy.add("full", ", ".join((city, country)))
+    else:
+        proxy.add("full", country)
     proxy.id = context.make_slug("addr", make_entity_id(fp(proxy.caption)))
     return proxy
 
@@ -118,23 +121,26 @@ def parse_sidejob(context: Zavod, record: dict[str, Any]):
     proxy_data = record
 
     politician = parse_record(context, record["mandates"][0]["politician"], EntityType.POLITICIAN)
-    organization = parse_record(context, record["sidejob_organization"], EntityType.ORGANIZATION)
+    if record["sidejob_organization"]:
+        organization = parse_record(context, record["sidejob_organization"], EntityType.ORGANIZATION)
 
-    label = record["label"]
+        label = record["label"]
+        # Choose proxy type by record label. 
+        # TODO: Find a more reliable way. 
+        if label.startswith("Mitglied"):
+            proxy = make_membership(context, politician, organization, proxy_data)
+        elif label.startswith(("Fraktionsvorsitzender", "Vorsitzende", "Vorsitzender", "Vorstand", "Stellv.", "Erste Vorsitzende", "Erster Vorsitzender")):
+            proxy = make_directorship(context, politician, organization, proxy_data)
+        else:
+            # TODO: Use suitable type for other (this doesn't fit in general, e.g. for "Beteiligung" or "Reisekosten")
+            proxy = make_employment(context, organization, politician, proxy_data)
+        # TODO: Find other suitable models. What about Interval, Other link or Payment?
 
-    # Choose proxy type by record label. 
-    # TODO: Find a more reliable way. 
-    if label.startswith("Mitglied"):
-        proxy = make_membership(context, politician, organization, proxy_data)
-    elif label.startswith(("Fraktionsvorsitzender", "Vorsitzende", "Vorsitzender", "Vorstand", "Stellv.", "Erste Vorsitzende", "Erster Vorsitzender")):
-        proxy = make_directorship(context, politician, organization, proxy_data)
+        # TODO: Where to save income?
+        # proxy.add("notes", record.pop("income_level", "Unbekanntes Einkommen"))
     else:
-        # TODO: Use suitable type for other (this doesn't fit in general, e.g. for "Beteiligung" or "Reisekosten")
-        proxy = make_employment(context, organization, politician, proxy_data)
-    # TODO: Find other suitable models. What about Interval, Other link or Payment?
-
-    # TODO: Where to save income?
-    # proxy.add("notes", record.pop("income_level", "Unbekanntes Einkommen"))
+        # TODO: Handle sidejobs with no organization.
+        proxy = None
     return proxy
 
 
@@ -160,11 +166,12 @@ def parse_record(context: Zavod, record: dict[str, Any], type: str):
     elif type == EntityType.ORGANIZATION:
         proxy = parse_organization(context, record)
 
-    proxy.id = context.make_slug(record.pop("id"))
-    proxy.add("sourceUrl", record.pop("api_url"))
-    # TODO: publisher?
-    # TODO: publisherUrl?
-    context.emit(proxy)
+    if (proxy):
+        proxy.id = context.make_slug(record.pop("id"))
+        proxy.add("sourceUrl", record.pop("api_url"))
+        # TODO: publisher?
+        # TODO: publisherUrl?
+        context.emit(proxy)
     return proxy
 
 
@@ -178,7 +185,8 @@ def parse(context: Zavod):
     for sideJob in sideJobsData:
         for mandate in sideJob["mandates"]:
             relatedMandateIds.add(mandate["id"])
-        relatedOrganizationIds.add(sideJob["sidejob_organization"]["id"])
+        if sideJob["sidejob_organization"]:
+            relatedOrganizationIds.add(sideJob["sidejob_organization"]["id"])
 
     if (len(relatedMandateIds) > 0):
         mandatesQueryParams = {
@@ -210,7 +218,7 @@ def parse(context: Zavod):
 
     ix = 0
     for ix, sideJobRecord in enumerate(sideJobsData):
-        if organizationsData:
+        if sideJobRecord["sidejob_organization"] and organizationsData:
             # Attach organization to sidejob record.
             for organizationRecord in organizationsData:
                 if sideJobRecord["sidejob_organization"]["id"] == organizationRecord["id"]:
