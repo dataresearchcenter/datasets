@@ -1,0 +1,24 @@
+name: {{ dataset }}
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    container: ghcr.io/investigativedata/graph-etl:main
+    defaults:
+      run:
+        working-directory: /graph/datasets/{{ dataset }}
+    steps:
+      - name: Parse and write the registry
+        run: |
+          make process
+      - name: Publish data to data.ftm.store
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          make publish

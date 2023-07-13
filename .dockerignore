@@ -1,0 +1,6 @@
+__iatikitcache__
+data
+datasets/*/cache.db
+datasets/*/data
+venv
+*.egg-info
