@@ -8,7 +8,7 @@ summary: |
   by a federal law since 2022. Also contains clients, agents and donators.
 resources:
   - name: entities.ftm.json
-    url: https://data.ftm.store/lobbytracker/de_lobbyregister/entities.ftm.json
+    url: https://data.ftm.store/de_lobbyregister/entities.ftm.json
     mime_type: application/json+ftm
 publisher:
   name: Deutscher Bundestag
