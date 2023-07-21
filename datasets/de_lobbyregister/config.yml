@@ -1,0 +1,31 @@
+name: de_lobbyregister
+title: Lobbyregister des Deutschen Bundestages
+prefix: de-bt-lr
+country: de
+summary: |
+  German registry about persons and organizations having access to the
+  Bundestag (german parliament) for lobbying purposes. Registration is required
+  by a federal law since 2022. Also contains clients, agents and donators.
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/lobbytracker/de_lobbyregister/entities.ftm.json
+    mime_type: application/json+ftm
+publisher:
+  name: Deutscher Bundestag
+  description: German Parliament
+  url: https://www.lobbyregister.bundestag.de
+
+extract:
+  sources:
+    - uri: https://www.lobbyregister.bundestag.de/sucheDetailJson?sort=REGISTRATION_DESC
+      pandas:
+        read:
+          handler: json_normalize
+          options:
+            record_path: results
+            max_level: 0
+
+transform:
+  handler: ./parse.py:parse
+
+

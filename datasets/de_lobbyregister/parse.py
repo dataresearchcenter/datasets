@@ -1,13 +1,11 @@
 from enum import Enum
 from typing import Any
 
-import orjson
 from fingerprints import generate as fp
 from followthemoney.util import make_entity_id
+from investigraph.model import Context
+from investigraph.types import CEGenerator
 from nomenklatura.entity import CE
-from zavod import Zavod, init_context
-
-URL = "https://www.lobbyregister.bundestag.de/sucheDetailJson?sort=REGISTRATION_DESC"
 
 
 class EntityType(Enum):
@@ -15,7 +13,7 @@ class EntityType(Enum):
     ORGANIZATION = "Organization"
 
 
-def make_address(context: Zavod, data) -> CE:
+def make_address(context: Context, data) -> CE:
     proxy = context.make("Address")
     city = data["city"]
     country = data["country"]["code"]
@@ -36,7 +34,7 @@ def make_address(context: Zavod, data) -> CE:
     return proxy
 
 
-def make_person(context: Zavod, org_ident: str, data: dict[str, Any]) -> CE:
+def make_person(context: Context, org_ident: str, data: dict[str, Any]) -> CE:
     proxy = context.make("Person")
     title = data.pop("academicDegreeBefore", None)
     firstName = data.pop("commonFirstName")
@@ -58,7 +56,7 @@ def make_person(context: Zavod, org_ident: str, data: dict[str, Any]) -> CE:
 
 
 def make_representation(
-    context: Zavod, agent: CE, client: CE, role: str | None = "Auftraggeber"
+    context: Context, agent: CE, client: CE, role: str | None = "Auftraggeber"
 ) -> CE:
     rel = context.make("Representation")
     ident = make_entity_id(client.id, agent.id)
@@ -69,7 +67,7 @@ def make_representation(
     return rel
 
 
-def wrangle_organisazion(context: Zavod, proxy: CE, data: dict[str, Any]) -> CE:
+def wrangle_organisazion(context: Context, proxy: CE, data: dict[str, Any]) -> CE:
     proxy.add("name", data.pop("name"))
     proxy.add("phone", data.pop("phoneNumber"))
 
@@ -120,7 +118,7 @@ def wrangle_organisazion(context: Zavod, proxy: CE, data: dict[str, Any]) -> CE:
     return proxy
 
 
-def parse_record(context: Zavod, record: dict[str, Any]):
+def parse_record(context: Context, record: dict[str, Any]):
     registerId = record.pop("registerNumber")
     record = record.pop("registerEntryDetail")
     proxy_data = record.pop("lobbyistIdentity")
@@ -189,20 +187,7 @@ def parse_record(context: Zavod, record: dict[str, Any]):
         context.emit(rel)
 
 
-def parse(context: Zavod):
-    data_fp = context.fetch_resource("source.json", URL)
-    with open(data_fp) as f:
-        data = orjson.loads(f.read())
-        ix = 0
-        for ix, record in enumerate(data["results"]):
-            parse_record(context, record)
-            if ix and ix % 1_000 == 0:
-                context.log.info("Parse record %d ..." % ix)
-        if ix:
-            context.log.info("Parsed %d records." % (ix + 1), fp=data_fp.name)
-
-
-if __name__ == "__main__":
-    with init_context("metadata.yml") as context:
-        context.export_metadata("export/index.json")
-        parse(context)
+def parse(ctx: Context, record: dict[str, Any], ix: int) -> CEGenerator:
+    tx = ctx.task()
+    parse_record(tx, record)
+    return tx
