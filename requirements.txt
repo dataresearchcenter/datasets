@@ -1,6 +1,0 @@
-followthemoney @ git+https://github.com/investigativedata/followthemoney.git@schema/science-identifiers
-investigraph>=0.5.2
-mkdocs-material
-jinja-cli
-html5lib
-psycopg2-binary
