@@ -1,6 +1,14 @@
 name: de_abgeordnetenwatch_lobbymeetings
 title: Lobbytreffen (Abgeordnetenwatch)
 prefix: de-aw
+resources:
+  - name: entities.ftm.json
+    url: https://s3.investigativedata.org/data.ftm.store/de_abgeordnetenwatch_lobbymeetings/entities.ftm.json
+    mime_type: application/json+ftm
+publisher:
+  name: Parlamentwatch e.V.
+  description: The non-profit association Parlamentwatch e.V.
+  url: https://www.abgeordnetenwatch.de/
 
 extract:
   sources:
@@ -31,6 +39,7 @@ transform:
         politician:
           schema: Person
           key: politician
+          key_literal: "person"
           properties:
             name:
               column: politician
@@ -39,6 +48,7 @@ transform:
         body:
           schema: PublicBody
           key: ministry
+          key_literal: "ministry"
           properties:
             name:
               column: ministry
@@ -50,6 +60,7 @@ transform:
             - politician
             - date
             - ministry
+          key_literal: "event"
           properties:
             date:
               column: date
