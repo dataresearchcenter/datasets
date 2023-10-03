@@ -1,6 +1,6 @@
-name: de_abgeordnetenwatch
+name: de_abgeordnetenwatch_sidejobs
 title: abgeordnetenwatch.de
-prefix: de-pw
+prefix: de-aw
 country: de
 summary: |
   This platform enables citizens to ask questions to members of parliament
@@ -10,7 +10,7 @@ summary: |
   income (side jobs) of members of the Bundestag.
 resources:
   - name: entities.ftm.json
-    url: https://data.ftm.store/de_abgeordnetenwatch/entities.ftm.json
+    url: https://data.ftm.store/de_abgeordnetenwatch_sidejobs/entities.ftm.json
     mime_type: application/json+ftm
 publisher:
   name: Parlamentwatch e.V.

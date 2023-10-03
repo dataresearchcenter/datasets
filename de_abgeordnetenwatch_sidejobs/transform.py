@@ -1,10 +1,11 @@
 from enum import Enum
 from typing import Any
 
-from fingerprints import generate as fp
 from followthemoney.util import make_entity_id
+from ftmq.util import get_country_code
 from investigraph import Context
 from investigraph.types import CE, CEGenerator
+from investigraph.util import fingerprint as fp
 
 
 class EntityType(Enum):
@@ -76,7 +77,11 @@ def make_address(context: Context, data) -> CE:
         proxy.add("full", ", ".join((city, country)))
     else:
         proxy.add("full", country)
-    proxy.id = context.make_slug("addr", make_entity_id(fp(proxy.caption)))
+    proxy.id = context.make_slug(
+        get_country_code(country) or "xx",
+        make_entity_id(fp(proxy.caption)),
+        prefix="addr",
+    )
     return proxy
 
 
