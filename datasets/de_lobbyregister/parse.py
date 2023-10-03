@@ -3,6 +3,7 @@ from typing import Any
 
 from fingerprints import generate as fp
 from followthemoney.util import make_entity_id
+from ftmq.util import get_country_code
 from investigraph.model import Context
 from investigraph.types import CEGenerator
 from nomenklatura.entity import CE
@@ -30,7 +31,9 @@ def make_address(context: Context, data) -> CE:
         zipCode = data["zipCode"]
         proxy.add("full", ", ".join((street, zipCode, city, country)))
         proxy.add("postalCode", zipCode)
-    proxy.id = context.make_slug("addr", make_entity_id(fp(proxy.caption)))
+    proxy.id = context.make_slug(
+        get_country_code(country), make_entity_id(fp(proxy.caption)), prefix="addr"
+    )
     return proxy
 
 
