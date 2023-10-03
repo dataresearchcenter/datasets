@@ -1,11 +1,14 @@
 import copy
 import logging
+import os
 import time
 
+from banal import as_bool
 from investigraph import Context
 from investigraph.logic import requests
 
 URL = "https://www.abgeordnetenwatch.de/api/v2"
+TESTING = as_bool(os.environ.get("TESTING"))
 
 log = logging.getLogger(__name__)
 
@@ -33,6 +36,9 @@ def fetchByIds(path, ids={}, queryParams={}):
     ]:
         queryParams["id[in]"] = "[" + ",".join(str(id) for id in idChunk) + "]"
         data += fetchAll(path, queryParams)
+        if TESTING:
+            return data
+
     return data
 
 
@@ -58,6 +64,9 @@ def fetchAll(path, queryParams={}):
             range_start = -1
 
         dataAll += data["data"]
+
+        if TESTING:
+            return dataAll
 
     return dataAll
 

@@ -1,5 +1,5 @@
 name: de_abgeordnetenwatch_sidejobs
-title: abgeordnetenwatch.de
+title: Nebentätigkeiten Deutscher Politiker*innen (abgeordnetenwatch.de)
 prefix: de-aw
 country: de
 summary: |
@@ -10,7 +10,7 @@ summary: |
   income (side jobs) of members of the Bundestag.
 resources:
   - name: entities.ftm.json
-    url: https://data.ftm.store/de_abgeordnetenwatch_sidejobs/entities.ftm.json
+    url: https://s3.investigativedata.org/data.ftm.store/de_abgeordnetenwatch_sidejobs/entities.ftm.json
     mime_type: application/json+ftm
 publisher:
   name: Parlamentwatch e.V.

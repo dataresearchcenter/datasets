@@ -17,19 +17,20 @@ class EntityType(Enum):
 
 
 def extract_year(value: str) -> str | None:
-    for year in re.match(r".*(\d{4}).*", value).groups():
-        return year
+    if value:
+        for year in re.match(r".*(\d{4}).*", str(value)).groups():
+            return year
 
 
-def make_employment(
-    context: Context, employer: CE, employee: CE, data: dict[str, Any]
+def make_link(
+    context: Context, politician: CE, organization: CE, data: dict[str, Any]
 ) -> CE:
-    rel = context.make("Employment")
+    rel = context.make("UnknownLink")
     rel.id = context.make_slug("sidejob", data.pop("id"))
 
     label = data.pop("label")
-    rel.add("employer", employer)
-    rel.add("employee", employee)
+    rel.add("subject", politician)
+    rel.add("object", organization)
     rel.add("role", label)
 
     return rel
@@ -168,7 +169,7 @@ def parse_sidejob(context: Context, record: dict[str, Any]):
             proxy = make_directorship(context, politician, organization, record)
         else:
             # TODO: Use suitable type for other (this doesn't fit in general, e.g. for "Beteiligung" or "Reisekosten")
-            proxy = make_employment(context, organization, politician, record)
+            proxy = make_link(context, politician, organization, record)
         # TODO: Find other suitable models. What about Interval, Other link or Payment?
 
         # TODO: Where to save income?
