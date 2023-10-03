@@ -6,8 +6,6 @@ from followthemoney.util import make_entity_id
 from investigraph import Context
 from investigraph.types import CE, CEGenerator
 
-URL = "https://www.abgeordnetenwatch.de/api/v2"
-
 
 class EntityType(Enum):
     SIDEJOB = "Sidejob"
