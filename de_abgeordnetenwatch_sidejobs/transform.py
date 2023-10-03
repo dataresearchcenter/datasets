@@ -18,8 +18,10 @@ class EntityType(Enum):
 
 def extract_year(value: str) -> str | None:
     if value:
-        for year in re.match(r".*(\d{4}).*", str(value)).groups():
-            return year
+        m = re.match(r".*(\d{4}).*", str(value))
+        if m is not None:
+            for year in m.groups():
+                return year
 
 
 def make_link(
