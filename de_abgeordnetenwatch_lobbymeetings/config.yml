@@ -1,0 +1,67 @@
+name: de_abgeordnetenwatch_lobbymeetings
+title: Lobbytreffen (Abgeordnetenwatch)
+prefix: de-aw
+
+extract:
+  sources:
+    - uri: ./src/Lobbykontakte2013-2021.csv
+      pandas:
+        operations:
+          - handler: DataFrame.rename
+            options:
+              columns:
+                "Ehemaliges Regierungsmitglied": politician
+                "Datum": date
+                "Kontakt zu:": ministry
+                "Beteiligte (Gesprächsthema)": summary
+          - handler: DataFrame.assign
+            options:
+              topic: "lambda x: x['summary']"
+          - handler: Series.str.extract
+            column: topic
+            options:
+              pat: '\((.*?)\)'
+              expand: false
+
+
+transform:
+  # handler: ./transform.py:handle
+  queries:
+    - entities:
+        politician:
+          schema: Person
+          key: politician
+          properties:
+            name:
+              column: politician
+            country:
+              literal: de
+        body:
+          schema: PublicBody
+          key: ministry
+          properties:
+            name:
+              column: ministry
+            country:
+              literal: de
+        event:
+          schema: Event
+          keys:
+            - politician
+            - date
+            - ministry
+          properties:
+            date:
+              column: date
+              format: "%d.%m.%Y"
+            name:
+              columns:
+                - date
+                - politician
+              join: " - "
+            summary:
+              column: summary
+            organizer:
+              entity: body
+            involved:
+              entity: politician

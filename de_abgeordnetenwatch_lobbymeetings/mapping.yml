@@ -1,0 +1,40 @@
+lobbykontakte:
+  queries:
+    - entities:
+        politician:
+          schema: Person
+          key: politician
+          properties:
+            name:
+              column: politician
+            country:
+              literal: de
+        body:
+          schema: PublicBody
+          key: ministry
+          properties:
+            name:
+              column: ministry
+            country:
+              literal: de
+        event:
+          schema: Event
+          keys:
+            - politician
+            - date
+            - ministry
+          properties:
+            date:
+              column: date
+              format: "%d.%m.%Y"
+            name:
+              columns:
+                - date
+                - politician
+              join: " - "
+            summary:
+              column: summary
+            organizer:
+              entity: body
+            involved:
+              entity: politician
