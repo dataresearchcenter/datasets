@@ -1,0 +1,13 @@
+name: de_gnd
+
+extract:
+  fetch: false
+  handler: ./extract.py:handle
+  sources:
+    - uri: ./src/authorities-gnd-koerperschaft_lds.jsonld.gz
+      name: legalentity
+    - uri: ./src/authorities-gnd-person_lds.jsonld.gz
+      name: person
+
+transform:
+  handler: ./transform.py:handle

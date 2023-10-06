@@ -4,6 +4,10 @@ nomenklatura.db
 .anystore
 **/eu_stateaid/src
 _wip
+=======
+output
+xref
+de_gnd/src
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
