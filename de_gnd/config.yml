@@ -1,4 +1,5 @@
 name: de_gnd
+prefix: gnd
 
 extract:
   fetch: false
