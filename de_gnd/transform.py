@@ -4,7 +4,7 @@ from investigraph.model import Context
 
 PERSON_MAPPING = {
     'preferredNameEntityForThePerson': 'name',
-    'variantNameForThePerson': 'name',          # TODO: process name format
+    'variantNameForThePerson': 'alias',          # TODO: process name format
     'forename': 'firstName',
     'surname': 'lastName',
     'dateOfBirth': 'birthDate',
@@ -13,11 +13,11 @@ PERSON_MAPPING = {
 
 CORPORATE_MAPPING = {
     'preferredNameForTheCorporateBody': 'name',
-    'variantNameForTheCorporateBody': 'name',
+    'variantNameForTheCorporateBody': 'alias',
     'geographicAreaCode': 'country',
     'spatialAreaOfActivity': 'country',
     'placeOfBusiness': 'country',
-    'dateOfEstablishment': 'createdAt',
+    'dateOfEstablishment': 'incorporationDate',
     'homepage': 'website',
 }
 # TODO: add wikidataId as property
@@ -50,10 +50,8 @@ def get_type(record: Record) -> str:
 
 
 def add_properties(proxy, record: Record, mapping: dict[str, str]):
-    # TODO: increase efficency
     for gnd_key, ftm_key in mapping.items():
-        for value in get_values(record, gnd_key):
-            proxy.add(ftm_key, value)
+        proxy.add(ftm_key, get_values(record, gnd_key))
 
 
 def make_person(ctx: Context, record: Record) -> CE:
