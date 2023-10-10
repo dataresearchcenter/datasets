@@ -4,7 +4,7 @@ from investigraph.model import Context
 
 PERSON_MAPPING = {
     'preferredNameEntityForThePerson': 'name',
-    'variantNameForThePerson': 'alias',          # TODO: process name format
+    'variantNameForThePerson': 'alias',          
     'forename': 'firstName',
     'surname': 'lastName',
     'dateOfBirth': 'birthDate',
@@ -14,13 +14,13 @@ PERSON_MAPPING = {
 CORPORATE_MAPPING = {
     'preferredNameForTheCorporateBody': 'name',
     'variantNameForTheCorporateBody': 'alias',
+    'abbreviatedNameForTheCorporateBody': 'alias',
     'geographicAreaCode': 'country',
     'spatialAreaOfActivity': 'country',
     'placeOfBusiness': 'country',
     'dateOfEstablishment': 'incorporationDate',
     'homepage': 'website',
 }
-# TODO: add wikidataId as property
 
 def get_values(record: Record, key: str) -> list[str]:
     # TODO: Adjust for different base urls
@@ -49,9 +49,17 @@ def get_type(record: Record) -> str:
     return record_type
 
 
+def get_wikidata_url(record: Record) -> list[str]:
+    key = 'http://www.w3.org/2002/07/owl#sameAs'
+    if key in record.keys():
+        return [item.get('@id') for item in record[key] if 'wikidata' in item.get('@id')]
+    return []
+
+
 def add_properties(proxy, record: Record, mapping: dict[str, str]):
     for gnd_key, ftm_key in mapping.items():
         proxy.add(ftm_key, get_values(record, gnd_key))
+    proxy.add('wikidataId', get_wikidata_url(record))
 
 
 def make_person(ctx: Context, record: Record) -> CE:
