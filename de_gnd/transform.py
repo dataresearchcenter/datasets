@@ -13,7 +13,8 @@ PERSON_MAPPING = {
     'forename': 'firstName',
     'surname': 'lastName',
     'dateOfBirth': 'birthDate',
-    'dateOfDeath': 'deathDate'
+    'dateOfDeath': 'deathDate',
+    'gndIdentifier': 'gndId'
     }
 
 CORPORATE_MAPPING = {
@@ -25,6 +26,7 @@ CORPORATE_MAPPING = {
     'placeOfBusiness': 'country',
     'dateOfEstablishment': 'incorporationDate',
     'homepage': 'website',
+    'gndIdentifier': 'gndId'
 }
 
 
@@ -107,10 +109,23 @@ def get_wikidata_url(record: Record) -> list[str]:
     return []
 
 
+def get_reference_url(record: Record, domain: str) -> list[str]:
+    key = 'http://www.w3.org/2002/07/owl#sameAs'
+    if key in record.keys():
+        return [item.get('@id') for item in record[key] if domain in item.get('@id')]
+    return [] 
+
+
+def add_reference_urls(proxy, record: Record):
+    reference_domains = {'wikidata': 'wikidataId', 'viaf': 'viafId', 'isni': 'isni'}
+    for reference_domain, ftm_key in reference_domains.items():
+        proxy.add(ftm_key, get_reference_url(record, reference_domain))
+
+
 def add_properties(proxy, record: Record, mapping: dict[str, str]):
     for gnd_key, ftm_key in mapping.items():
         proxy.add(ftm_key, get_values(record, gnd_key))
-    proxy.add('wikidataId', get_wikidata_url(record))
+    add_reference_urls(proxy, record)
 
 
 def make_person(ctx: Context, record: Record) -> CE:
