@@ -64,7 +64,7 @@ def get_values(record: Record, key: str) -> list[str]:
         return []
 
 # TODO: Move into general utils function and convert 
-def convert_to_iso_date(date_str):
+def convert_to_iso_date(date_str: str) -> str:
     date_str = date_str.replace('XX.', '')
     formats = [
         "%Y-%m-%d", "%Y-%m", "%Y", "%d.%m.%Y", "%d.%m.%y", '%m.%Y', '%Y, %d.%m.',
