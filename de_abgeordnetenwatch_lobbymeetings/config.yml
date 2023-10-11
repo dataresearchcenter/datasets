@@ -3,7 +3,7 @@ title: Lobbytreffen (Abgeordnetenwatch)
 prefix: de-aw
 resources:
   - name: entities.ftm.json
-    url: https://s3.investigativedata.org/data.ftm.store/de_abgeordnetenwatch_lobbymeetings/entities.ftm.json
+    url: https://data.ftm.store/de_abgeordnetenwatch_lobbymeetings/entities.ftm.json
     mime_type: application/json+ftm
 publisher:
   name: Parlamentwatch e.V.
