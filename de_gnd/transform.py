@@ -22,12 +22,25 @@ CORPORATE_MAPPING = {
     'variantNameForTheCorporateBody': 'alias',
     'abbreviatedNameForTheCorporateBody': 'alias',
     'geographicAreaCode': 'country',
-    'spatialAreaOfActivity': 'country',
-    'placeOfBusiness': 'country',
     'dateOfEstablishment': 'incorporationDate',
     'homepage': 'website',
     'gndIdentifier': 'gndId'
 }
+
+
+def get_country_code(country_uri: str) -> str:
+    area_code = country_uri.split('#')[-1]
+    code_elements = area_code.split('-')
+    if len(code_elements) > 1:
+        return code_elements[1].lower()
+    else:
+        region_code = code_elements[0]
+        if region_code == 'XA':
+            return 'eu'
+        elif region_code == 'XQ':
+            return 'zz'
+        else:
+            return country_uri
 
 
 def convert_to_iso_date(date_str: str) -> str:
@@ -51,18 +64,21 @@ def convert_to_iso_date(date_str: str) -> str:
     return date_str
 
 
+
+def process(key: str, values: list[str]) -> list[str]:
+    if 'date' in key.lower():
+        values = [convert_to_iso_date(elem) for elem in values]
+    if 'country' in key.lower():
+        values = [get_country_code(elem) for elem in values]
+    return values
+
+
 def get_values(record: Record, key: str) -> list[str]:
     # TODO: Adjust for different base urls
-    # TODO: get id values 
     base = "https://d-nb.info/standards/elementset/gnd#"
     try: 
-        values = [value['@value'] for value in record[base + key]]
-        # convert dates to iso format
-        if 'date' in key.lower():
-            values = [convert_to_iso_date(elem) for elem in values]
-        return values 
+        return [value.get('@value', value.get('@id')) for value in record[base + key]]
     except KeyError:
-        #print('KeyError: ' + key + ' not found in ' )
         return []
 
 # TODO: Move into general utils function and convert 
@@ -124,7 +140,9 @@ def add_reference_urls(proxy, record: Record):
 
 def add_properties(proxy, record: Record, mapping: dict[str, str]):
     for gnd_key, ftm_key in mapping.items():
-        proxy.add(ftm_key, get_values(record, gnd_key))
+        values = get_values(record, gnd_key)
+        proc_values = process(ftm_key, values)
+        proxy.add(ftm_key, proc_values)
     add_reference_urls(proxy, record)
 
 
