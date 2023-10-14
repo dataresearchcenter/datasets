@@ -82,10 +82,7 @@ def convert_to_iso_date(date_str: str) -> str:
     return date_str
 
 
-def extract_id(value: str, person_type: str = 'DifferentiatedPerson') -> str:
-    # format of person ids is different for the person type
-    if person_type != 'DifferentiatedPerson':
-        return value.split('x')[-1]
+def extract_id(value: str) -> str:
     return value.split('/')[-1]
 
 
