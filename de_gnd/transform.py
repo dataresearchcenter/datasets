@@ -122,6 +122,7 @@ def add_properties(proxy, record: Record, mapping: dict[str, str]) -> CE:
 def make_person(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("Person")
     proxy.id = ctx.make_slug(extract_id(record["@id"]))
+    proxy.add('sourceUrl', record["@id"])
     proxy = add_properties(proxy, record, PERSON_MAPPING)
     return proxy
 
@@ -129,6 +130,7 @@ def make_person(ctx: Context, record: Record) -> CE:
 def make_legalentity(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("LegalEntity")
     proxy.id = ctx.make_slug(extract_id(record['@id']))
+    proxy.add('sourceUrl', record["@id"])
     proxy.add('legalForm', [legal_form.split('#')[-1] for legal_form in record['@type']])
     proxy = add_properties(proxy, record, CORPORATE_MAPPING)
     return proxy
@@ -137,6 +139,7 @@ def make_legalentity(ctx: Context, record: Record) -> CE:
 def make_company(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("Company")
     proxy.id = ctx.make_slug(extract_id(record['@id']))
+    proxy.add('sourceUrl', record["@id"])
     proxy = add_properties(proxy, record, CORPORATE_MAPPING)
     return proxy
 
