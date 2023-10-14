@@ -117,6 +117,13 @@ def add_properties(proxy, record: Record, mapping: dict[str, str]) -> CE:
     return proxy
 
 
+def make_organization(ctx: Context, url: str) -> CE:
+    proxy = ctx.make('Organization')
+    proxy.id = ctx.make_slug(extract_id(url))
+    proxy.add('sourceUrl', url)
+    return proxy
+
+
 def make_membership(ctx: Context, member: CE, organization_url: str) -> CE:
     proxy = ctx.make('Membership')
     proxy.id = ctx.make_slug(extract_id(organization_url), member.id, 'membership')
