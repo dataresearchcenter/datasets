@@ -4,7 +4,9 @@ from investigraph.model import Context
 from datetime import datetime
 import locale
 
+
 locale.setlocale(locale.LC_ALL, 'de_DE.utf8')
+BASE = "https://d-nb.info/standards/elementset/gnd#"
 
 PERSON_MAPPING = {
     'preferredNameForThePerson': 'name',
@@ -53,9 +55,8 @@ def process(key: str, values: list[str]) -> list[str]:
 
 
 def get_values(record: Record, key: str) -> list[str]:
-    base = "https://d-nb.info/standards/elementset/gnd#"
     try: 
-        return [value.get('@value', value.get('@id')) for value in record[base + key]]
+        return [value.get('@value', value.get('@id')) for value in record[BASE + key]]
     except KeyError:
         return []
 
@@ -119,6 +120,14 @@ def add_properties(proxy, record: Record, mapping: dict[str, str]) -> CE:
     return proxy
 
 
+def make_membership(ctx: Context, member: CE, organization_url: str) -> CE:
+    proxy = ctx.make('Membership')
+    proxy.id = ctx.make_slug(extract_id(organization_url), member.id, 'membership')
+    proxy.add('organization', make_organization(ctx, organization_url))
+    proxy.add('member', member)
+    return proxy
+
+
 def make_person(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("Person")
     proxy.id = ctx.make_slug(extract_id(record["@id"]))
@@ -133,6 +142,9 @@ def make_legalentity(ctx: Context, record: Record) -> CE:
     proxy.add('sourceUrl', record["@id"])
     proxy.add('legalForm', [legal_form.split('#')[-1] for legal_form in record['@type']])
     proxy = add_properties(proxy, record, CORPORATE_MAPPING)
+    if BASE + 'corporateBodyIsMember' in record.keys():
+        for membership in get_values(record, 'corporateBodyIsMember'):
+            membership_proxy = make_membership(ctx, proxy, membership)
     return proxy
 
 
