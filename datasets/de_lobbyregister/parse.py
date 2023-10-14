@@ -3,7 +3,7 @@ from typing import Any
 
 from fingerprints import generate as fp
 from followthemoney.util import make_entity_id
-from ftmq.util import get_country_code
+from ftmq.util import fingerprint, get_country_code
 from investigraph.model import Context
 from investigraph.types import CEGenerator
 from nomenklatura.entity import CE
@@ -155,7 +155,7 @@ def parse_record(context: Context, record: dict[str, Any]):
         payer.add("name", item["name"])
         payer.add("address", item.get("location"))
         payer.id = context.make_slug(
-            "donator", make_entity_id("donator", proxy.id, payer.caption)
+            "donator", make_entity_id("donator", proxy.id, fingerprint(payer.caption))
         )
         context.emit(payer)
 
