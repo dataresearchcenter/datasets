@@ -6,65 +6,79 @@ from investigraph.types import CE, CEGenerator, Record
 BASE = "https://d-nb.info/standards/elementset/gnd#"
 
 PERSON_MAPPING = {
-    'preferredNameForThePerson': 'name',
-    'personalName': 'name',
-    'variantNameForThePerson': 'alias',          
-    'forename': 'firstName',
-    'surname': 'lastName',
-    'dateOfBirth': 'birthDate',
-    'dateOfDeath': 'deathDate',
-    'gndIdentifier': 'gndId'
-    }
+    "preferredNameForThePerson": "name",
+    "personalName": "name",
+    "variantNameForThePerson": "alias",
+    "forename": "firstName",
+    "surname": "lastName",
+    "dateOfBirth": "birthDate",
+    "dateOfDeath": "deathDate",
+    "gndIdentifier": "gndId",
+}
 
 CORPORATE_MAPPING = {
-    'preferredNameForTheCorporateBody': 'name',
-    'variantNameForTheCorporateBody': 'alias',
-    'abbreviatedNameForTheCorporateBody': 'alias',
-    'dateOfEstablishment': 'incorporationDate',
-    'gndIdentifier': 'gndId',
-    'geographicAreaCode': 'country',
-    'gndSubjectCategory': 'classification',
-    'homepage': 'website',
+    "preferredNameForTheCorporateBody": "name",
+    "variantNameForTheCorporateBody": "alias",
+    "abbreviatedNameForTheCorporateBody": "alias",
+    "dateOfEstablishment": "incorporationDate",
+    "gndIdentifier": "gndId",
+    "geographicAreaCode": "country",
+    "gndSubjectCategory": "classification",
+    "homepage": "website",
 }
 
 
 def get_country_code(country_uri: str) -> str:
-    area_code = country_uri.split('#')[-1]
-    code_elements = area_code.split('-')
+    area_code = country_uri.split("#")[-1]
+    code_elements = area_code.split("-")
     if len(code_elements) > 1:
         return code_elements[1].lower()
     else:
         region_code = code_elements[0]
-        if region_code == 'XA':
-            return 'eu'
-        elif region_code == 'XQ':
-            return 'zz'
+        if region_code == "XA":
+            return "eu"
+        elif region_code == "XQ":
+            return "zz"
         else:
             return country_uri
 
 
 def process(key: str, values: list[str]) -> list[str]:
-    if 'date' in key.lower():
+    if "date" in key.lower():
         values = [convert_to_iso_date(elem) for elem in values]
-    if 'country' in key.lower():
+    if "country" in key.lower():
         values = [get_country_code(elem) for elem in values]
     return values
 
 
 def get_values(record: Record, key: str) -> list[str]:
-    try: 
-        return [value.get('@value', value.get('@id')) for value in record[BASE + key]]
+    try:
+        return [value.get("@value", value.get("@id")) for value in record[BASE + key]]
     except KeyError:
         return []
 
-# TODO: Move into general utils function and convert 
+
+# TODO: Move into general utils function and convert
 def convert_to_iso_date(date_str: str) -> str:
-    date_str = date_str.replace('XX.', '')
+    date_str = date_str.replace("XX.", "")
     formats = [
-        "%Y-%m-%d", "%Y-%m", "%Y", "%d.%m.%Y", "%d.%m.%y", '%m.%Y', '%Y, %d.%m.',
-        "%Y,%d.%m.", "%Y,%m,%d", "%Y,%b.", "%Y,%b", "%Y,%B", "%Y,%d.%B", "%Y/%m",
-        "%Y,%d.%b.", "%Y,%d.%B"
-    ] 
+        "%Y-%m-%d",
+        "%Y-%m",
+        "%Y",
+        "%d.%m.%Y",
+        "%d.%m.%y",
+        "%m.%Y",
+        "%Y, %d.%m.",
+        "%Y,%d.%m.",
+        "%Y,%m,%d",
+        "%Y,%b.",
+        "%Y,%b",
+        "%Y,%B",
+        "%Y,%d.%B",
+        "%Y/%m",
+        "%Y,%d.%b.",
+        "%Y,%d.%B",
+    ]
     for format_str in formats:
         try:
             date_obj = datetime.strptime(date_str, format_str)
@@ -75,20 +89,12 @@ def convert_to_iso_date(date_str: str) -> str:
             else:
                 return date_obj.strftime("%Y-%m-%d")
         except ValueError:
-                continue
+            continue
     return date_str
 
 
 def extract_id(value: str) -> str:
-    return value.split('/')[-1]
-
-
-def get_type(record: Record) -> str:
-    # TODO: Adjust for multiple corporate types
-    record_type = ""
-    if '@type' in record.keys():
-        record_type = record['@type'][0].split('#')[-1]
-    return record_type
+    return value.split("/")[-1]
 
 
 def get_reference_id(record: Record, domain: str) -> list[str]:
@@ -119,64 +125,66 @@ def add_properties(proxy, record: Record, mapping: dict[str, str]) -> CE:
 
 
 def make_organization(ctx: Context, url: str) -> CE:
-    proxy = ctx.make('Organization')
+    proxy = ctx.make("Organization")
     proxy.id = ctx.make_slug(extract_id(url))
-    proxy.add('sourceUrl', url)
+    proxy.add("sourceUrl", url)
     return proxy
 
 
 def make_membership(ctx: Context, member: CE, organization_url: str) -> CE:
-    proxy = ctx.make('Membership')
-    proxy.id = ctx.make_slug(extract_id(organization_url), member.id, 'membership')
-    proxy.add('organization', make_organization(ctx, organization_url))
-    proxy.add('member', member)
+    proxy = ctx.make("Membership")
+    proxy.id = ctx.make_slug(extract_id(organization_url), member.id, "membership")
+    proxy.add("organization", make_organization(ctx, organization_url))
+    proxy.add("member", member)
     return proxy
 
 
 def make_person(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("Person")
     proxy.id = ctx.make_slug(extract_id(record["@id"]))
-    proxy.add('sourceUrl', record["@id"])
+    proxy.add("sourceUrl", record["@id"])
     proxy = add_properties(proxy, record, PERSON_MAPPING)
     return proxy
 
 
 def make_legalentity(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("LegalEntity")
-    proxy.id = ctx.make_slug(extract_id(record['@id']))
-    proxy.add('sourceUrl', record["@id"])
-    proxy.add('legalForm', [legal_form.split('#')[-1] for legal_form in record['@type']])
+    proxy.id = ctx.make_slug(extract_id(record["@id"]))
+    proxy.add("sourceUrl", record["@id"])
+    proxy.add(
+        "legalForm", [legal_form.split("#")[-1] for legal_form in record["@type"]]
+    )
     proxy = add_properties(proxy, record, CORPORATE_MAPPING)
-    if BASE + 'corporateBodyIsMember' in record.keys():
-        for membership in get_values(record, 'corporateBodyIsMember'):
-            membership_proxy = make_membership(ctx, proxy, membership)
+    if BASE + "corporateBodyIsMember" in record.keys():
+        for membership in get_values(record, "corporateBodyIsMember"):
+            ctx.emit(make_membership(ctx, proxy, membership))
     return proxy
 
 
 def make_company(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("Company")
-    proxy.id = ctx.make_slug(extract_id(record['@id']))
-    proxy.add('sourceUrl', record["@id"])
+    proxy.id = ctx.make_slug(extract_id(record["@id"]))
+    proxy.add("sourceUrl", record["@id"])
     proxy = add_properties(proxy, record, CORPORATE_MAPPING)
     return proxy
 
 
+def get_type(record: Record) -> str | None:
+    # TODO: Adjust for multiple corporate types
+    if "@type" in record.keys():
+        return record["@type"][0].split("#")[-1]
+
+
 def handle(ctx: Context, record: Record, ix: int) -> CEGenerator:
     tx = ctx.task()
-
-    # skip ids with '/about' as this is metadata instead of a new entity
-    if 'about' not in record['@id']:
-
-        if ctx.source.name == "legalentity":
-            record_type = get_type(record)
-            if record_type == 'Company':
-                entity = make_company(tx, record)
-            else:
-                entity = make_legalentity(tx, record)
-            yield entity
-        elif ctx.source.name == "person":
-            person_type = get_type(record)
-            # exclude families and name entities
-            if person_type != 'Family' and person_type != "":
-                entity = make_person(tx, record)
-                yield entity 
+    if ctx.source.name == "legalentity":
+        record_type = get_type(record)
+        if record_type == "Company":
+            entity = make_company(tx, record)
+        else:
+            entity = make_legalentity(tx, record)
+        tx.emit(entity)
+    elif ctx.source.name == "person":
+        entity = make_person(tx, record)
+        tx.emit(entity)
+    yield from tx
