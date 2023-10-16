@@ -1,11 +1,8 @@
-from investigraph.types import CE, CEGenerator, Record
-from investigraph.model import Context
-
 from datetime import datetime
-import locale
 
+from investigraph.model import Context
+from investigraph.types import CE, CEGenerator, Record
 
-locale.setlocale(locale.LC_ALL, 'de_DE.utf8')
 BASE = "https://d-nb.info/standards/elementset/gnd#"
 
 PERSON_MAPPING = {
