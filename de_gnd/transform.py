@@ -94,17 +94,21 @@ def get_type(record: Record) -> str:
     return record_type
 
 
-def get_reference_url(record: Record, domain: str) -> list[str]:
-    key = 'http://www.w3.org/2002/07/owl#sameAs'
+def get_reference_id(record: Record, domain: str) -> list[str]:
+    key = "http://www.w3.org/2002/07/owl#sameAs"
     if key in record.keys():
-        return [item.get('@id') for item in record[key] if domain in item.get('@id')]
-    return [] 
+        return [
+            item.get("@id", "").split("/")[-1]
+            for item in record[key]
+            if domain in item.get("@id")
+        ]
+    return []
 
 
 def add_reference_urls(proxy, record: Record) -> CE:
-    reference_domains = {'wikidata': 'wikidataId', 'viaf': 'viafId', 'isni': 'isni'}
+    reference_domains = {"wikidata": "wikidataId", "viaf": "viafId", "isni": "isni"}
     for reference_domain, ftm_key in reference_domains.items():
-        proxy.add(ftm_key, get_reference_url(record, reference_domain))
+        proxy.add(ftm_key, get_reference_id(record, reference_domain))
     return proxy
 
 
