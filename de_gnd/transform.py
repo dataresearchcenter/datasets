@@ -128,6 +128,7 @@ def make_organization(ctx: Context, url: str) -> CE:
     proxy = ctx.make("Organization")
     proxy.id = ctx.make_slug(extract_id(url))
     proxy.add("sourceUrl", url)
+    ctx.emit(proxy)
     return proxy
 
 
