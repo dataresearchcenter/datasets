@@ -14,6 +14,10 @@ PERSON_MAPPING = {
     "dateOfBirth": "birthDate",
     "dateOfDeath": "deathDate",
     "gndIdentifier": "gndId",
+    "gender": "gender",
+    "geographicAreaCode": "country",
+    "academicDegree": "title",
+    "biographicalOrHistoricalInformation": "description",
 }
 
 CORPORATE_MAPPING = {
@@ -48,6 +52,8 @@ def process(key: str, values: list[str]) -> list[str]:
         values = [convert_to_iso_date(elem) for elem in values]
     if "country" in key.lower():
         values = [get_country_code(elem) for elem in values]
+    if "gender" in key.lower():
+        values = [extract_gender(elem) for elem in values]
     return values
 
 
@@ -95,6 +101,13 @@ def convert_to_iso_date(date_str: str) -> str:
 
 def extract_id(value: str) -> str:
     return value.split("/")[-1]
+
+
+def extract_gender(gender_str: str) -> str:
+    gender = gender_str.split("#")[-1]
+    if gender == "male" or gender == "female":
+        return gender
+    return ""
 
 
 def get_reference_id(record: Record, domain: str) -> list[str]:
