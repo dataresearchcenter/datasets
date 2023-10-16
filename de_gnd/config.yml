@@ -1,5 +1,28 @@
 name: de_gnd
+title: Gemeinsame Normdatei (GND)
 prefix: gnd
+description: |
+  Die Gemeinsame Normdatei (GND) ist eine Normdatei für Personen,
+  Körperschaften, Kongresse, Geografika, Sachschlagwörter und Werktitel, die
+  vor allem zur Katalogisierung von Literatur in Bibliotheken dient, zunehmend
+  aber auch von Archiven, Museen, Projekten und in Web-Anwendungen genutzt
+  wird. Sie wird von der Deutschen Nationalbibliothek (DNB), allen
+  deutschsprachigen Bibliotheksverbünden, der Zeitschriftendatenbank (ZDB) und
+  zahlreichen weiteren Institutionen kooperativ geführt. Normdaten erleichtern
+  die Katalogisierung, bieten eindeutige Sucheinstiege und die Möglichkeit der
+  Vernetzung unterschiedlicher Informationsressourcen.
+  Die GND löste am 19. April 2012 die bis dahin getrennt geführten
+  Verzeichnisse Personennamendatei (PND), Gemeinsame Körperschaftsdatei (GKD),
+  Schlagwortnormdatei (SWD) und Einheitssachtitel-Datei des Deutschen
+  Musikarchivs (DMA-EST) ab. Seit Juli 2014 werden die Normdaten nach den
+  RDA-Regeln erfasst, die unter anderem auch von der Library of Congress
+  verwendet werden.
+url: https://gnd.network
+publisher:
+  name: Deutsche Nationalbibliothek
+  url: https://www.dnb.de
+frequency: monthly
+category: poi
 
 extract:
   fetch: false
