@@ -128,12 +128,35 @@ def add_reference_urls(proxy, record: Record) -> CE:
     return proxy
 
 
+def create_relationships(ctx: Context, person_id: str, record: Record) -> list[CE]:
+    REL_BASE = "https://d-nb.info/standards/elementset/agrelon"
+    relations = []
+    for key, value in record.items():
+        if REL_BASE in key:
+            relation = key.split("#")[-1]
+            for relative in record[key]:
+                relative_id = extract_id(relative["@id"])
+                proxy = make_family(ctx, person_id, relative_id, relation)
+                relations.append(proxy)
+    return relations
+
+
 def add_properties(proxy, record: Record, mapping: dict[str, str]) -> CE:
     for gnd_key, ftm_key in mapping.items():
         values = get_values(record, gnd_key)
         proc_values = process(ftm_key, values)
         proxy.add(ftm_key, proc_values)
     proxy = add_reference_urls(proxy, record)
+    return proxy
+
+
+def make_family(ctx: Context, person_id: str, relative_id: str, relation: str) -> CE:
+    proxy = ctx.make("Family")
+    proxy.id = ctx.make_slug(relative_id, person_id, "family")
+    proxy.add("person", person_id)
+    proxy.add("relative", ctx.make_slug(relative_id))
+    proxy.add("relationship", relation)
+    ctx.emit(proxy)
     return proxy
 
 
@@ -158,6 +181,7 @@ def make_person(ctx: Context, record: Record) -> CE:
     proxy.id = ctx.make_slug(extract_id(record["@id"]))
     proxy.add("sourceUrl", record["@id"])
     proxy = add_properties(proxy, record, PERSON_MAPPING)
+    relationships = create_relationships(ctx, proxy.id, record)
     return proxy
 
 
