@@ -1,0 +1,19 @@
+name: de_lobbypedia_parteispenden
+title: Parteispenden (Lobbycontrol)
+prefix: de-lp
+country: de
+summary: |
+  Lobbypedia is an independent, lobby-critical online encyclopedia provided by LobbyControl e.V.
+  The Parteispenden database provides information on donations to political parties from companies or private persons.
+publisher:
+  name: Lobbycontrol
+  description: Non-profit organisation
+  url: https://lobbypedia.de/wiki/Parteispenden-datenbank
+
+extract:
+  sources:
+    - uri: ./src/parteispenden.json
+  handler: ./extract.py:handle
+
+transform:
+  handler: ./transform.py:handle
