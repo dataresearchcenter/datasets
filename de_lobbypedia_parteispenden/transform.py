@@ -38,6 +38,7 @@ def make_organization(ctx: Context, record: Record) -> CE:
     proxy.id = ctx.make_slug("party", record["Empfänger"][0]["fulltext"])
     proxy.add("name", get_values(record, "Empfänger", "fulltext"))
     proxy.add("sourceUrl", get_values(record, "Empfänger", "fullurl"))
+    proxy.add("topics", "pol.party")
     ctx.emit(proxy)
     return proxy
 
