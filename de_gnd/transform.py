@@ -1,7 +1,16 @@
 from datetime import datetime
+from functools import cache
 
 from investigraph.model import Context
 from investigraph.types import CE, CEGenerator, Record
+import os, sys
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.join(current_dir, "..")
+sys.path.append(parent_dir)
+
+from de_gnd.sru import get_title_from_sru_request
+
 
 BASE = "https://d-nb.info/standards/elementset/gnd#"
 
@@ -18,6 +27,7 @@ PERSON_MAPPING = {
     "geographicAreaCode": "country",
     "academicDegree": "title",
     "biographicalOrHistoricalInformation": "description",
+    "professionOrOccupation": "position",
 }
 
 CORPORATE_MAPPING = {
@@ -54,6 +64,8 @@ def process(key: str, values: list[str]) -> list[str]:
         values = [get_country_code(elem) for elem in values]
     if "gender" in key.lower():
         values = [extract_gender(elem) for elem in values]
+    if "position" in key.lower():
+        values = [get_profession_from_url(elem) for elem in values]
     return values
 
 
@@ -62,6 +74,12 @@ def get_values(record: Record, key: str) -> list[str]:
         return [value.get("@value", value.get("@id")) for value in record[BASE + key]]
     except KeyError:
         return []
+
+
+@cache
+def get_profession_from_url(url: str) -> str:
+    gndId = extract_id(url)
+    return get_title_from_sru_request(gndId)
 
 
 # TODO: Move into general utils function and convert
