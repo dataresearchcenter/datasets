@@ -12,7 +12,9 @@ publisher:
 
 extract:
   sources:
-    - uri: ./src/parteispenden.json
+    - uri: https://lobbypedia.de/w/index.php?title=Spezial:Ask&x=-5B-5BKategorie%3AParteispende-5D-5D-20-5B-5BParteispende-2FKategorie%3A%3Ajuristische-20Person-7C-7Cnat%C3%BCrliche-20Person-5D-5D-20-5B-5BJahr%3A%3A2000-7C-7C2001-7C-7C2002-7C-7C2003-7C-7C2004-7C-7C2005-7C-7C2006-7C-7C2007-7C-7C2008-7C-7C2009-7C-7C2010-5D-5D%2F-3FGeldgeber%2F-3FParteispende-2FKategorie%3DKategorie%2F-3FBetrag%2F-3FEmpf%C3%A4nger%2F-3FJahr-23-2Dn%2F-3FOrt%2F-3FBundesland%2F-3FBranche%2F-3FSchlagworte&mainlabel=&limit=10000&order=descending&sort=Modification%20date&offset=0&format=json&default=keine%20Ergebnisse%20mit%20der%20aktuellen%20Auswahl
+    - uri: https://lobbypedia.de/wiki/Spezial:Semantische_Suche/-5B-5BKategorie:Parteispende-5D-5D-20-5B-5BParteispende-2FKategorie::juristische-20Person-7C-7Cnat%C3%BCrliche-20Person-5D-5D-20-5B-5BJahr::2018-7C-7C2019-7C-7C2020-7C-7C2021-7C-7C2022-7C-7C2023-5D-5D/-3FGeldgeber/-3FParteispende-2FKategorie%3DKategorie/-3FBetrag/-3FEmpf%C3%A4nger/-3FJahr-23-2Dn/-3FOrt/-3FBundesland/-3FBranche/-3FSchlagworte/mainlabel%3D/limit%3D10000/order%3Ddescending/sort%3DModification-20date/offset%3D0/format%3Djson/default%3Dkeine-20Ergebnisse-20mit-20der-20aktuellen-20Auswahl
+    - uri: https://lobbypedia.de/wiki/Spezial:Semantische_Suche/-5B-5BKategorie:Parteispende-5D-5D-20-5B-5BParteispende-2FKategorie::juristische-20Person-7C-7Cnat%C3%BCrliche-20Person-5D-5D-20-5B-5BJahr::2011-7C-7C2012-7C-7C2013-7C-7C2014-7C-7C2015-7C-7C2016-7C-7C2017-5D-5D/-3FGeldgeber/-3FParteispende-2FKategorie%3DKategorie/-3FBetrag/-3FEmpf%C3%A4nger/-3FJahr-23-2Dn/-3FOrt/-3FBundesland/-3FBranche/-3FSchlagworte/mainlabel%3D/limit%3D10000/order%3Ddescending/sort%3DModification-20date/offset%3D0/format%3Djson/default%3Dkeine-20Ergebnisse-20mit-20der-20aktuellen-20Auswahl
   handler: ./extract.py:handle
 
 transform:
