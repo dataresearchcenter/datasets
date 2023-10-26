@@ -22,6 +22,7 @@ PERSON_MAPPING = {
     "surname": "lastName",
     "dateOfBirth": "birthDate",
     "dateOfDeath": "deathDate",
+    "placeOfBirth": "birthPlace",
     "gndIdentifier": "gndId",
     "gender": "gender",
     "geographicAreaCode": "country",
@@ -39,6 +40,7 @@ CORPORATE_MAPPING = {
     "geographicAreaCode": "country",
     "gndSubjectCategory": "classification",
     "homepage": "website",
+    "placeOfBusiness": "address",
 }
 
 
@@ -65,7 +67,9 @@ def process(key: str, values: list[str]) -> list[str]:
     if "gender" in key.lower():
         values = [extract_gender(elem) for elem in values]
     if "position" in key.lower():
-        values = [get_profession_from_url(elem) for elem in values]
+        values = [get_title_from_vocab_url(elem, "profession") for elem in values]
+    if "place" in key.lower() or "address" in key.lower():
+        values = [get_title_from_vocab_url(elem, "place") for elem in values]
     return values
 
 
@@ -77,9 +81,9 @@ def get_values(record: Record, key: str) -> list[str]:
 
 
 @cache
-def get_profession_from_url(url: str) -> str:
+def get_title_from_vocab_url(url: str, category_type: str) -> str:
     gndId = extract_id(url)
-    return get_title_from_sru_request(gndId)
+    return get_title_from_sru_request(gndId, category_type)
 
 
 # TODO: Move into general utils function and convert
