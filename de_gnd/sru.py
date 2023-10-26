@@ -1,7 +1,7 @@
-import requests
-import xml.etree.ElementTree as ET
-from bs4 import BeautifulSoup
 from typing import Any
+import requests
+
+from bs4 import BeautifulSoup
 
 
 VOCAB_CONFIG = {"place": "Tg", "profession": "Ts"}
@@ -40,7 +40,6 @@ def request_data(gndId: str, vocab_type: str) -> str:
 
 
 def process_xml(xml_text):
-    root = ET.fromstring(xml_text)
     soup = BeautifulSoup(xml_text, "xml")
     records = soup.find_all("record")
     return records
