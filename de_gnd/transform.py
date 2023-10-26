@@ -10,6 +10,7 @@ parent_dir = os.path.join(current_dir, "..")
 sys.path.append(parent_dir)
 
 from de_gnd.sru import get_title_from_sru_request
+from de_gnd.standard_vocab import get_title_from_standard_vocab
 
 
 BASE = "https://d-nb.info/standards/elementset/gnd#"
@@ -70,6 +71,8 @@ def process(key: str, values: list[str]) -> list[str]:
         values = [get_title_from_vocab_url(elem, "profession") for elem in values]
     if "place" in key.lower() or "address" in key.lower():
         values = [get_title_from_vocab_url(elem, "place") for elem in values]
+    if "classification" in key.lower():
+        values = [get_title_from_standard_vocab(elem) for elem in values]
     return values
 
 
