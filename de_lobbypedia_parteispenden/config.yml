@@ -5,6 +5,10 @@ country: de
 summary: |
   Lobbypedia is an independent, lobby-critical online encyclopedia provided by LobbyControl e.V.
   The Parteispenden database provides information on donations to political parties from companies or private persons.
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/de_lobbypedia_parteispenden/entities.ftm.json
+    mime_type: application/json+ftm
 publisher:
   name: Lobbycontrol
   description: Non-profit organisation
