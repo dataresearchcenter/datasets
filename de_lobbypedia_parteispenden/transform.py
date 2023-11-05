@@ -1,5 +1,7 @@
 from typing import Any
 
+from followthemoney.util import join_text
+from ftmq.util import fingerprint_id
 from investigraph.model import Context
 from investigraph.types import CE, CEGenerator, Record
 
@@ -26,9 +28,11 @@ def create_payer(ctx: Context, record: Record) -> CE:
 
 def make_address(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("Address")
-    proxy.id = ctx.make_slug("address", record["Ort"])
+    proxy.id = ctx.make_slug(record["Ort"], record["Bundesland"], prefix="de-addr")
     proxy.add("city", record["Ort"])
     proxy.add("state", record["Bundesland"])
+    proxy.add("country", "de")
+    proxy.add("full", join_text(record["Ort"], record["Bundesland"], sep=", "))
     ctx.emit(proxy)
     return proxy
 
@@ -45,9 +49,11 @@ def make_organization(ctx: Context, record: Record) -> CE:
 
 def make_legalentity(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("LegalEntity")
-    proxy.id = ctx.make_slug("legalentity", record["Geldgeber"][0]["fulltext"])
+    proxy.id = ctx.make_slug(fingerprint_id(record["Geldgeber"][0]["fulltext"]))
     proxy = add_payer_properties(proxy, record)
-    proxy.add("address", make_address(ctx, record))
+    address = make_address(ctx, record)
+    proxy.add("addressEntity", address)
+    proxy.add("address", address.get("full"))
     ctx.emit(proxy)
     return proxy
 
@@ -63,12 +69,15 @@ def make_person(ctx: Context, record: Record) -> CE:
 
 def make_payment(ctx: Context, record: Record, payer: str, beneficiary: str) -> CE:
     proxy = ctx.make("Payment")
+    date = record["printouts"]["Jahr"]
     proxy.id = ctx.make_slug(record["fulltext"])
     proxy.add("payer", payer)
     proxy.add("beneficiary", beneficiary)
     proxy.add("sourceUrl", record["fullurl"])
     proxy.add("amountEur", record["printouts"]["Betrag"])
-    proxy.add("date", record["printouts"]["Jahr"])
+    proxy.add("amount", record["printouts"]["Betrag"])
+    proxy.add("currency", "EUR")
+    proxy.add("date",date) 
     ctx.emit(proxy)
     return proxy
 
