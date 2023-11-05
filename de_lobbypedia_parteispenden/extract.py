@@ -1,12 +1,12 @@
-import json
+import orjson
 from typing import Any, Generator
 import requests
 
-from investigraph.model import Context
+from investigraph.model import Context, Resolver
 
 
-def handle(ctx: Context, *args, **kwargs) -> Generator[dict[str, Any], None, None]:
-    res = requests.get(ctx.source.uri) 
-    data = res.json()['results']
+def handle(ctx: Context, res: Resolver, **kwargs) -> Generator[dict[str, Any], None, None]:
+    content = res.get_content()
+    data = orjson.loads(content)["results"]
     for key, entry in data.items():
         yield entry

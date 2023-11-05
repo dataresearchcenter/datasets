@@ -26,13 +26,15 @@ def create_payer(ctx: Context, record: Record) -> CE:
     return proxy
 
 
-def make_address(ctx: Context, record: Record) -> CE:
+def make_address(ctx: Context, record: Record) -> CE | None:
     proxy = ctx.make("Address")
-    proxy.id = ctx.make_slug(record["Ort"], record["Bundesland"], prefix="de-addr")
+    proxy.id = ctx.make_slug(*record["Ort"], *record["Bundesland"], prefix="de-addr")
+    if proxy.id is None:
+        return
     proxy.add("city", record["Ort"])
     proxy.add("state", record["Bundesland"])
     proxy.add("country", "de")
-    proxy.add("full", join_text(record["Ort"], record["Bundesland"], sep=", "))
+    proxy.add("full", join_text(*record["Ort"], *record["Bundesland"], sep=", "))
     ctx.emit(proxy)
     return proxy
 
@@ -52,8 +54,9 @@ def make_legalentity(ctx: Context, record: Record) -> CE:
     proxy.id = ctx.make_slug(fingerprint_id(record["Geldgeber"][0]["fulltext"]))
     proxy = add_payer_properties(proxy, record)
     address = make_address(ctx, record)
-    proxy.add("addressEntity", address)
-    proxy.add("address", address.get("full"))
+    if address:
+        proxy.add("addressEntity", address)
+        proxy.add("address", address.get("full"))
     ctx.emit(proxy)
     return proxy
 
@@ -62,7 +65,10 @@ def make_person(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("Person")
     proxy.id = ctx.make_slug("person", record["Geldgeber"][0]["fulltext"])
     proxy = add_payer_properties(proxy, record)
-    proxy.add("address", make_address(ctx, record))
+    address = make_address(ctx, record)
+    if address:
+        proxy.add("addressEntity", address)
+        proxy.add("address", address.get("full"))
     ctx.emit(proxy)
     return proxy
 
@@ -70,14 +76,15 @@ def make_person(ctx: Context, record: Record) -> CE:
 def make_payment(ctx: Context, record: Record, payer: str, beneficiary: str) -> CE:
     proxy = ctx.make("Payment")
     date = record["printouts"]["Jahr"]
+    amounts = [str(round(a, 2)) for a in record["printouts"]["Betrag"]]
     proxy.id = ctx.make_slug(record["fulltext"])
     proxy.add("payer", payer)
     proxy.add("beneficiary", beneficiary)
     proxy.add("sourceUrl", record["fullurl"])
-    proxy.add("amountEur", record["printouts"]["Betrag"])
-    proxy.add("amount", record["printouts"]["Betrag"])
+    proxy.add("amountEur", amounts)
+    proxy.add("amount", amounts)
     proxy.add("currency", "EUR")
-    proxy.add("date",date) 
+    proxy.add("date", date)
     ctx.emit(proxy)
     return proxy
 
