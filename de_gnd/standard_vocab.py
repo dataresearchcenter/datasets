@@ -38,6 +38,6 @@ def get_title_from_standard_vocab(gnd_id: str) -> str:
     vocab = build_vocab(records)
     try:
         return vocab[gnd_id]
-    except:
+    except KeyError:
         print(f"{gnd_id} not in GND standard vocab.")
-        return ""
+        return gnd_id

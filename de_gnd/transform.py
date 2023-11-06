@@ -35,7 +35,7 @@ PERSON_MAPPING = {
 CORPORATE_MAPPING = {
     "preferredNameForTheCorporateBody": "name",
     "variantNameForTheCorporateBody": "alias",
-    "abbreviatedNameForTheCorporateBody": "alias",
+    "abbreviatedNameForTheCorporateBody": "weakAlias",
     "dateOfEstablishment": "incorporationDate",
     "gndIdentifier": "gndId",
     "geographicAreaCode": "country",
@@ -159,6 +159,8 @@ def create_relationships(ctx: Context, person_id: str, record: Record) -> list[C
     for key, value in record.items():
         if REL_BASE in key:
             relation = key.split("#")[-1]
+            if relation.startswith("has"):
+                relation = relation[3:]
             for relative in record[key]:
                 relative_id = extract_id(relative["@id"])
                 proxy = make_family(ctx, person_id, relative_id, relation)

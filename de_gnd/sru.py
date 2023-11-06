@@ -28,7 +28,7 @@ def get_params(gndId: str, vocab_type: str) -> dict[str, Any]:
     return params
 
 
-def request_data(gndId: str, vocab_type: str) -> str:
+def request_data(gndId: str, vocab_type: str) -> str | None:
     sru_url = "https://services.dnb.de/sru/authorities"
     try:
         response = requests.get(sru_url, params=get_params(gndId, vocab_type))
@@ -59,5 +59,7 @@ def extract_title(records, gndId: str, vocab_type: str) -> str:
 
 def get_title_from_sru_request(gndId: str, vocab_type: str) -> str:
     response = request_data(gndId, VOCAB_CONFIG[vocab_type])
-    records = process_xml(response)
-    return extract_title(records, gndId, vocab_type)
+    if response is not None:
+        records = process_xml(response)
+        return extract_title(records, gndId, vocab_type)
+    return ""
