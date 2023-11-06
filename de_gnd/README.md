@@ -17,3 +17,7 @@ This will emit the entity fragments directly into the postgres database and avoi
 After the whole process, export the `ftm store` to a file:
 
     ftm store iterate -d de_gnd > ./data/de_gnd/entities.ftm.json
+
+## testing
+
+use env var `GND_TEST_SIZE=1000` to only process a subset of data.
