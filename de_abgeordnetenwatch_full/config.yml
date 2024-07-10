@@ -1,0 +1,49 @@
+name: de_abgeordnetenwatch_full
+title: "German Legislators from AbgeordnetenWatch"
+url: https://www.abgeordnetenwatch.de
+prefix: de-aw
+coverage:
+  frequency: daily
+  start: 2024-06-12
+summary: >
+  Members of the German national legislature (The Bundestag)
+  and state legislatures (Landtag).
+description: |
+  Members of the German national legislature (The Bundestag)
+  and state legislatures (Landtag) and the positions they occupy
+  in the legislature, provided by the [Abgeordenetenwatch API](https://www.abgeordnetenwatch.de/api).
+
+  This dataset (as opposed to the original OpenSanctions crawler) keeps the
+  internal IDs for persons and adds more data.
+
+  Data released under CC0 1.0 license.
+publisher:
+  name: Parlamentwatch e.V.
+  official: false
+  description: |
+    On abgeordnetenwatch.de (which translates as “member of parliament watch”)
+    users can find all politicial representatives and ask them questions, read
+    investigative research and support their demands towards politics for more
+    transparency.
+  country: de
+  url: https://www.abgeordnetenwatch.de/ueber-uns/impressum
+data:
+  url: "https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?type=mandate"
+  format: JSON
+
+resources:
+  - name: entities.ftm.json
+    url: https://s3.investigativedata.org/data.ftm.store/de_abgeordnetenwatch_full/entities.ftm.json
+    mime_type: application/json+ftm
+
+extract:
+  sources:
+    - uri: https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?type=mandate
+  handler: ./extract.py:handle
+
+transform:
+  handler: ./transform.py:handle
+
+load:
+  index_uri: s3://data.ftm.store/de_abgeordnetenwatch_full/index.json
+  entities_uri: s3://data.ftm.store/de_abgeordnetenwatch_full/entities.ftm.json
