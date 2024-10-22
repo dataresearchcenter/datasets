@@ -33,7 +33,8 @@ pipeline:
   parse:
     method: de_bgh:parse
     handle:
-      pass: download
+      download: download
+      fetch: fetch
 
   download:
     method: fetch

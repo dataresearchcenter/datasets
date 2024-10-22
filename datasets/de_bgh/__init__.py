@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 X_ROWS = ".//td[@class='ESpruchk']/.."
+X_NEXT = ".//img[@src='/rechtsprechung/bgh/pics/weiter.gif']/../@href"
 X_URL = ".//td[@class='EAz']//a[@type='application/pdf']/@href"
 X_DEP = ".//td[@class='ESpruchk']/text()"
 X_DATE = ".//td[@class='EDatum']/text()"
@@ -28,8 +29,13 @@ def parse(context, data):
         for row in result.html.xpath(X_ROWS):
             url = stringify(row.xpath(X_URL))
             if url is not None:
-                data["department"] = stringify(row.xpath(X_DEP))
-                data["date"] = dateformat(row.xpath(X_DATE))
-                data["reference"] = stringify(row.xpath(X_REF))
-                data["url"] = urljoin(data["url"], url)
-                context.emit(data=data)
+                _data = {**data}
+                _data["department"] = stringify(row.xpath(X_DEP))
+                _data["date"] = dateformat(row.xpath(X_DATE))
+                _data["reference"] = stringify(row.xpath(X_REF))
+                _data["url"] = urljoin(data["url"], url)
+                context.emit(rule="download", data=_data)
+        next_url = stringify(result.html.xpath(X_NEXT))
+        if next_url:
+            data["url"] = urljoin(data["url"], next_url)
+            context.emit(rule="fetch", data=data)
