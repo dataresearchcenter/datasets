@@ -1,0 +1,46 @@
+name: usrtk_monsanto_papers
+title: USRTK Monsanto Papers (State court and Federal court)
+
+pipeline:
+  init:
+    method: seed
+    params:
+      urls:
+        - https://usrtk.org/monsanto-papers/state-court/
+        - https://usrtk.org/monsanto-papers/federal-court/
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+              - pattern: https://usrtk.org/monsanto-papers/.*
+              - pattern: https://usrtk.org/wp-content/uploads/.*
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+    handle:
+      store: store
+      fetch: fetch
+
+  store:
+    method: directory
+
+leakrfc:
+  sync:
+    memorious:
+      key_template: "{{ title }}/{{ url.split('/')[-1].replace('-', ' ') }}"

@@ -1,0 +1,49 @@
+name: de_bgh
+title: Entscheidungen des Bundesgerichtshof
+
+pipeline:
+  init:
+    method: session
+    params:
+      proxy: http://archivebox1:8080
+    handle:
+      pass: dates
+
+  dates:
+    method: dates
+    params:
+      format: "%Y-%m"
+      start: 2000-01
+      days: 30
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://juris.bundesgerichtshof.de/cgi-bin/rechtsprechung/list.py?Gericht=bgh&Art=en&Datum=%(date)s
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    handle:
+      pass: parse
+
+  parse:
+    method: de_bgh:parse
+    handle:
+      pass: download
+
+  download:
+    method: fetch
+    handle:
+      pass: store
+
+  store:
+    method: directory
+
+leakrfc:
+  sync:
+    memorious:
+      key_template: "{{ department }}/{{ date[:4] }}/{{ date[5:7] }}/{{ reference.replace('/','-') }}.pdf"
