@@ -1,7 +1,4 @@
-from typing import Any
-
-from followthemoney.util import join_text
-from ftmq.util import fingerprint_id
+from investigraph.util import join_text
 from investigraph.model import Context
 from investigraph.types import CE, CEGenerator, Record
 
@@ -10,7 +7,7 @@ def get_values(record: Record, category: str, subcategory) -> list[str]:
     return [elem[subcategory] for elem in record[category]]
 
 
-def add_payer_properties(proxy: CE, record) -> CE:
+def add_payer_properties(proxy: CE, record: Record) -> CE:
     proxy.add("name", get_values(record, "Geldgeber", "fulltext"))
     proxy.add("sourceUrl", get_values(record, "Geldgeber", "fullurl"))
     proxy.add("topics", record["Branche"])
@@ -51,7 +48,7 @@ def make_organization(ctx: Context, record: Record) -> CE:
 
 def make_legalentity(ctx: Context, record: Record) -> CE:
     proxy = ctx.make("LegalEntity")
-    proxy.id = ctx.make_slug(fingerprint_id(record["Geldgeber"][0]["fulltext"]))
+    proxy.id = ctx.make_id(record["Geldgeber"][0]["fulltext"])
     proxy = add_payer_properties(proxy, record)
     address = make_address(ctx, record)
     if address:
@@ -93,5 +90,5 @@ def handle(ctx: Context, record: Record, ix: int) -> CEGenerator[CE]:
     tx = ctx.task()
     payer = create_payer(tx, record["printouts"])
     beneficiary = make_organization(tx, record["printouts"])
-    payment_entity = make_payment(tx, record, payer.id, beneficiary.id)
+    make_payment(tx, record, payer.id, beneficiary.id)
     yield from tx

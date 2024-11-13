@@ -1,12 +1,9 @@
-import orjson
-from typing import Any, Generator
-import requests
-
 from investigraph.model import Context, Resolver
+from investigraph.types import RecordGenerator
+import orjson
 
 
-def handle(ctx: Context, res: Resolver, **kwargs) -> Generator[dict[str, Any], None, None]:
+def handle(ctx: Context, res: Resolver, **kwargs) -> RecordGenerator:
     content = res.get_content()
     data = orjson.loads(content)["results"]
-    for key, entry in data.items():
-        yield entry
+    yield from data.values()
