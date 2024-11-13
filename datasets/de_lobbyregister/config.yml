@@ -6,6 +6,11 @@ summary: |
   German registry about persons and organizations having access to the
   Bundestag (german parliament) for lobbying purposes. Registration is required
   by a federal law since 2022. Also contains clients, agents and donators.
+coverage:
+  countries:
+    - de
+  frequency: weekly
+category: poi
 resources:
   - name: entities.ftm.json
     url: https://data.ftm.store/de_lobbyregister/entities.ftm.json
@@ -26,6 +31,4 @@ extract:
             max_level: 0
 
 transform:
-  handler: ./parse.py:parse
-
-
+  handler: ./transform.py:handle
