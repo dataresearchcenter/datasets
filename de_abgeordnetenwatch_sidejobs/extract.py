@@ -12,7 +12,7 @@ from investigraph.util import dict_merge
 URL = "https://www.abgeordnetenwatch.de/api/v2/"
 TESTING = as_bool(os.environ.get("TESTING"))
 MAX_ERRORS = 5
-CHUNK_SIZE = 500
+CHUNK_SIZE = 1000
 
 log = logging.getLogger(__name__)
 
