@@ -1,0 +1,46 @@
+name: eu_asktheeu
+description: Freedom of Information (FOI) requests to the European Union via asktheeu.org
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.asktheeu.org/en/search/status:successful
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+            - pattern: https://(www\.)?asktheeu.org/en/request/.*
+            - pattern: https://(www\.)?asktheeu.org/en/search/status:successful
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        and:
+          - pattern: https://(www\.)?asktheeu.org/en/request/.*
+          - or:
+            - mime_group: archives
+            - mime_group: documents
+    handle:
+      store: store
+      fetch: fetch
+
+  store:
+    method: directory
