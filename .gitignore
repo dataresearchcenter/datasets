@@ -10,6 +10,8 @@ nomenklatura.db
 output
 xref
 
+data/*
+.anystore
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
