@@ -1,0 +1,53 @@
+name: de_bundestag_dip
+title: Dokumentations- und Informationssystem für Parlamentsmaterialien (DIP)
+prefix: de-dip
+country: de
+category: library
+description: >
+  Das Dokumentations- und Informationssystem für Parlamentsmaterialien (DIP)
+  ist ein gemeinsames Informationssystem von Bundestag und Bundesrat. In DIP
+  ist das parlamentarische Geschehen dokumentiert, wie es in Drucksachen und
+  Stenografischen Berichten (Plenarprotokollen) festgehalten wird. Das
+  ermöglicht einen Überblick über die parlamentarischen Beratungen beider
+  Verfassungsorgane.
+publisher:
+  name: Deutscher Bundestag
+  description: German Parliament
+  url: https://bundestag.de
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+coverage:
+  frequency: daily
+content_type: documents
+
+stealthy: true
+
+pipeline:
+  init:
+    method: de_bundestag_dip:seed
+    params:
+      url: https://search.dip.bundestag.de/api/v1/drucksache?apikey=I9FKdCn.hbfefNWCY336dL6x62vfwNKpoN2RZ1gp21
+      timedelta:
+        days: 5
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    handle:
+      pass: parse
+
+  parse:
+    method: de_bundestag_dip:parse
+    handle:
+      cursor: fetch
+      download: download
+
+  download:
+    method: fetch
+    handle:
+      pass: store
+
+  store:
+    method: directory
