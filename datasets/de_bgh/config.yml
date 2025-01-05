@@ -1,5 +1,27 @@
 name: de_bgh
-title: Entscheidungen des Bundesgerichtshof
+title: Entscheidungen des Bundesgerichtshof (BGH)
+description: >
+  Scraped documents from the court archive of the german "Bundesgerichtshof
+  (BGH)"
+category: court
+publisher:
+  name: Bundesgerichtshof
+  url: https://www.bundesgerichtshof.de
+  official: true
+  country: de
+  description: >
+    Der Bundesgerichtshof (BGH) ist das oberste Gericht der Bundesrepublik
+    Deutschland im Bereich der Zivil- und Strafrechtspflege, der sogenannten
+    ordentlichen Gerichtsbarkeit. Er wurde am 1. Oktober 1950 errichtet und hat
+    seinen Sitz in Karlsruhe.
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+coverage:
+  frequency: daily
+content_type: documents
+data_url: https://juris.bundesgerichtshof.de/cgi-bin/rechtsprechung/list.py?Gericht=bgh&Art=en
+aleph_url: https://aleph.investigativedata.org/datasets/581
 
 pipeline:
   init:
@@ -10,10 +32,11 @@ pipeline:
       pass: dates
 
   dates:
-    method: dates
+    # method: dates
+    method: de_bgh:dates
     params:
       format: "%Y-%m"
-      start: 2000-01
+      end: 2000-01
       days: 30
     handle:
       pass: seed

@@ -1,6 +1,7 @@
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from urllib.parse import urljoin
 from normality import latinize_text
-from datetime import datetime
 
 
 X_ROWS = ".//td[@class='ESpruchk']/.."
@@ -39,3 +40,13 @@ def parse(context, data):
         if next_url:
             data["url"] = urljoin(data["url"], next_url)
             context.emit(rule="fetch", data=data)
+
+
+def dates(context, data):
+    """memorious built-in dates operation is somehow broken"""
+    dateformat = context.params.get("format", "%Y-%m-%d")
+    end = datetime.strptime(context.params["end"], dateformat)
+    current = datetime.now()
+    while current > end:
+        context.emit(data={**data, "date": current.strftime(dateformat)})
+        current = current - relativedelta(months=1)
