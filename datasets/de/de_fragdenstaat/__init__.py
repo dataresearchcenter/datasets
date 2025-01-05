@@ -1,12 +1,10 @@
-from datetime import datetime
 from typing import Any
 
 from anystore.decorators import anycache
 from banal import ensure_dict
 from memorious.logic.context import Context
 
-from utils.cache import make_url_cache_key
-
+from utils.cache import emit_cached, make_url_cache_key
 
 DEFAULT_URL = "https://fragdenstaat.de/api/v1/document"
 
@@ -17,12 +15,6 @@ def get_publicbody(context: Context, url: str | None) -> dict[str, Any]:
         res = context.http.get(url)
         return res.json
     return {}
-
-
-@anycache(key_func=make_url_cache_key)
-def emit_document(context: Context, data: dict[str, Any]) -> datetime:
-    context.emit(data=data)
-    return datetime.now()
 
 
 def reduce_publicbody(data: dict[str, Any]) -> dict[str, Any]:
@@ -50,7 +42,7 @@ def seed(context, data):
             }
 
             if data["url"]:
-                emit_document(context, data)
+                emit_cached(context, data)
 
     if res.json["meta"]["next"] is not None:
         context.recurse(data={"url": res.json["meta"]["next"]})
