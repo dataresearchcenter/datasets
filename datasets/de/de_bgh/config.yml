@@ -25,9 +25,7 @@ aleph_url: https://aleph.investigativedata.org/datasets/581
 
 pipeline:
   init:
-    method: session
-    params:
-      proxy: http://archivebox1:8080
+    method: utils.operations:init
     handle:
       pass: dates
 
