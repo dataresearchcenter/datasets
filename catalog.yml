@@ -1,0 +1,3 @@
+name: Investigative Commons
+uri: s3://investigativecommons
+public_url: https://data.investigativecommons.org/{{ dataset }}/{{ key }}
