@@ -1,0 +1,45 @@
+name: amnesty_research_reports
+description: Amnesty International Research Reports
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.amnesty.org/en/search/?qresource-type=2146
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        mime_group: documents
+      include_paths:
+        - ".//div[@class='col__content']/div[@class='document-content-wrap']/div[@class='grid']/div[@class='col col--1/2--md']"
+        - ".//article[@class='search-item--bordered']"
+        - ".//ul[@class='pagination__list']"
+      meta:
+        title: ".//h1[@class='heading--main heading--uppercase heading--in-padded']"
+        summary: ".//div[@class='col__content']/div[@class='document-content-wrap']/div[@class='wysiwyg']/p"
+        source_url: ".//div[@class='col__content']/div[@class='document-content-wrap']/div[@class='grid']/div[@class='col col--1/2--md']/@href"
+        notes: ".//ul[@class='tags--discrete--md']/li[@class='tags__item--discrete']/a[@class='tags__link--discrete--md']"
+        keywords: ".//div[@class='document-content-wrap']/aside/ul[@class='tags']/li[@class='tags__item']/a[@class='tags__link']"
+      meta_date:
+        published_at: ".//div[@class='col__content']/div[@class='document-content-wrap']/p[@class='meta']/time"
+    handle:
+      fetch: fetch
+      store: store
+
+  store:
+    method: directory
