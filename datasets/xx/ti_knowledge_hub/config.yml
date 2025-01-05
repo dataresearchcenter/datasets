@@ -1,0 +1,76 @@
+name: ti_knowledge_hub
+title: Transparency International Knowledge Hub
+description: |
+  The Anti-Corruption Knowledge Hub is an online space where Transparency
+  International (TI) presents its research output. It is the home of the
+  Anti-Corruption Helpdesk, TI's expert network, a series of topic guides and
+  country-specific research. In addition, the Hub hosts many of the studies,
+  tools and knowledge which lie behind what we do at Transparency
+  International.
+category: library
+prefix: ti
+publisher:
+  name: Transparency International
+  description: |
+    Transparency International e.V. (TI) is a German registered association
+    founded in 1993 by former employees of the World Bank. Based in Berlin, its
+    nonprofit and non-governmental purpose is to take action to combat global
+    corruption with civil societal anti-corruption measures and to prevent
+    criminal activities arising from corruption. Its most notable publications
+    include the Global Corruption Barometer and the Corruption Perceptions
+    Index. Transparency International serves as an umbrella organization.
+  url: https://transparency.org
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+coverage:
+  frequency: daily
+content_type: documents
+data_url: https://knowledgehub.transparency.org
+
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://knowledgehub.transparency.org/helpdesk/browse/
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        or:
+          - pattern: https://knowledgehub.transparency.org/helpdesk
+          - pattern: https://knowledgehub.transparency.org/assets
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        mime_group: documents
+      # include_paths:
+      #   - ".//div[@class='col__content']/div[@class='document-content-wrap']/div[@class='grid']/div[@class='col col--1/2--md']"
+      #   - ".//article[@class='search-item--bordered']"
+      #   - ".//ul[@class='pagination__list']"
+      meta:
+        name: ".//main[@class='sidebar-right']/header[@class='page-header ']/div[@class='container']/h1[@class='heading heading--primary']"
+        title: ".//main[@class='sidebar-right']/header[@class='page-header ']/div[@class='container']/h1[@class='heading heading--primary']"
+        summary: ".//main[@class='sidebar-right']/div[@class='container']/div[@class='w-sidebar']/div[@class='w-sidebar__main']/div[@class='copy']/p[2]"
+      meta_date:
+        published_at: ".//main[@class='sidebar-right']/div[@class='container']/div[@class='w-sidebar']/div[@class='w-sidebar__main']/div[@class='copy']/p[5]"
+    handle:
+      fetch: fetch
+      store: store
+
+  store:
+    method: directory
