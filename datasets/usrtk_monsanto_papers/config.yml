@@ -1,5 +1,32 @@
 name: usrtk_monsanto_papers
 title: USRTK Monsanto Papers (State court and Federal court)
+description: >
+  As part of the discovery process during the litigation that preceded the
+  settlement, Monsanto had to turn over millions of pages of its internal
+  records. The Monsanto Papers and other court records are shared below,
+  including documents regarding the company’s ghostwriting of an important paper
+  published in the year 2000, and how the company used that “independent”
+  scientific literature to promote and defend its herbicides.
+prefix: usrtk
+category: court
+coverage:
+  frequency: never
+publisher:
+  name: U.S. Right to Know
+  description: >
+    U.S. Right to Know is a nonprofit public health research group. We
+    investigate corporate wrongdoing and government failures that threaten our
+    health, environment or food system. We work in the public interest to help
+    keep families healthy.
+  country: us
+  url: https://usrtk.org
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+info_url: https://usrtk.org/monsanto-papers/
+data_url: https://usrtk.org/monsanto-papers/federal-court/
+aleph_url: https://aleph.investigativedata.org/datasets/574
 
 pipeline:
   init:
@@ -41,6 +68,8 @@ pipeline:
     method: directory
 
 leakrfc:
+  uri: s3://investigativecommons/usrtk_monsanto_papers
+  public_url: https://data.investigativecommons.org/usrtk_monsanto_papers/{{ key }}
   sync:
     memorious:
       key_template: "{{ title }}/{{ url.split('/')[-1].replace('-', ' ') }}"
