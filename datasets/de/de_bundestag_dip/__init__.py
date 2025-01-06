@@ -1,23 +1,17 @@
 from datetime import datetime, timedelta
-from typing import Any, TypeAlias
 
 from banal import ensure_dict, ensure_list
 from furl import furl
 from memorious.logic.context import Context
 from servicelayer import env
 
+from utils import Data
 from utils.cache import emit_cached
-
-Data: TypeAlias = dict[str, Any]
 
 
 def seed(context: Context, data: Data):
     f = furl(context.params["url"])
-    if (
-        not env.to_bool("FULL_RUN")
-        and not env.to_int("LIMIT")
-        and not env.to_int("TIME_LIMIT")
-    ):
+    if not env.to_bool("FULL_RUN"):
         start_date = (
             env.get("START_DATE")
             or (

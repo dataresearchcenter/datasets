@@ -1,8 +1,11 @@
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from urllib.parse import urljoin
+
+from dateutil.relativedelta import relativedelta
+from memorious.logic.context import Context
 from normality import latinize_text
 
+from utils import Data
 
 X_ROWS = ".//td[@class='ESpruchk']/.."
 X_NEXT = ".//img[@src='/rechtsprechung/bgh/pics/weiter.gif']/../@href"
@@ -25,7 +28,7 @@ def dateformat(e) -> str | None:
         return datetime.strptime(value, DATE).date().isoformat()
 
 
-def parse(context, data):
+def parse(context: Context, data: Data):
     with context.http.rehash(data) as result:
         for row in result.html.xpath(X_ROWS):
             url = stringify(row.xpath(X_URL))
@@ -42,7 +45,7 @@ def parse(context, data):
             context.emit(rule="fetch", data=data)
 
 
-def dates(context, data):
+def dates(context: Context, data: Data):
     """memorious built-in dates operation is somehow broken"""
     dateformat = context.params.get("format", "%Y-%m-%d")
     end = datetime.strptime(context.params["end"], dateformat)
