@@ -25,7 +25,7 @@ X_METADATA = {
     "summary": ".//p[contains(concat(' ', normalize-space(@class), ' '), ' ps-abstrakt ')]/span[2]/text()",
 }
 
-RE_REF = re.compile(r"Drucksache\s(\d{1,2}\/\d+)")
+RE_REF = re.compile(r".*(\d{1,2}\/\d+).*")
 
 
 def extract_meta(el: HtmlElement) -> Data:
@@ -40,15 +40,15 @@ def extract_meta(el: HtmlElement) -> Data:
     return data
 
 
-def extract_ref(value: str) -> str | None:
+def extract_ref(value: str) -> str:
     m = RE_REF.match(value)
     if m:
         return m.groups()[0]
+    raise ValueError(f"Invalid reference: `{value}`")
 
 
-def extract_term(value: str | None) -> str | None:
-    if value:
-        return value.split("/")[0]
+def extract_term(value: str) -> str:
+    return value.split("/")[0]
 
 
 def seed(context: Context, data: Data) -> None:
