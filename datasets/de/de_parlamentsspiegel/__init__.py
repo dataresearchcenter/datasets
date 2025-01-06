@@ -8,7 +8,7 @@ from memorious.logic.context import Context
 from servicelayer import env
 
 from utils import Data
-from utils.cache import emit_cached
+from utils.operations import cached_emit
 
 X_NEXT = ".//a[@class='page-link text-dark']/@data-seite"
 X_ROWS = ".//div[@class='ps-vorgang']"
@@ -104,7 +104,7 @@ def parse(context: Context, data: Data):
 
             # FIXME
             if state not in ("Sachsen", "Rheinland-Pfalz"):
-                emit_cached(context, detail_data, "download")
+                cached_emit(context, detail_data, "download")
 
     next_pages = set()
     for page in res.html.xpath(X_NEXT):
