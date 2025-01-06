@@ -6,7 +6,7 @@ from memorious.logic.context import Context
 from servicelayer import env
 
 from utils import Data
-from utils.cache import emit_cached
+from utils.operations import cached_emit
 
 
 def seed(context: Context, data: Data):
@@ -31,13 +31,13 @@ def parse(context: Context, data: Data):
 
     for document in ensure_list(res.json["documents"]):
         detail_data = parse_drucksache(document)
-        emit_cached(context, {**data, **detail_data, **{"meta": document}}, "download")
+        cached_emit(context, {**data, **detail_data, **{"meta": document}}, "download")
 
     # next page
-    fu = furl(data["url"])
-    if res.json["cursor"] != fu.args.get("cursor"):
-        fu.args["cursor"] = res.json["cursor"]
-        context.emit("cursor", data={**data, **{"url": fu.url}})
+    f = furl(data["url"])
+    if res.json["cursor"] != f.args.get("cursor"):
+        f.args["cursor"] = res.json["cursor"]
+        context.emit("cursor", data={**data, **{"url": f.url}})
 
 
 def parse_drucksache(document: Data) -> Data:

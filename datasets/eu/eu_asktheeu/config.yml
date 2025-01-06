@@ -20,12 +20,17 @@ pipeline:
       rules:
         and:
           - or:
-            - pattern: https://(www\.)?asktheeu.org/en/request/.*
-            - pattern: https://(www\.)?asktheeu.org/en/search/status:successful
+              - pattern: https://(www\.)?asktheeu.org/en/request/.*
+              - pattern: https://(www\.)?asktheeu.org/en/search/status:successful
           - not:
               or:
                 - mime_group: assets
                 - mime_group: images
+    handle:
+      pass: cached_emit
+
+  cached_emit:
+    method: utils.operations:cached_emit
     handle:
       pass: parse
 
@@ -36,11 +41,11 @@ pipeline:
         and:
           - pattern: https://(www\.)?asktheeu.org/en/request/.*
           - or:
-            - mime_group: archives
-            - mime_group: documents
+              - mime_group: archives
+              - mime_group: documents
     handle:
       store: store
       fetch: fetch
 
   store:
-    method: directory
+    method: utils.operations:store

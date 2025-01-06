@@ -4,7 +4,7 @@ prefix: de-fds
 category: library
 coverage:
   frequency: daily
-publisher: 
+publisher:
   name: FragDenStaat.de
   description: >
     FragDenStaat ist die zentrale Anlaufstelle für Informationsfreiheit in
@@ -38,4 +38,4 @@ pipeline:
       pass: store
 
   store:
-    method: directory
+    method: utils.operations:store

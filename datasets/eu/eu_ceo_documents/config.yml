@@ -25,6 +25,11 @@ pipeline:
                 - mime_group: assets
                 - mime_group: images
     handle:
+      pass: cached_emit
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
       pass: parse
 
   parse:
@@ -39,4 +44,4 @@ pipeline:
       fetch: fetch
 
   store:
-    method: directory
+    method: utils.operations:store

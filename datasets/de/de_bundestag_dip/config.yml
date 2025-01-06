@@ -50,4 +50,4 @@ pipeline:
       pass: store
 
   store:
-    method: directory
+    method: utils.operations:store

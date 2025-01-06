@@ -4,7 +4,8 @@ from anystore.decorators import anycache
 from banal import ensure_dict
 from memorious.logic.context import Context
 
-from utils.cache import emit_cached, make_url_cache_key
+from utils.cache import make_url_cache_key
+from utils.operations import cached_emit
 
 DEFAULT_URL = "https://fragdenstaat.de/api/v1/document"
 
@@ -42,7 +43,7 @@ def seed(context, data):
             }
 
             if data["url"]:
-                emit_cached(context, data)
+                cached_emit(context, data)
 
     if res.json["meta"]["next"] is not None:
         context.recurse(data={"url": res.json["meta"]["next"]})

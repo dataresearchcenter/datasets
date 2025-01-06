@@ -6,6 +6,7 @@ from memorious.logic.context import Context
 from normality import latinize_text
 
 from utils import Data
+from utils.operations import cached_emit
 
 X_ROWS = ".//td[@class='ESpruchk']/.."
 X_NEXT = ".//img[@src='/rechtsprechung/bgh/pics/weiter.gif']/../@href"
@@ -38,7 +39,7 @@ def parse(context: Context, data: Data):
                 _data["date"] = dateformat(row.xpath(X_DATE))
                 _data["reference"] = stringify(row.xpath(X_REF))
                 _data["url"] = urljoin(data["url"], url)
-                context.emit(rule="download", data=_data)
+                cached_emit(context, _data, "download")
         next_url = stringify(result.html.xpath(X_NEXT))
         if next_url:
             data["url"] = urljoin(data["url"], next_url)

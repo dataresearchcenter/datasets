@@ -1,15 +1,17 @@
-from datetime import datetime
 from typing import Any
+from urllib.parse import urlparse, urlunparse
 
 import requests
-from anystore.decorators import anycache
 from anystore.store import get_store
 from banal import is_mapping
 from memorious.logic.context import Context
 from servicelayer import env
 
+from utils import Data
+
 CACHE_PREFIX = env.get("MEMORIOUS_CACHE_PREFIX", "memorious")
 USE_CACHE = env.to_bool("MEMORIOUS_CACHE", True)
+CACHE = get_store()
 
 
 def make_cache_key(context: Context, key: str) -> str | None:
@@ -39,12 +41,14 @@ def make_url_cache_key(
     return make_cache_key(context, url)
 
 
-@anycache(key_func=make_url_cache_key)
-def emit_cached(
-    context: Context, data: dict[str, Any], rule: str | None = None
-) -> datetime:
-    context.emit(rule or "pass", data=data)
-    return datetime.now()
+def sanitize_key(url: str) -> str | None:
+    """Remove scheme to make path-like key of an url"""
+    return urlunparse(["", *urlparse(url)[1:]]).strip("/")
 
 
-CACHE = get_store()
+def make_emit_cache_key(context: Context, data: Data) -> str | None:
+    cache_key = data.get("emit_cache_key", data.get("url"))
+    if not cache_key:
+        return
+    cache_key = sanitize_key(cache_key)
+    return make_cache_key(context, f"emit/{cache_key}")
