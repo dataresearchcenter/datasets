@@ -107,8 +107,9 @@ def parse(context: Context, data: Data):
     next_pages = set()
     for page in res.html.xpath(X_NEXT):
         next_pages.add(int(page))
-    for page in next_pages:
+    for page in sorted(next_pages):
         if page > data["page"]:
             f = furl(data["url"])
             f.args["page"] = page
             context.emit("fetch", data={**data, "url": f.url, "page": page})
+            break  # only emit next page
