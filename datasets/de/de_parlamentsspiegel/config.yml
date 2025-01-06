@@ -62,4 +62,4 @@ pipeline:
       store: store
 
   store:
-    method: directory
+    method: utils.operations:store
