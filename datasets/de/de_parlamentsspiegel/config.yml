@@ -1,0 +1,65 @@
+name: de_parlamentsspiegel
+title: Parlamentsspiegel (gemeinsames Informationssystem der Landesparlamente der Bundesrepublik Deutschland)
+description: >
+  Der Parlamentsspiegel ist das gemeinsame Informationssystem der
+  Landesparlamente der Bundesrepublik Deutschland. Es stellt umfangreiche
+  Suchfunktionalitäten bereit und ermöglicht den direkten PDF-Zugriff auf die
+  gesuchten Beratungsvorgänge und Dokumente. Im Parlamentsspiegel finden Sie
+  Dokumente zu allen gesetzgeberischen Initiativen mit ihrer parlamentarischen
+  Behandlung, zu Regierungserklärungen und aktuellen Debatten, zu Anträgen, zu
+  Anfragen an die Landesregierungen, zu Untersuchungsausschüssen und
+  Enquete-Kommissionen und vieles andere mehr.
+category: library
+publisher:
+  name: Parlamentsspiegel
+  url: https://www.parlamentsspiegel.de
+  country: de
+  official: true
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+coverage:
+  frequency: daily
+content_type: documents
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: de_parlamentsspiegel:seed
+    params:
+      url: https://www.parlamentsspiegel.de/suche?query=&detail=true&qyZeitAb=&qyZeitBis=&type=dokument&als=0&size=10&page=0
+      timedelta:
+        days: 30
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    handle:
+      pass: parse
+
+  parse:
+    method: de_parlamentsspiegel:parse
+    handle:
+      fetch: fetch
+      download: download
+
+  download:
+    method: fetch
+    handle:
+      pass: parse_download
+
+  parse_download:
+    method: parse
+    params:
+      store:
+        mime_group: documents
+    handle:
+      store: store
+
+  store:
+    method: directory
