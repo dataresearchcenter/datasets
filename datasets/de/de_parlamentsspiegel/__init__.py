@@ -53,6 +53,7 @@ def extract_term(value: str | None) -> str | None:
 
 def seed(context: Context, data: Data) -> None:
     f = furl(context.params["url"])
+    f.args["qyZeitBis"] = "heute"
     if not env.to_bool("FULL_RUN"):
         start_date = (
             env.get("START_DATE")
@@ -63,8 +64,9 @@ def seed(context: Context, data: Data) -> None:
             .date()
             .isoformat()
         )
-        f.args["qyZeitBis"] = "heute"
         f.args["qyZeitAb"] = start_date
+        if env.get("END_DATE"):
+            f.args["qyZeitBis"] = env.get("END_DATE")
 
     data["url"] = f.url
     data["page"] = 0
