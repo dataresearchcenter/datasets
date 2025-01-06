@@ -10,13 +10,10 @@ from servicelayer import env
 from utils import Data
 
 CACHE_PREFIX = env.get("MEMORIOUS_CACHE_PREFIX", "memorious")
-USE_CACHE = env.to_bool("MEMORIOUS_CACHE", True)
 CACHE = get_store()
 
 
 def make_cache_key(context: Context, key: str) -> str | None:
-    if not USE_CACHE or not key:
-        return
     prefix = context.crawler.name
     return f"{CACHE_PREFIX}/{prefix}/{key}"
 
@@ -24,9 +21,6 @@ def make_cache_key(context: Context, key: str) -> str | None:
 def make_url_cache_key(
     context: Context, url: str | dict[str, Any] | None, *args, **kwargs
 ) -> str | None:
-    if not USE_CACHE:
-        return
-
     if is_mapping(url):
         url = url["url"]
     if not url:

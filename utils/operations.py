@@ -1,12 +1,15 @@
+from anystore.settings import Settings
 from banal import ensure_dict
 from memorious.logic.context import Context
 from servicelayer import env
 
 from utils import Data, get_method
-from utils.cache import CACHE, USE_CACHE, make_emit_cache_key
+from utils.cache import CACHE, make_emit_cache_key
 
 DEBUG = env.to_bool("DEBUG")
 PROXY = env.get("MEMORIOUS_CRAWL_PROXY")
+
+settings = Settings()
 
 
 def init(context: Context, data: Data):
@@ -27,7 +30,7 @@ def cached_emit(context: Context, data: Data, rule: str | None = None):
     Only emit (pass through next stage) if a cache key is not present yet. The
     cache key will be set in the last (store) stage.
     """
-    if not USE_CACHE:
+    if not settings.use_cache:
         context.emit(rule or "pass", data=data)
         return
     cache_key = make_emit_cache_key(context, data)
