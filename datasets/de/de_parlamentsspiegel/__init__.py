@@ -75,7 +75,6 @@ def parse(context: Context, data: Data):
     res = context.http.rehash(data)
     for row in res.html.xpath(X_ROWS):
         header = row.xpath(X_ROW_HEADER)
-        assert len(header) == 4
         state, category, doc_type, date = header
         doc_id = row.xpath(X_ROW_ID)
         pdf_url = row.xpath(X_PDF_URL)
