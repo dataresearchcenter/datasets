@@ -40,11 +40,10 @@ def extract_meta(el: HtmlElement) -> Data:
     return data
 
 
-def extract_ref(value: str) -> str:
+def extract_ref(value: str) -> str | None:
     m = RE_REF.match(value)
     if m:
         return m.groups()[0]
-    raise ValueError(f"Invalid reference: `{value}`")
 
 
 def extract_term(value: str) -> str:
@@ -85,31 +84,32 @@ def parse(context: Context, data: Data):
 
         if all((doc_id, pdf_url, reference, title)):
             reference_id = extract_ref(reference[0])
-            legislative_term = extract_term(reference_id)
+            if reference_id:
+                legislative_term = extract_term(reference_id)
+                detail_data = {
+                    **data,
+                    **extract_meta(row),
+                    "state": state,
+                    "category": category,
+                    "doc_type": doc_type,
+                    "date": datetime.strptime(date, "%d.%m.%Y").date().isoformat(),
+                    "doc_id": doc_id[0].replace(".ps-detail-", ""),
+                    "url": pdf_url[0],
+                    "reference": reference[0],
+                    "reference_id": reference_id,
+                    "legislative_term": legislative_term,
+                    "title": title[0],
+                }
 
-            detail_data = {
-                **data,
-                **extract_meta(row),
-                "state": state,
-                "category": category,
-                "doc_type": doc_type,
-                "date": datetime.strptime(date, "%d.%m.%Y").date().isoformat(),
-                "doc_id": doc_id[0].replace(".ps-detail-", ""),
-                "url": pdf_url[0],
-                "reference": reference[0],
-                "reference_id": reference_id,
-                "legislative_term": legislative_term,
-                "title": title[0],
-            }
-
-            # FIXME
-            if state not in ("Sachsen", "Rheinland-Pfalz"):
-                cached_emit(context, detail_data, "download")
+                # FIXME
+                if state not in ("Sachsen", "Rheinland-Pfalz"):
+                    cached_emit(context, detail_data, "download")
 
     next_pages = set()
     for page in res.html.xpath(X_NEXT):
         next_pages.add(int(page))
     for page in sorted(next_pages):
+        page = page - 1  # 0-indexed
         if page > data["page"]:
             f = furl(data["url"])
             f.args["page"] = page
