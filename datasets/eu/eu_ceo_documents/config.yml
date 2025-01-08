@@ -1,5 +1,23 @@
 name: eu_ceo_documents
-description: Documents and reports published on the Corporate Europe Observatory website
+title: Documents and reports published on the Corporate Europe Observatory website
+description: >
+  Corporate Europe Observatory (CEO) is a research and campaign group working to
+  expose and challenge the privileged access and influence enjoyed by corporations
+  and their lobby groups in EU policy making. This collection scrapes all
+  documents found on their public website.
+country: eu
+prefix: eu-ceo
+category: library
+coverage:
+  frequency: weekly
+publisher:
+  name: Corporate Europe Observatory
+  country: eu
+  url: https://www.corporateeurope.org/
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
 
 pipeline:
   init:
@@ -11,6 +29,11 @@ pipeline:
     method: seed
     params:
       url: https://corporateeurope.org
+    handle:
+      pass: cached_emit
+
+  cached_emit:
+    method: utils.operations:cached_emit
     handle:
       pass: fetch
 
@@ -25,11 +48,6 @@ pipeline:
                 - mime_group: assets
                 - mime_group: images
     handle:
-      pass: cached_emit
-
-  cached_emit:
-    method: utils.operations:cached_emit
-    handle:
       pass: parse
 
   parse:
@@ -41,7 +59,7 @@ pipeline:
           - mime_group: documents
     handle:
       store: store
-      fetch: fetch
+      fetch: cached_emit
 
   store:
     method: utils.operations:store
