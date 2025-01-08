@@ -1,0 +1,65 @@
+name: bishop_accountability
+title: Scraped documents from the "Bishop Accountability" project
+description: >
+  BishopAccountability.org is a digital and brick-and-mortar archive of the
+  Catholic clergy abuse crisis; the staff also does basic research. We establish
+  assignment histories of accused clergy and religious, maintain a database of
+  accused, and track the lists of accused that the dioceses and religious orders
+  have published. Our Database of Accused in the United States comprises more
+  than 7,300 records as of September 30, 2021.
+prefix: us-bsha
+category: library
+coverage:
+  frequency: monthly
+publisher:
+  name: BishopAccountability.org
+  country: us
+  url: https://www.bishop-accountability.org
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.bishop-accountability.org
+    handle:
+      pass: cached_emit
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - domain: www.bishop-accountability.org
+          - not:
+              mime_group: assets
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+          - mime_group: images
+    handle:
+      store: store
+      fetch: cached_emit
+
+  store:
+    method: utils.operations:store
