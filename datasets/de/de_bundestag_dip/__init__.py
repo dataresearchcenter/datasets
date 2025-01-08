@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from banal import ensure_dict, ensure_list
 from furl import furl
 from memorious.logic.context import Context
+from normality import collapse_spaces
 from servicelayer import env
 
 from utils import Data
@@ -49,14 +50,7 @@ def parse_drucksache(document: Data) -> Data:
     else:
         return {}
     data = {"base": base}
-    data["title"] = " - ".join(
-        (
-            base,
-            document["dokumentnummer"],
-            document["drucksachetyp"],
-            document["titel"],
-        )
-    )
+    document["titel"] = collapse_spaces(document["titel"])
     data["published_at"] = document["datum"]
     data["foreign_id"] = document["id"]
     if "urheber" in document:
