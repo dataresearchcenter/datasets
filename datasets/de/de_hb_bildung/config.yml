@@ -1,0 +1,66 @@
+name: de_hb_bildung
+title: Senatorin für Kinder und Bildung Bremen
+description: >
+  Documents scraped from the public website of Senatorin für Kinder und Bildung Bremen (www.bildung.bremen.de)
+country: de
+category: library
+coverage:
+  frequency: daily
+publisher:
+  name: Senatorin für Kinder und Bildung Bremen
+  country: de
+  url: https://www.bildung.bremen.de
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.bildung.bremen.de
+    handle:
+      pass: fetch
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+              - pattern: https://www.bildung.bremen.de.*
+              - pattern: https://bildung.bremen.de.*
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+          - mime_group: media
+    handle:
+      store: store
+      fetch: cached_emit
+
+  store:
+    method: utils.operations:store

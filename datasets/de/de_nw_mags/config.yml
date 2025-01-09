@@ -1,0 +1,66 @@
+name: de_nw_mags
+title: Ministerium für Arbeit, Gesundheit und Soziales des Landes Nordrhein-Westfalen
+description: >
+  Documents scraped from the public website of Ministerium für Arbeit, Gesundheit und Soziales des Landes Nordrhein-Westfalen (www.mags.nrw)
+country: de
+category: library
+coverage:
+  frequency: daily
+publisher:
+  name: Ministerium für Arbeit, Gesundheit und Soziales des Landes Nordrhein-Westfalen
+  country: de
+  url: https://www.mags.nrw
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.mags.nrw
+    handle:
+      pass: fetch
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+              - pattern: https://www.mags.nrw.*
+              - pattern: https://mags.nrw.*
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+          - mime_group: media
+    handle:
+      store: store
+      fetch: cached_emit
+
+  store:
+    method: utils.operations:store

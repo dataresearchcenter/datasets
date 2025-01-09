@@ -1,0 +1,66 @@
+name: de_by_stmuk
+title: Bayerisches Staatsministerium für Unterricht und Kultus
+description: >
+  Documents scraped from the public website of Bayerisches Staatsministerium für Unterricht und Kultus (www.km.bayern.de)
+country: de
+category: library
+coverage:
+  frequency: daily
+publisher:
+  name: Bayerisches Staatsministerium für Unterricht und Kultus
+  country: de
+  url: https://www.km.bayern.de
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.km.bayern.de
+    handle:
+      pass: fetch
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+              - pattern: https://www.km.bayern.de.*
+              - pattern: https://km.bayern.de.*
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+          - mime_group: media
+    handle:
+      store: store
+      fetch: cached_emit
+
+  store:
+    method: utils.operations:store

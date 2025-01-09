@@ -1,0 +1,66 @@
+name: de_by_stmas
+title: Staatsministerin für Familie, Arbeit und Soziales
+description: >
+  Documents scraped from the public website of Staatsministerin für Familie, Arbeit und Soziales (www.stmas.bayern.de)
+country: de
+category: library
+coverage:
+  frequency: daily
+publisher:
+  name: Staatsministerin für Familie, Arbeit und Soziales
+  country: de
+  url: https://www.stmas.bayern.de
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.stmas.bayern.de
+    handle:
+      pass: fetch
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+              - pattern: https://www.stmas.bayern.de.*
+              - pattern: https://stmas.bayern.de.*
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+          - mime_group: media
+    handle:
+      store: store
+      fetch: cached_emit
+
+  store:
+    method: utils.operations:store

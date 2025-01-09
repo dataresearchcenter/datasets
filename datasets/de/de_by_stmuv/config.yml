@@ -1,0 +1,66 @@
+name: de_by_stmuv
+title: Bayerisches Staatsministerium für Umwelt und Verbraucherschutz
+description: >
+  Documents scraped from the public website of Bayerisches Staatsministerium für Umwelt und Verbraucherschutz (www.stmuv.bayern.de)
+country: de
+category: library
+coverage:
+  frequency: daily
+publisher:
+  name: Bayerisches Staatsministerium für Umwelt und Verbraucherschutz
+  country: de
+  url: https://www.stmuv.bayern.de
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.stmuv.bayern.de
+    handle:
+      pass: fetch
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+              - pattern: https://www.stmuv.bayern.de.*
+              - pattern: https://stmuv.bayern.de.*
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+          - mime_group: media
+    handle:
+      store: store
+      fetch: cached_emit
+
+  store:
+    method: utils.operations:store

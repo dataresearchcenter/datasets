@@ -1,0 +1,66 @@
+name: de_sl_wirtschaft
+title: Ministerium für Wirtschaft, Innovation, Digitales und Energie Saarland
+description: >
+  Documents scraped from the public website of Ministerium für Wirtschaft, Innovation, Digitales und Energie Saarland (www.wirtschaft.saarland.de)
+country: de
+category: library
+coverage:
+  frequency: daily
+publisher:
+  name: Ministerium für Wirtschaft, Innovation, Digitales und Energie Saarland
+  country: de
+  url: https://www.wirtschaft.saarland.de
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://www.wirtschaft.saarland.de
+    handle:
+      pass: fetch
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+              - pattern: https://www.wirtschaft.saarland.de.*
+              - pattern: https://wirtschaft.saarland.de.*
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+          - mime_group: media
+    handle:
+      store: store
+      fetch: cached_emit
+
+  store:
+    method: utils.operations:store

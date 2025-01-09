@@ -1,0 +1,66 @@
+name: de_he_hmdf
+title: Hessisches Ministerium der Finanzen
+description: >
+  Documents scraped from the public website of Hessisches Ministerium der Finanzen (finanzen.hessen.de)
+country: de
+category: library
+coverage:
+  frequency: daily
+publisher:
+  name: Hessisches Ministerium der Finanzen
+  country: de
+  url: https://finanzen.hessen.de
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+
+stealthy: true
+
+pipeline:
+  init:
+    method: utils.operations:init
+    handle:
+      pass: seed
+
+  seed:
+    method: seed
+    params:
+      url: https://finanzen.hessen.de
+    handle:
+      pass: fetch
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - or:
+              - pattern: https://finanzen.hessen.de.*
+              - pattern: https://finanzen.hessen.de.*
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+          - mime_group: media
+    handle:
+      store: store
+      fetch: cached_emit
+
+  store:
+    method: utils.operations:store
