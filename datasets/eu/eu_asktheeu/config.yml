@@ -1,5 +1,25 @@
 name: eu_asktheeu
-description: Freedom of Information (FOI) requests to the European Union via asktheeu.org
+title: Scraped documents from AskTheEU website (FOI requests/answers)
+description: >
+  AskTheEU.org is an online platform for citizens to send access to documents
+  requests directly to EU institutions. This collection scrapes all documents
+  found on their public website.
+prefix: eu-foi
+category: library
+coverage:
+  frequency: daily
+publisher:
+  name: AskTheEU.org
+  description: >
+    AskTheEU.org is an online platform for citizens to send access to documents
+    requests directly to EU institutions.
+  country: eu
+  url: https://www.asktheeu.org/
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+data_url: https://www.asktheeu.org/en/list/all
 
 pipeline:
   init:
@@ -11,6 +31,11 @@ pipeline:
     method: seed
     params:
       url: https://www.asktheeu.org/en/search/status:successful
+    handle:
+      pass: fetch
+
+  cached_emit:
+    method: utils.operations:cached_emit
     handle:
       pass: fetch
 
@@ -27,11 +52,6 @@ pipeline:
                 - mime_group: assets
                 - mime_group: images
     handle:
-      pass: cached_emit
-
-  cached_emit:
-    method: utils.operations:cached_emit
-    handle:
       pass: parse
 
   parse:
@@ -45,7 +65,7 @@ pipeline:
               - mime_group: documents
     handle:
       store: store
-      fetch: fetch
+      fetch: cached_emit
 
   store:
     method: utils.operations:store
