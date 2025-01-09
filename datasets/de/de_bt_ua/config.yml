@@ -1,0 +1,15 @@
+name: de_bt_ua
+title: "[FDS] Bundestag Untersuchungsausschüsse 1. bis 20. Wahlperiode"
+category: library
+coverage:
+  frequency: never
+  country: de
+publisher:
+  name: FragDenStaat
+  url: https://fragdenstaat.de
+data_url: https://fragdenstaat.de/dokumente/sammlung/47-bundestag-untersuchungsausschusse-1-bis-20-wahlperiode/
+aleph_url: https://aleph.investigativedata.org/datasets/583
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
