@@ -1,0 +1,21 @@
+name: de_bt_va
+title: "[FDS] Bundestag Vermittlungsausschuss Protokolle 13. bis 18. Wahlperiode "
+description: >
+  Eines der einflussreichsten Gremien der deutschen Gesetzgebung ist
+  gleichzeitig eines der intransparentesten. Wir veröffentlichen die Protokolle
+  aus dem Vermittlungsausschuss von Bundestag und Bundesrat aus den Jahren 1995
+  bis 2017 – auch zu den Hartz-Gesetzen und verfassungswidrigen Initiativen.
+category: library
+coverage:
+  frequency: never
+  country: de
+publisher:
+  name: FragDenStaat
+  url: https://fragdenstaat.de
+info_url: https://fragdenstaat.de/blog/2023/06/28/vermittlungsausschuss-protokolle-oeffentlich/
+data_url: https://fragdenstaat.de/dokumente/sammlung/62-vermittlungsausschuss-protokolle-13-bis-18-wahlperiode/
+aleph_url: https://aleph.investigativedata.org/datasets/495
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
