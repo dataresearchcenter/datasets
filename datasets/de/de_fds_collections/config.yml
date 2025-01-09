@@ -43,4 +43,4 @@ pipeline:
 leakrfc:
   sync:
     memorious:
-      key_template: "{{ collection }}/{{ id }} - {{ name }}"
+      key_template: "{{ collection_id }} - {{ collection.replace('/', '-') }}/{{ title }}.{{ _file_name.split('.')[-1] }}"

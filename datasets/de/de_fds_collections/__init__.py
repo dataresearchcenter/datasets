@@ -15,6 +15,7 @@ def seed(context: Context, data: Data):
             data = {
                 **document,
                 "collection": collection["title"],
+                "collection_id": collection["id"],
                 "collection_date": collection["created_at"],
                 "url": document["file_url"],
                 "source_url": document["site_url"],
