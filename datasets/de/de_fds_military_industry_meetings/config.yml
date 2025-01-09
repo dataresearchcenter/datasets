@@ -1,0 +1,25 @@
+name: de_fds_military_industry_meetings
+title: "[FDS] Military Industry Meetings"
+category: library
+country: de
+coverage:
+  frequency: never
+publisher:
+  name: FragDenStaat.de
+  description: >
+    FragDenStaat ist die zentrale Anlaufstelle für Informationsfreiheit in
+    Deutschland. Wir bringen Informationen an die Öffentlichkeit, die bisher in
+    Aktenschränken verstaubten. Egal ob Lobbyisten-Mail, Umweltgutachten,
+    Sitzungsprotokoll oder Kalendereintrag: FragDenStaat hilft dabei, sie
+    mithilfe der Informationsfreiheitsgesetze (IFG) zu befreien und zu
+    veröffentlichen. Das Projekt besteht aus vier Säulen: der Anfrage-Plattform,
+    Mitmach-Kampagnen, strategischen Klagen und investigativen Recherchen. Dabei
+    setzen wir auf enge Partnerschaften mit Journalist:innen, Aktivist:innen und
+    zivilgesellschaftlichen Initiativen.
+  country: de
+  url: https://fragdenstaat.de
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+data_url: https://fragdenstaat.de/dokumente/sammlung/114-military-industry-meetings/
