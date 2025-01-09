@@ -1,12 +1,23 @@
 name: ti_knowledge_hub
-title: Transparency International Knowledge Hub
+title: Transparency International Knowledge Hub / "Anti-Corruption Helpdesk"
 description: |
-  The Anti-Corruption Knowledge Hub is an online space where Transparency
-  International (TI) presents its research output. It is the home of the
-  Anti-Corruption Helpdesk, TI's expert network, a series of topic guides and
-  country-specific research. In addition, the Hub hosts many of the studies,
-  tools and knowledge which lie behind what we do at Transparency
-  International.
+  Scraped from the TI Knowledge Hub (aka "Anti-Corruption Helpdesk")
+
+  The Anti-Corruption Helpdesk meets the professional knowledge and research
+  needs of a variety of stakeholders, providing timely and tailored responses to
+  corruption-related enquiries.
+
+  Questions are answered within ten working days in the form of short briefings,
+  drawing on the knowledge of Transparency International’s global network of
+  anti-corruption experts and practitioners.
+
+  Each answer provides a synthesis of the state of research on a particular
+  topic, lessons learned from case studies as well as practical recommendations
+  for anti-corruption approaches.
+
+  Topics cover a wide range of corruption-related issues, from the effectiveness
+  of anti-corruption agencies, to tackling corruption in post-conflict
+  situations, to recent trends in anti-bribery laws.
 category: library
 prefix: ti
 publisher:
