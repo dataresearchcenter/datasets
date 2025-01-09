@@ -1,0 +1,18 @@
+name: eu_ceo_crispr
+title: Documents related to CRISPR (Corporate Europe Observatory)
+description: >
+  A collection of documents related to CRISPR once found at the website of
+  Corporate Europe Observatory (CEO).
+country: eu
+prefix: eu-ceo
+category: library
+coverage:
+  frequency: never
+publisher:
+  name: Corporate Europe Observatory
+  country: eu
+  url: https://www.corporateeurope.org/
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
