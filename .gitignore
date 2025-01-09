@@ -10,6 +10,7 @@ nomenklatura.db
 output
 xref
 
+*.code-workspace
 data/*
 .anystore
 # Byte-compiled / optimized / DLL files
