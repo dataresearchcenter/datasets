@@ -63,3 +63,8 @@ pipeline:
 
   store:
     method: utils.operations:store
+
+leakrfc:
+  sync:
+    memorious:
+      key_template: "{{ state }}/{% if legislative_term %}{{ legislative_term }}. Wahlperiode{% else %}{{ date[:4] }}{% endif %}/{{ category }}/{{ doc_type }}/{% if reference_id %}{{ reference_id.replace('/','-') }} - {% endif %}{{ doc_id }}.{{ _file_name.split('.')[-1] }}"

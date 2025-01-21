@@ -25,7 +25,7 @@ X_METADATA = {
     "summary": ".//p[contains(concat(' ', normalize-space(@class), ' '), ' ps-abstrakt ')]/span[2]/text()",
 }
 
-RE_REF = re.compile(r".*(\d{1,2}\/\d+).*")
+RE_REF = re.compile(r".*\s(\d{1,2}\/\d+).*")
 
 
 def extract_meta(el: HtmlElement) -> Data:
@@ -84,26 +84,27 @@ def parse(context: Context, data: Data):
 
         if all((doc_id, pdf_url, reference, title)):
             reference_id = extract_ref(reference[0])
+            legislative_term = None
             if reference_id:
                 legislative_term = extract_term(reference_id)
-                detail_data = {
-                    **data,
-                    **extract_meta(row),
-                    "state": state,
-                    "category": category,
-                    "doc_type": doc_type,
-                    "date": datetime.strptime(date, "%d.%m.%Y").date().isoformat(),
-                    "doc_id": doc_id[0].replace(".ps-detail-", ""),
-                    "url": pdf_url[0],
-                    "reference": reference[0],
-                    "reference_id": reference_id,
-                    "legislative_term": legislative_term,
-                    "title": title[0],
-                }
+            detail_data = {
+                **data,
+                **extract_meta(row),
+                "state": state,
+                "category": category,
+                "doc_type": doc_type,
+                "date": datetime.strptime(date, "%d.%m.%Y").date().isoformat(),
+                "doc_id": doc_id[0].replace(".ps-detail-", ""),
+                "url": pdf_url[0],
+                "reference": reference[0],
+                "reference_id": reference_id,
+                "legislative_term": legislative_term,
+                "title": title[0],
+            }
 
-                # FIXME
-                if state not in ("Sachsen", "Rheinland-Pfalz"):
-                    cached_emit(context, detail_data, "download")
+            # FIXME
+            if state not in ("Sachsen", "Rheinland-Pfalz"):
+                cached_emit(context, detail_data, "download")
 
     next_pages = set()
     for page in res.html.xpath(X_NEXT):
