@@ -1,0 +1,68 @@
+name: usrtk
+title: Scraped documents from usrtk.org website
+description: >
+  Scraped documents from the public website of U.S. Right to Know (usrtk.org)
+prefix: usrtk
+category: library
+coverage:
+  frequency: weekly
+publisher:
+  name: U.S. Right to Know
+  description: >
+    U.S. Right to Know is a nonprofit public health research group. We
+    investigate corporate wrongdoing and government failures that threaten our
+    health, environment or food system. We work in the public interest to help
+    keep families healthy.
+  country: us
+  url: https://usrtk.org
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+content_type: documents
+aleph_url: https://aleph.investigativedata.org/datasets/585
+
+pipeline:
+  init:
+    method: seed
+    params:
+      urls:
+        - https://usrtk.org
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    params:
+      rules:
+        and:
+          - domain: usrtk.org
+          - not:
+              or:
+                - mime_group: assets
+                - mime_group: images
+    handle:
+      pass: cached_emit
+
+  cached_emit:
+    method: utils.operations:cached_emit
+    handle:
+      pass: parse
+
+  parse:
+    method: parse
+    params:
+      store:
+        or:
+          - mime_group: archives
+          - mime_group: documents
+    handle:
+      store: store
+      fetch: fetch
+
+  store:
+    method: directory
+
+leakrfc:
+  sync:
+    memorious:
+      key_template: "{{ title }}/{{ url.split('/')[-1].replace('-', ' ') }}"
