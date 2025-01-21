@@ -43,4 +43,4 @@ pipeline:
 leakrfc:
   sync:
     memorious:
-      key_template: "{{ publicbody.jurisdiction | default('unknown') }}/{{ publicbody.name | default('unknown') }}/{{ last_modified_at[:4] }}/{{ last_modified_at[5:7] }}/{{ id }} - {{ title }}"
+      key_template: "{{ publicbody.jurisdiction | default('unknown') }}/{{ publicbody.name | default('unknown') | replace('/', ' ') }}/{{ last_modified_at[:4] }}/{{ last_modified_at[5:7] }}/{{ id }} - {{ title.replace('/', ' ') }}"
