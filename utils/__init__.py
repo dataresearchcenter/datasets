@@ -1,6 +1,7 @@
 from importlib import import_module
 from typing import Any, TypeAlias
 
+from lxml.html import HtmlElement
 from servicelayer.extensions import get_entry_point
 
 Data: TypeAlias = dict[str, Any]
@@ -17,3 +18,14 @@ def get_method(method_name: str):
     package, method = method_name.rsplit(":", 1)
     module = import_module(package)
     return getattr(module, method)
+
+
+def get_value_from_xpath(html: HtmlElement, path: str) -> Any:
+    part = html.xpath(path)
+    if isinstance(part, list) and len(part) == 1:
+        part = part[0]
+    if hasattr(part, "text"):
+        part = part.text
+    if isinstance(part, str):
+        return part.strip()
+    return part
