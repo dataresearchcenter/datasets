@@ -45,8 +45,13 @@ def store(context: Context, data: Data):
     An extended store to be able to set the emit cache key after successful
     store
     """
-    handler = get_method(context.params.get("operation", "directory"))
-    handler(context, data)
-    cache_key = make_emit_cache_key(context, data)
-    if cache_key:
-        CACHE.touch(cache_key)
+
+    # FIXME
+    try:
+        handler = get_method(context.params.get("operation", "directory"))
+        handler(context, data)
+        cache_key = make_emit_cache_key(context, data)
+        if cache_key:
+            CACHE.touch(cache_key)
+    except Exception as e:
+        context.log.error(f"Cannot store file: `{e.__class__.__name__}: {e}`")
