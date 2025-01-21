@@ -14,6 +14,7 @@ publisher:
   name: Deutscher Bundestag
   description: German Parliament
   url: https://bundestag.de
+  official: true
 maintainer:
   name: "||)·|()"
   url: https://investigativedata.io
@@ -51,3 +52,8 @@ pipeline:
 
   store:
     method: utils.operations:store
+
+leakrfc:
+  sync:
+    memorious:
+      key_template: "{{ base }}/{{ meta.wahlperiode }}. Wahlperiode/{{ meta.fundstelle.dokumentart }}/{{ meta.fundstelle.drucksachetyp }}/{{ meta.id }}-{{ meta.fundstelle.pdf_url.split('/')[-1] }}"
