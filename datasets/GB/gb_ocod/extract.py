@@ -24,5 +24,8 @@ def handle(ctx: Context) -> Generator[dict[str, Any], None, None]:
 	download(resource_link)
 	unpack()
 	filename = f"/tmp/{os.path.splitext(resource_name)[0]}.csv"
-	with open(filename) as csvfile:
-		yield from csv.DictReader(csvfile)
+	with open(filename, newline='') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			yield {key: (None if value == "" else value) for key, value in row.items()}
+
