@@ -7,11 +7,11 @@ import csv
 
 def download(lnk):
 	response = requests.get(lnk)
-	with open("latest.zip", "wb") as f:
+	with open("/tmp/latest.zip", "wb") as f:
 		f.write(response.content)
 
 def unpack():
-	with zipfile.ZipFile("latest.zip", 'r') as arch:
+	with zipfile.ZipFile("/tmp/latest.zip", 'r') as arch:
 		arch.extractall("./")
 
 def handle(ctx: Context) -> Generator[dict[str, Any], None, None]:
@@ -23,6 +23,6 @@ def handle(ctx: Context) -> Generator[dict[str, Any], None, None]:
 	resource_link = requests.get(uri+'/'+resource_name, headers=headers).json()['result']['download_url']
 	download(resource_link)
 	unpack()
-	filename = os.path.splitext(resource_name)[0] + '.csv'
+	filename = '/tmp/' + os.path.splitext(resource_name)[0] + '.csv'
 	with open(filename) as csvfile:
 		yield from csv.DictReader(csvfile)
