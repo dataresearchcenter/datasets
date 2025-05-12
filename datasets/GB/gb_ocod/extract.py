@@ -12,7 +12,7 @@ def download(lnk):
 
 def unpack():
 	with zipfile.ZipFile("/tmp/latest.zip", 'r') as arch:
-		arch.extractall("./")
+		arch.extractall("/tmp/")
 
 def handle(ctx: Context) -> Generator[dict[str, Any], None, None]:
 	uri = ctx.source.uri
@@ -20,9 +20,9 @@ def handle(ctx: Context) -> Generator[dict[str, Any], None, None]:
 	res = requests.get(uri, headers=headers)
 	data = res.json()
 	resource_name = [f for f in data['result'].get('resources') if f['name']=="Full File"][0]['file_name']
-	resource_link = requests.get(uri+'/'+resource_name, headers=headers).json()['result']['download_url']
+	resource_link = requests.get(f"{uri}/{resource_name}", headers=headers).json().get('result', {}).get('download_url')
 	download(resource_link)
 	unpack()
-	filename = '/tmp/' + os.path.splitext(resource_name)[0] + '.csv'
+	filename = f"/tmp/{os.path.splitext(resource_name)[0]}.csv"
 	with open(filename) as csvfile:
 		yield from csv.DictReader(csvfile)
