@@ -1,4 +1,4 @@
-name: datasets
+name: datasets_biweekly
 
 on:
   schedule:
