@@ -1,0 +1,7 @@
+datasets:
+  - from_uri: https://data.ftm.store/gb_ocod/index.json
+    git_repo: https://github.com/dataresearchcenter/datasets
+    maintainer:
+      name: DARC
+      url: https://dataresearchcenter.org
+      logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
