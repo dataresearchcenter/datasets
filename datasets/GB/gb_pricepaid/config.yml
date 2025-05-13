@@ -1,0 +1,22 @@
+name: gb_pricepaid
+title: HM Land Registry Price Paid Data
+country: gb
+summary: |
+  The Price Paid Data includes information on all property sales in England and Wales
+  that are sold for value and are lodged with the HM Land Registry for registration.
+publisher:
+  name: HM Land Registry
+  description: |
+    His Majesty's Land Registry is a non-ministerial department of His Majesty's Government,
+    created in 1862 to register the ownership of land and property in England and Wales.
+  url: https://use-land-property-data.service.gov.uk/
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/gb_pricepaid/entities.ftm.json
+    mime_type: application/json+ftm
+extract:
+  sources:
+    - uri: http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-monthly-update-new-version.csv
+  handler: ./extract.py:handle
+transform:
+  handler: ./transform.py:handle
