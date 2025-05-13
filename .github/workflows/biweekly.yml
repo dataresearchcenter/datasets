@@ -2,11 +2,12 @@ name: datasets_biweekly
 
 on:
   schedule:
-    - cron: "0 0 5/20 * *"
+    - cron: "0 0 3/17 * *"
   workflow_dispatch: {}
   push:
     paths:
       - gb/gb_ocod
+      - gb/gb_ccod
 
 jobs:
   data:
@@ -22,6 +23,7 @@ jobs:
       matrix:
         dataset:
           - gb_ocod
+          - gb_ccod
     steps:
       - name: parse and write the dataset
         run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
