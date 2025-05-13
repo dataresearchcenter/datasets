@@ -8,6 +8,7 @@ on:
     paths:
       - gb/gb_ocod
       - gb/gb_ccod
+      - gb/gb_pricepaid
 
 jobs:
   data:
@@ -24,6 +25,7 @@ jobs:
         dataset:
           - gb_ocod
           - gb_ccod
+          - gb_pricepaid
     steps:
       - name: parse and write the dataset
         run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
