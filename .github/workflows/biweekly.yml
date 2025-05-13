@@ -24,7 +24,7 @@ jobs:
       matrix:
         dataset:
           - gb_ocod
-          - gb_ccod
+          # - gb_ccod #too large to aggregate in memory, paused for now
           - gb_pricepaid
     steps:
       - name: parse and write the dataset
