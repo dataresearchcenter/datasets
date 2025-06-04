@@ -21,6 +21,7 @@ resources:
 
 extract:
   sources:
+    - uri: ./src/2023_FTS_dataset_en.xlsx
     - uri: ./src/2022.xlsx
     - uri: ./src/2021.xlsx
     - uri: ./src/2020.xlsx
