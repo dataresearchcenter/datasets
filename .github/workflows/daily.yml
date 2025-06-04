@@ -1,0 +1,37 @@
+name: datasets_biweekly
+
+on:
+  schedule:
+    - cron: "13 12 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    container: ghcr.io/dataresearchcenter/datasets:latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
+    strategy:
+      matrix:
+        dataset:
+          - ec_meetings
+          - eu_transparency_register
+    steps:
+      - name: parse and write the dataset
+        run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
+
+  catalog:
+    needs: data
+    runs-on: ubuntu-latest
+    container: ghcr.io/dataresearchcenter/datasets:latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
+    steps:
+      - name: Update the catalog
+        run: "make publish"
+      - name: Notify success
+        run: "anystore io -i ${{ secrets.DATASETS_DAILY_HEARTBEAT }}"
