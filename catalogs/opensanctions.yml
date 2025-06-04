@@ -1,0 +1,35 @@
+include_catalogs:
+  - from_uri: https://data.opensanctions.org/datasets/latest/index.json
+    exclude_datasets:
+      - all
+      - crime
+      - default
+      - debarment
+      - ext_*
+      - enrichers
+      - opencorporates
+      - ransomwhere
+      - regulatory
+      - research
+      - sanctions
+      - securities
+      - special_interest
+      - validation
+      - wikidata
+      - wanted
+
+    patch_metadata:
+      maintainer:
+        name: OpenSanctions
+        url: https://opensanctions.org
+        description: |
+          OpenSanctions is an international database of persons and companies
+          of political, criminal, or economic interest. The project combines
+          the sanctions lists, databases of politically exposed persons, and
+          other information about persons in the public interest into a single,
+          easy-to-use dataset.
+      git_repo: https://github.com/opensanctions/opensanctions/
+      content_type: structured
+      tags:
+        - OpenSanctions
+

@@ -1,0 +1,4 @@
+include_catalogs:
+  - from_uri: https://data.ftm.store/investigraph.eu.json
+  - from_uri: https://data.ftm.store/lobbytracker/catalog.json
+  - from_uri: ./catalogs/opensanctions.json

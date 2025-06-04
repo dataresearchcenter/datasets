@@ -1,0 +1,47 @@
+
+datasets:
+  - from_uri: https://data.ftm.store/gb_ocod/index.json
+  - from_uri: https://data.ftm.store/gb_ccod/index.json
+  - from_uri: https://data.ftm.store/gb_pricepaid/index.json
+
+include_catalogs:
+  - from_uri: ./catalogs/opensanctions.json
+  - from_uri: https://data.ftm.store/investigraph.eu.json
+    patch_metadata:
+      tags:
+        - investigraph.eu
+  - from_uri: https://data.followthegrant.org/catalog.json
+    patch_metadata:
+      maintainer:
+        name: FollowTheGrant
+        url: https://followthegrant.org
+        description: |
+           FollowTheGrant offers a comprehensive database for journalistic
+           investigations of conflicts of interest in science.
+      tags:
+        - FollowTheGrant
+  - from_uri: https://s3.investigativedata.org/dokukratie/catalog.json
+    patch_metadata:
+      dataset_prefix: de_dokukratie
+      dataset_prefix_ignore:
+        - de_vsberichte
+      maintainer:
+        name: "DARC"
+        url: https://dataresearchcenter.org
+      content_type: documents
+      tags:
+        - dokukratie
+  - from_uri: https://data.ftm.store/lobbytracker/catalog.json
+    patch_metadata:
+      maintainer:
+        name: "DARC"
+        url: https://dataresearchcenter.org
+      tags:
+        - Lobbytracker
+  - from_uri: https://data.investigativecommons.org/index.json
+    patch_metadata:
+      maintainer:
+        name: "DARC"
+        url: https://dataresearchcenter.org
+      tags:
+        - Investigative Commons

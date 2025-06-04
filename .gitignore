@@ -1,10 +1,7 @@
-.prefect
+catalogs/*.json
 data
-catalog.json
-docs/datasets
-docs/index.md
-mkdocs.yml
-
+nomenklatura.db
+.anystore
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

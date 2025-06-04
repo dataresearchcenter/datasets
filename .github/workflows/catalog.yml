@@ -1,0 +1,20 @@
+name: catalog
+
+on:
+  schedule:
+    - cron: "13 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    container: ghcr.io/dataresearchcenter/datasets:latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
+    steps:
+      - name: Update the catalog
+        run: "make publish"
+      - name: Notify success
+        run: "anystore io -i ${{ secrets.DATASETS_CATALOG_HEARTBEAT }}"

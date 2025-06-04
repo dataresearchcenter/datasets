@@ -24,7 +24,7 @@ jobs:
       matrix:
         dataset:
           - gb_ocod
-          # - gb_ccod #too large to aggregate in memory, paused for now
+          - gb_ccod 
           - gb_pricepaid
     steps:
       - name: parse and write the dataset
@@ -40,6 +40,6 @@ jobs:
       FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
     steps:
       - name: Update the catalog
-        run: "investigraph build-catalog -i /datasets/catalog.yml -o s3://data.ftm.store/index.json"
+        run: "make publish"
       - name: Notify success
         run: "anystore io -i ${{ secrets.DATASETS_BIWEEKLY_HEARTBEAT }}"
