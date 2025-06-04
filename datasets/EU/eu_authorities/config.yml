@@ -16,6 +16,11 @@ publisher:
     two not-for-profit, non-governmental organisations, Access Info Europe and
     mySociety. It is not an official EU website.
   url: https://www.asktheeu.org/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
 
 extract:
   sources:
