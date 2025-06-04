@@ -1,0 +1,8 @@
+name: fr_hatvp
+title: Registered Lobby Organizations (FR)
+publisher:
+  name: High-Authority for Transparency in Pubic Life
+  url: https://www.hatvp.fr
+extract:
+  sources:
+    - uri: https://www.hatvp.fr/agora/opendata/agora_repertoire_opendata.json
