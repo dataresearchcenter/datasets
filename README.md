@@ -1,3 +1,10 @@
+# ARCHIVED as of 2025-06-04
+
+This EU scrapers now live in https://github.com/dataresearchcenter/datasets
+
+Browse datasets online: https://investigraph.eu
+
+
 # investigraph.eu 🇪🇺
 
 This is a collaborative collection of datasets that are common to use for *follow the money* investigations with european scope.

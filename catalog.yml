@@ -1,45 +1,58 @@
 datasets:
   - from_uri: https://data.ftm.store/eu_transparency_register/index.json
+    tags:
+      - lobbyism
+    maintainer:
+      name: "||)·|()"
+      url: https://investigativedata.io
   - from_uri: https://data.ftm.store/ec_meetings/index.json
+    tags:
+      - lobbyism
+    maintainer:
+      name: "||)·|()"
+      url: https://investigativedata.io
   - from_uri: https://data.ftm.store/eu_fts/index.json
-    git_repo: https://github.com/investigativedata/investigraph-eu
+    category: procurement
+    tags:
+      - financial transparency
+      - public funding
     maintainer:
-      name: investigativedata.io
+      name: "||)·|()"
       url: https://investigativedata.io
-      logo_url: https://cdn.investigativedata.org/style/logo_square_light.svg
   - from_uri: https://data.ftm.store/eu_authorities/index.json
-    git_repo: https://github.com/investigativedata/investigraph-eu
     maintainer:
-      name: investigativedata.io
+      name: "||)·|()"
       url: https://investigativedata.io
-      logo_url: https://cdn.investigativedata.org/style/logo_square_light.svg
   - from_uri: https://data.ftm.store/eu_horizon_europe/index.json
-    git_repo: https://github.com/investigativedata/investigraph-eu
+    category: procurement
+    tags:
+      - financial transparency
+      - public funding
+      - research funding
     maintainer:
-      name: investigativedata.io
+      name: "||)·|()"
       url: https://investigativedata.io
-      logo_url: https://cdn.investigativedata.org/style/logo_square_light.svg
   - from_uri: https://data.ftm.store/eu_fp7/index.json
-    git_repo: https://github.com/investigativedata/investigraph-eu
+    category: procurement
+    tags:
+      - financial transparency
+      - public funding
+      - research funding
     maintainer:
-      name: investigativedata.io
+      name: "||)·|()"
       url: https://investigativedata.io
-      logo_url: https://cdn.investigativedata.org/style/logo_square_light.svg
   - from_uri: https://data.opensanctions.org/datasets/latest/eu_meps/index.json
-    git_repo: https://github.com/opensanctions/opensanctions
+    category: poi
     maintainer:
-      name: OpenSanctions
+      name: "OpenSanctions"
       url: https://opensanctions.org
-      logo_url: https://assets.opensanctions.org/images/ura/logo_text.svg
   - from_uri: https://data.opensanctions.org/datasets/latest/eu_cor_members/index.json
-    git_repo: https://github.com/opensanctions/opensanctions
+    category: poi
     maintainer:
-      name: OpenSanctions
+      name: "OpenSanctions"
       url: https://opensanctions.org
-      logo_url: https://assets.opensanctions.org/images/ura/logo_text.svg
   - from_uri: https://data.opensanctions.org/datasets/latest/eu_fsf/index.json
-    git_repo: https://github.com/opensanctions/opensanctions
+    category: sanctions
     maintainer:
-      name: OpenSanctions
+      name: "OpenSanctions"
       url: https://opensanctions.org
-      logo_url: https://assets.opensanctions.org/images/ura/logo_text.svg

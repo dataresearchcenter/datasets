@@ -1,6 +1,6 @@
 from typing import Generator
 
-from ftmq.util import make_fingerprint_id as fp
+from ftmq.util import make_fingerprint as fp
 from ftmq.util import make_entity_id
 from investigraph.model import Context
 from investigraph.types import CE, CEGenerator, Record

@@ -7,24 +7,20 @@ from investigraph.types import CE, CEGenerator, Record
 
 
 def make_address(ctx: Context, prefix: str, data: dict[str, Any]) -> CE | None:
-    street = data.get("{prefix} office address")
-    postalCode = data.get("{prefix} office post code")
-    postBox = data.get("{prefix} office post box")
-    city = data.get("{prefix} office city")
-    country = data.get("{prefix} office country")
+    proxy = ctx.make("Address")
+    street = data.get(f"{prefix} office address")
+    postalCode = data.get(f"{prefix} office post code")
+    postBox = data.get(f"{prefix} office post box")
+    city = data.get(f"{prefix} office city")
+    country = data.get(f"{prefix} office country")
     full = join_text(street, postalCode, postBox, city, country, sep=", ")
-    proxy_id = ctx.make_slug(make_entity_id(fp(full)), prefix="addr")
-    if proxy_id is not None:
-        proxy = ctx.make(
-            "Address",
-            proxy_id,
-            full=full,
-            street=street,
-            postalCode=postalCode,
-            city=city,
-            country=country,
-            postOfficeBox=postBox,
-        )
+    proxy.id = ctx.make_slug(make_entity_id(fp(full)), prefix="addr")
+    if proxy.id is not None:
+        proxy.add("street", street)
+        proxy.add("postalCode", postalCode)
+        proxy.add("postOfficeBox", postBox)
+        proxy.add("city", city)
+        proxy.add("country", country)
         ctx.emit(proxy)
         return proxy
 
