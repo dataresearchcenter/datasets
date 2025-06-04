@@ -23,28 +23,29 @@ publisher:
     through the other EU institutions. It supports the whole Commission.
   url: https://commission.europa.eu/about-european-commission/departments-and-executive-agencies/secretariat-general_en
 maintainer:
-  name: investigativedata.io
-  url: https://investigativedata.io
-  logo_url: https://cdn.investigativedata.org/style/logo_square_light.svg
-git_repo: https://github.com/investigativedata/investigraph-eu
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
 
 extract:
   sources:
     - name: organizations
-      uri: https://ec.europa.eu/transparencyregister/public/consultation/statistics.do?action=getLobbyistsExcel&fileType=XLS_NEW
+      uri: https://transparency-register.europa.eu/odplastorganisationxls_en
       pandas:
+        read:
+          handler: read_excel
         operations:
           - handler: DataFrame.fillna
             options:
               value: ""
     - name: persons
-      uri: https://ec.europa.eu/transparencyregister/public/consultation/statistics.do?action=getLobbyistsXml&fileType=ACCREDITED_PERSONS
+      uri: https://transparency-register.europa.eu/odplastaccreditedxml_en
       pandas:
         read:
+          handler: read_xml
           options:
-            xpath: .//pd:accreditedPerson
-            namespaces:
-              pd: http://ec.europa.eu/transparencyregister/accreditedPerson/V1
+            xpath: .//accreditedPerson
 
 transform:
   handler: ./transform.py:handle

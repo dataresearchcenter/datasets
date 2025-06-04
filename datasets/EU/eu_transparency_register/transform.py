@@ -21,13 +21,18 @@ def make_address(ctx: Context, prefix: str, data: dict[str, Any]) -> CE | None:
         proxy.add("postOfficeBox", postBox)
         proxy.add("city", city)
         proxy.add("country", country)
+        proxy.add("street", street)
+        proxy.add("postalCode", postalCode)
+        proxy.add("postOfficeBox", postBox)
+        proxy.add("city", city)
+        proxy.add("country", country)
         ctx.emit(proxy)
         return proxy
 
 
-def parse_record(ctx: Context, record: dict[str, Any]):
+def parse_record(ctx: TaskContext, record: dict[str, Any]):
     schema = "Organization"
-    if "company" in record["Form of the entity"]:
+    if "company" in (record["Form of the entity"] or ""):
         schema = "Company"
     ident = record["Identification code"]
     proxy_id = ctx.make_slug(ident)
@@ -50,28 +55,28 @@ def parse_record(ctx: Context, record: dict[str, Any]):
     proxy.add("classification", record["Category of registration"].split(","))
     proxy.add("sector", record["Level of interest"].split(","))
     proxy.add("summary", record["Goals"])
-    proxy.add("keywords", record["Fields of interest"].split(","))
+    proxy.add("keywords", record["Field of interest"].split(","))
     description_cols = (
         "Communication activities",
-        "EU legislative proposals/policies",
+        "EU Legislative proposals/policies",
         "Intergroups and unofficial groupings",
-        "Unoffical Groups",
+        "Unofficial Groups",
         "Expert Groups",
         "Participation in other EU supported forums and platforms",
         "Members Complementary information",
-        "Is member of: List of associations, (con)federations, networks or other bodies of which the organisation is a member",  # noqa
-        "Organisation Members: List of organisations, networks and associations that are the members and/or  affiliated with the organisation",  # noqa
+        "Is member of: List of associations, (con)federations, networks and other bodies of which the organisation is a member",  # noqa
+        "Organisation Members: List of organisations, networks and associations that are the members and/or affiliated with the organisation",  # noqa
         "Interests represented",
-        "Annual costs for registers activity or total budget",
+        "Annual cost for register activity or total budget",
         "Source of funding",
         "Source of funding (other)",
         "Closed year EU grant: amount (source)",
         "Closed year total EU grants",
-        "Closed year: Intermediary (cost) or client (revenue): EU legislative proposal ",  # noqa
-        "Current year Intermediary or client",
-        "Current year EU grant: source (amount)",
+        "Closed year: Intermediary (cost) or client (revenue): EU legislative proposal",  # noqa
+        "Current year intermediary or client",
+        # "Current year EU grant: source (amount)",
         "Current year total",
-        "Complementary information",
+        "Complementary Information",
     )
     description = "\n\n".join(
         [f"{c}:\n{record[c]}" for c in description_cols if record[c]]
@@ -81,7 +86,7 @@ def parse_record(ctx: Context, record: dict[str, Any]):
     ctx.emit(proxy)
 
 
-def parse_agents(ctx: Context, record: dict[str, Any]):
+def parse_agents(ctx: TaskContext, record: dict[str, Any]):
     regId = record.pop("orgIdentificationCode")
     client_id = ctx.make_slug(regId)
     client = ctx.make("Organization", client_id)
@@ -118,7 +123,7 @@ def parse_agents(ctx: Context, record: dict[str, Any]):
     ctx.emit(rel)
 
 
-def handle(ctx: Context, record: Record, ix: int) -> CEGenerator:
+def handle(ctx: SourceContext, record: Record, ix: int) -> CEGenerator:
     ctx = ctx.task()
     if ctx.source.name == "organizations":
         parse_record(ctx, record)
