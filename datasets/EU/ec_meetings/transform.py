@@ -9,7 +9,7 @@ from investigraph.util import clean_name, join_text
 
 def make_address(ctx: Context, data: Record) -> CE | None:
     location = data.pop("Location")
-    if not fp(location):
+    if not location:
         return
     proxy_id = ctx.make_id(fp(location), prefix="addr")
     return ctx.make_proxy("Address", proxy_id, full=location)
@@ -43,11 +43,11 @@ def zip_things(
             # log.error(f"Unable to unzip things: {things1} | {things2}")
 
 
-def make_organizations(ctx: Context, data: Record) -> CEGenerator:
-    regIds = data.pop("Transparency register ID")
+def make_organizations(ctx: SourceContext, data: Record) -> CEGenerator:
+    regIds = data.pop("Transparency register ID") or ""
     orgs = False
     for name, regId in zip_things(
-        data.pop("Name of interest representative"),
+        data.pop("Name of interest representative") or "",
         regIds,
     ):
         if clean_name(regId):
@@ -60,18 +60,20 @@ def make_organizations(ctx: Context, data: Record) -> CEGenerator:
                 yield make_organization(ctx, regId)
 
 
-def make_persons(ctx: Context, data: Record, body: CE) -> CEGenerator:
+def make_persons(
+    ctx: SourceContext, data: Record, body: CE
+) -> Generator[CE, None, None]:
     for name, role in zip_things(
         data.pop("Name of EC representative"),
-        data.pop("Title of EC representative"),
+        data.pop("Title of EC representative") or "",
         scream=True,
     ):
         yield make_person(ctx, name, role, body)
 
 
 def make_event(
-    ctx: Context, data: Record, organizer: CE, involved: list[CE]
-) -> CEGenerator:
+    ctx: SourceContext, data: Record, organizer: CE, involved: list[CE]
+) -> Generator[CE, None, None]:
     date = data.pop("Date of meeting")
     participants = [o for o in make_organizations(ctx, data)]
     proxy_id = ctx.make_slug(
@@ -85,6 +87,9 @@ def make_event(
     proxy.add("name", name)
     proxy.add("date", date)
     proxy.add("summary", data.pop("Subject of the meeting"))
+    proxy.add("organizer", organizer)
+    proxy.add("involved", involved)
+    proxy.add("involved", participants)
     portfolio = data.pop("Portfolio", None)
     if portfolio:
         proxy.add("notes", "Portfolio: " + portfolio)
@@ -96,15 +101,11 @@ def make_event(
         proxy.add("addressEntity", address)
         yield address
 
-    proxy.add("organizer", organizer)
-    proxy.add("involved", involved)
-    proxy.add("involved", participants)
-
     yield from participants
     yield proxy
 
 
-def parse_record(ctx: Context, data: Record, body: CE):
+def parse_record(ctx: SourceContext, data: Record, body: CE):
     involved = [x for x in make_persons(ctx, data, body)]
     yield from make_event(ctx, data, body, involved)
     yield from involved
@@ -118,7 +119,7 @@ def parse_record(ctx: Context, data: Record, body: CE):
         yield rel
 
 
-def parse_record_ec(ctx: Context, data: Record):
+def parse_record_ec(ctx: SourceContext, data: Record):
     # meetings of EC representatives
     name = data.pop("Name of cabinet")
     body_id = ctx.make_slug(fp(name))
@@ -128,7 +129,7 @@ def parse_record_ec(ctx: Context, data: Record):
     yield from parse_record(ctx, data, body)
 
 
-def parse_record_dg(ctx: Context, data: Record):
+def parse_record_dg(ctx: SourceContext, data: Record):
     # meetings of EC Directors-General
     acronym = data.pop("Name of DG - acronym")
     body_id = ctx.make_slug("dg", acronym)
@@ -144,9 +145,9 @@ def parse_record_dg(ctx: Context, data: Record):
     yield from parse_record(ctx, data, body)
 
 
-def handle(ctx: Context, data: Record, ix: int):
+def handle(ctx: SourceContext, record: Record, ix: int) -> CEGenerator:
     if ctx.source.name.startswith("ec"):
         handler = parse_record_ec
     else:
         handler = parse_record_dg
-    yield from handler(ctx, data)
+    yield from handler(ctx, record)

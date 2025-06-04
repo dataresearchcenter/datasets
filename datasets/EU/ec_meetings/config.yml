@@ -11,6 +11,9 @@ summary: |
   meaning and scope of the conditionality and complementary transparency
   measures provided for in the Interinstitutional Agreement establishing the
   mandatory Transparency Register.
+category: poi
+tags:
+  - lobbyism
 resources:
   - name: entities.ftm.json
     url: https://data.ftm.store/ec_meetings/entities.ftm.json
@@ -23,10 +26,10 @@ publisher:
     through the other EU institutions. It supports the whole Commission.
   url: https://commission.europa.eu/about-european-commission/departments-and-executive-agencies/secretariat-general_en
 maintainer:
-  name: investigativedata.io
-  url: https://investigativedata.io
-  logo_url: https://cdn.investigativedata.org/style/logo_square_light.svg
-git_repo: https://github.com/investigativedata/investigraph-eu
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
 
 extract:
   pandas:
