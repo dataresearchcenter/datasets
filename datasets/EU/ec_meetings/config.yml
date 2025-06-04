@@ -50,7 +50,3 @@ extract:
 
 transform:
   handler: ./transform.py:handle
-
-load:
-  index_uri: s3://data.ftm.store/ec_meetings/index.json
-  entities_uri: s3://data.ftm.store/ec_meetings/entities.ftm.json
