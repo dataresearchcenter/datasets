@@ -1,30 +1,41 @@
 from typing import Generator
 
-from ftmq.util import make_fingerprint as fp
-from ftmq.util import make_entity_id
-from investigraph.model import Context
-from investigraph.types import CE, CEGenerator, Record
-from investigraph.util import clean_name, join_text
+from fingerprints import generate as fp
+from followthemoney.util import join_text, make_entity_id
+from nomenklatura.entity import CE
+
+from investigraph.model import SourceContext
+from investigraph.types import CEGenerator, Record
 
 
-def make_address(ctx: Context, data: Record) -> CE | None:
+def make_address(ctx: SourceContext, data: Record) -> CE | None:
     location = data.pop("Location")
     if not location:
         return
-    proxy_id = ctx.make_id(fp(location), prefix="addr")
-    return ctx.make_proxy("Address", proxy_id, full=location)
+    id_ = ctx.make_id(location, prefix="addr")
+    proxy = ctx.make_proxy("Address", id_)
+    proxy.add("full", location)
+    return proxy
 
 
-def make_person(ctx: Context, name: str, role: str, body: CE) -> CE:
-    proxy_id = ctx.make_slug("person", make_entity_id(body.id, fp(name)))
-    return ctx.make_proxy("Person", proxy_id, name=name, description=role)
+def make_person(ctx: SourceContext, name: str, role: str, body: CE) -> CE:
+    id_ = ctx.make_slug("person", make_entity_id(body.id, fp(name)))
+    proxy = ctx.make_proxy("Person", id_)
+    proxy.add("name", name)
+    proxy.add("description", role)
+    return proxy
 
 
-def make_organization(ctx: Context, regId: str, name: str | None = None) -> CE:
-    proxy_id = ctx.make_slug(regId, prefix="eu-tr")
-    proxy = ctx.make_proxy("Organization", proxy_id, idNumber=regId)
+def make_organization(
+    ctx: SourceContext, regId: str, name: str | None = None
+) -> CE | None:
+    if not fp(regId):
+        return
+    id_ = ctx.make_slug(regId, prefix="eu-tr")
+    proxy = ctx.make_proxy("Organization", id_)
     if fp(name):
         proxy.add("name", name)
+    proxy.add("idNumber", regId)
     return proxy
 
 
@@ -50,14 +61,17 @@ def make_organizations(ctx: SourceContext, data: Record) -> CEGenerator:
         data.pop("Name of interest representative") or "",
         regIds,
     ):
-        if clean_name(regId):
+        org = make_organization(ctx, regId, name)
+        if org is not None:
             orgs = True
-            yield make_organization(ctx, regId, name)
+            yield org
     if not orgs:
         # yield only via id
         for regId in regIds.split(","):
-            if clean_name(regId):
-                yield make_organization(ctx, regId)
+            regId = regId.strip()
+            org = make_organization(ctx, regId)
+            if org is not None:
+                yield org
 
 
 def make_persons(
@@ -76,12 +90,12 @@ def make_event(
 ) -> Generator[CE, None, None]:
     date = data.pop("Date of meeting")
     participants = [o for o in make_organizations(ctx, data)]
-    proxy_id = ctx.make_slug(
+    id_ = ctx.make_slug(
         "meeting",
         date,
         make_entity_id(organizer.id, *sorted([p.id for p in participants])),
     )
-    proxy = ctx.make_proxy("Event", proxy_id)
+    proxy = ctx.make_proxy("Event", id_)
     label = join_text(*[p.first("name") for p in participants])
     name = f"{date} - {organizer.caption} x {label}"
     proxy.add("name", name)
@@ -111,8 +125,8 @@ def parse_record(ctx: SourceContext, data: Record, body: CE):
     yield from involved
 
     for member in involved:
-        rel_id = ctx.make_slug("membership", make_entity_id(body.id, member.id))  # noqa
-        rel = ctx.make_proxy("Membership", rel_id)
+        id_ = ctx.make_slug("membership", make_entity_id(body.id, member.id))
+        rel = ctx.make_proxy("Membership", id_)
         rel.add("organization", body)
         rel.add("member", member)
         rel.add("role", member.get("description"))
@@ -122,8 +136,10 @@ def parse_record(ctx: SourceContext, data: Record, body: CE):
 def parse_record_ec(ctx: SourceContext, data: Record):
     # meetings of EC representatives
     name = data.pop("Name of cabinet")
-    body_id = ctx.make_slug(fp(name))
-    body = ctx.make_proxy("PublicBody", body_id, name=name, jurisdiction="eu")
+    id_ = ctx.make_slug(fp(name))
+    body = ctx.make_proxy("PublicBody", id_)
+    body.add("name", name)
+    body.add("jurisdiction", "eu")
 
     yield body
     yield from parse_record(ctx, data, body)
@@ -132,14 +148,11 @@ def parse_record_ec(ctx: SourceContext, data: Record):
 def parse_record_dg(ctx: SourceContext, data: Record):
     # meetings of EC Directors-General
     acronym = data.pop("Name of DG - acronym")
-    body_id = ctx.make_slug("dg", acronym)
-    body = ctx.make_proxy(
-        "PublicBody",
-        body_id,
-        name=data.pop("Name of DG - full name"),
-        weakAlias=acronym,
-        jurisdiction="eu",
-    )
+    id_ = ctx.make_slug("dg", acronym)
+    body = ctx.make_proxy("PublicBody", id_)
+    body.add("name", data.pop("Name of DG - full name"))
+    body.add("weakAlias", acronym)
+    body.add("jurisdiction", "eu")
 
     yield body
     yield from parse_record(ctx, data, body)
