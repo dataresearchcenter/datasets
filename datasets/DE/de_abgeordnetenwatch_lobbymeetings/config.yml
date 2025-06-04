@@ -9,6 +9,7 @@ publisher:
   name: Parlamentwatch e.V.
   description: The non-profit association Parlamentwatch e.V.
   url: https://www.abgeordnetenwatch.de/
+data_url: https://www.abgeordnetenwatch.de/die-lobbykontakte-der-bundesregierung-liste
 
 extract:
   sources:
