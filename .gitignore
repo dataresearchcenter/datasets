@@ -2,6 +2,7 @@ catalogs/*.json
 data
 nomenklatura.db
 .anystore
+**/eu_stateaid/src
 _wip
 
 # Byte-compiled / optimized / DLL files
