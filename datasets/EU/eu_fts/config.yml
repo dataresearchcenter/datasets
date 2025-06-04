@@ -10,9 +10,23 @@ summary: |
   countries ('indirect management'), and beneficiaries of the European
   Development Fund.
 
+data_url: https://data.europa.eu/data/datasets/fts?locale=en
+
+category: procurement
+tags:
+  - financial transparency
+  - public funding
+  - investigraph.eu
+
 publisher:
   name: European Commission
   url: http://ec.europa.eu/budget/fts/index_en.htm
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
 
 resources:
   - name: entities.ftm.json
@@ -69,4 +83,3 @@ extract:
 
 transform:
   handler: ./transform.py:handle
-
