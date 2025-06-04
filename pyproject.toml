@@ -1,0 +1,38 @@
+[project]
+name = "datasets"
+version = "0.0.0"
+description = "DARC Data Library"
+authors = [
+    { name = "Alexandra Ștefănescu", email = "alex@dataresearchcenter.org" },
+    { name = "Jan Strozyk", email = "jan@dataresearchcenter.org" },
+    { name = "Simon Wörpel", email = "simon@dataresearchcenter.org" },
+]
+license = { text = "AGPLv3+" }
+readme = "README.md"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.11,<4"
+dependencies = [
+    "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git@develop",
+    "httpx (>=0.28.1,<0.29.0)",
+    "plyvel (>=1.5.1,<2.0.0)",
+    "ijson (>=3.4.0,<4.0.0)",
+    "beautifulsoup4 (>=4.13.4,<5.0.0)",
+    "followthemoney @ git+https://github.com/dataresearchcenter/followthemoney.git@schema/science-identifiers",
+]
+
+[project.urls]
+Homepage = "https://dataresearchcenter.org/library"
+Documentation = "https://github.com/dataresearchcenter/datasets"
+Repository = "https://github.com/dataresearchcenter/datasets"
+Issues = "https://github.com/dataresearchcenter/datasets/issues"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
