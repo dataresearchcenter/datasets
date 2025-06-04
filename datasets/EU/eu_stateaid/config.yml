@@ -3,10 +3,20 @@ title: State Aid Transparency Public Search
 publisher:
   name: European Commission
   url: https://webgate.ec.europa.eu/competition/transparency/public
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/eu_stateaid/entities.ftm.json
+    mime_type: application/json+ftm
+
 extract:
   sources:
     - uri: ./20240208-eu-stateaid.csv.gz
-      stream: false
       pandas:
         read:
           options:
@@ -17,6 +27,7 @@ extract:
             options:
               columns:
                 "20240208-eu-stateaid.csv": Country
+
 transform:
   queries:
     - entities:
@@ -81,10 +92,3 @@ transform:
               columns:
                 - "Nominal Amount, expressed as full amount"
                 - "Aid element, expressed as full amount"
-
-load:
-  fragments_uri: postgresql:///ftm
-
-aggregate: false
-# aggregate: 
-#   handler: investigraph.logic.aggregate:in_db
