@@ -14,7 +14,11 @@ COPY setup.py /datasets/
 COPY pyproject.toml /datasets/
 COPY README.md /datasets/
 
+USER 0
+RUN mkdir /datasets/datasets
+RUN touch /datasets/datasets/__init__.py
 RUN pip install /datasets
+USER 1000
 
 WORKDIR /datasets
 ENTRYPOINT [ "" ]
