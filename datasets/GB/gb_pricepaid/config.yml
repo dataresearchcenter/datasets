@@ -14,9 +14,35 @@ resources:
   - name: entities.ftm.json
     url: https://data.ftm.store/gb_pricepaid/entities.ftm.json
     mime_type: application/json+ftm
+git_repo: https://github.com/dataresearchcenter/datasets
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+
 extract:
   sources:
     - uri: http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-monthly-update-new-version.csv
-  handler: ./extract.py:handle
+      pandas:
+        read:
+          options:
+            names:
+              - id
+              - amount
+              - createDate
+              - postalCode
+              - propertyType
+              - newlyBuilt
+              - tenure
+              - houseNumber
+              - unit
+              - street
+              - locality
+              - city
+              - district
+              - county
+              - recordType
+              - recordStatus
+
 transform:
   handler: ./transform.py:handle
