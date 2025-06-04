@@ -25,7 +25,6 @@ frequency: monthly
 category: poi
 
 extract:
-  fetch: false
   handler: ./extract.py:handle
   sources:
     - uri: ./src/authorities-gnd-koerperschaft_lds.jsonld.gz

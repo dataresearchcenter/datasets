@@ -1,13 +1,14 @@
-catalogs/*.json
+# dev data
+**/eu_stateaid/src
+**/de_gnd/src
 data
+_wip
+
+catalogs/*.json
 nomenklatura.db
 .anystore
-**/eu_stateaid/src
-_wip
-=======
 output
 xref
-de_gnd/src
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

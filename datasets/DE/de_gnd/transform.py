@@ -1,16 +1,16 @@
+import os
 from datetime import datetime
-from functools import cache
 
-from investigraph.model import Context
+from investigraph.model import SourceContext, TaskContext
 from investigraph.types import CE, CEGenerator, Record
-import os, sys
+from investigraph.util import get_func
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.join(current_dir, "..")
-sys.path.append(parent_dir)
+BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 
-from de_gnd.sru import get_title_from_sru_request
-from de_gnd.standard_vocab import get_title_from_standard_vocab
+get_title_from_sru_request = get_func("./sru.py:get_title_from_sru_request", BASE_PATH)
+get_title_from_standard_vocab = get_func(
+    "./standard_vocab.py:get_title_from_standard_vocab", BASE_PATH
+)
 
 
 BASE = "https://d-nb.info/standards/elementset/gnd#"
@@ -83,7 +83,6 @@ def get_values(record: Record, key: str) -> list[str]:
         return []
 
 
-@cache
 def get_title_from_vocab_url(url: str, category_type: str) -> str:
     gndId = extract_id(url)
     return get_title_from_sru_request(gndId, category_type)
@@ -153,19 +152,16 @@ def add_reference_urls(proxy, record: Record) -> CE:
     return proxy
 
 
-def create_relationships(ctx: Context, person_id: str, record: Record) -> list[CE]:
+def create_relationships(ctx: TaskContext, person_id: str, record: Record) -> None:
     REL_BASE = "https://d-nb.info/standards/elementset/agrelon"
-    relations = []
-    for key, value in record.items():
+    for key in record:
         if REL_BASE in key:
             relation = key.split("#")[-1]
             if relation.startswith("has"):
                 relation = relation[3:]
             for relative in record[key]:
                 relative_id = extract_id(relative["@id"])
-                proxy = make_family(ctx, person_id, relative_id, relation)
-                relations.append(proxy)
-    return relations
+                ctx.emit(make_family(ctx, person_id, relative_id, relation))
 
 
 def add_properties(proxy, record: Record, mapping: dict[str, str]) -> CE:
@@ -177,43 +173,48 @@ def add_properties(proxy, record: Record, mapping: dict[str, str]) -> CE:
     return proxy
 
 
-def make_family(ctx: Context, person_id: str, relative_id: str, relation: str) -> CE:
-    proxy = ctx.make("Family")
+def make_family(
+    ctx: TaskContext, person_id: str, relative_id: str, relation: str
+) -> CE:
+    proxy = ctx.make_proxy("Family")
     proxy.id = ctx.make_slug(relative_id, person_id, "family")
     proxy.add("person", person_id)
     proxy.add("relative", ctx.make_slug(relative_id))
     proxy.add("relationship", relation)
-    ctx.emit(proxy)
     return proxy
 
 
-def make_organization(ctx: Context, url: str) -> CE:
-    proxy = ctx.make("Organization")
+def make_organization(ctx: TaskContext, url: str) -> CE:
+    proxy = ctx.make_proxy("Organization")
     proxy.id = ctx.make_slug(extract_id(url))
     proxy.add("sourceUrl", url)
-    ctx.emit(proxy)
     return proxy
 
 
-def make_membership(ctx: Context, member: CE, organization_url: str) -> CE:
-    proxy = ctx.make("Membership")
+def make_membership(ctx: TaskContext, member: CE, organization_url: str) -> CE:
+    proxy = ctx.make_proxy("Membership")
     proxy.id = ctx.make_slug(extract_id(organization_url), member.id, "membership")
     proxy.add("organization", make_organization(ctx, organization_url))
     proxy.add("member", member)
     return proxy
 
 
-def make_person(ctx: Context, record: Record) -> CE:
-    proxy = ctx.make("Person")
+def make_person(ctx: TaskContext, record: Record) -> CE | None:
+    proxy = ctx.make_proxy("Person")
     proxy.id = ctx.make_slug(extract_id(record["@id"]))
     proxy.add("sourceUrl", record["@id"])
     proxy = add_properties(proxy, record, PERSON_MAPPING)
-    relationships = create_relationships(ctx, proxy.id, record)
-    return proxy
+    create_relationships(ctx, proxy.id, record)
+    for pos in proxy.get("position"):
+        if "politiker" in pos.lower():
+            proxy.add("topics", "role.pep")
+            break
+    if proxy.to_dict()["properties"]:
+        return proxy
 
 
-def make_legalentity(ctx: Context, record: Record) -> CE:
-    proxy = ctx.make("LegalEntity")
+def make_legalentity(ctx: TaskContext, record: Record) -> CE:
+    proxy = ctx.make_proxy("LegalEntity")
     proxy.id = ctx.make_slug(extract_id(record["@id"]))
     proxy.add("sourceUrl", record["@id"])
     proxy.add(
@@ -226,8 +227,8 @@ def make_legalentity(ctx: Context, record: Record) -> CE:
     return proxy
 
 
-def make_company(ctx: Context, record: Record) -> CE:
-    proxy = ctx.make("Company")
+def make_company(ctx: TaskContext, record: Record) -> CE:
+    proxy = ctx.make_proxy("Company")
     proxy.id = ctx.make_slug(extract_id(record["@id"]))
     proxy.add("sourceUrl", record["@id"])
     proxy = add_properties(proxy, record, CORPORATE_MAPPING)
@@ -240,16 +241,16 @@ def get_type(record: Record) -> str | None:
         return record["@type"][0].split("#")[-1]
 
 
-def handle(ctx: Context, record: Record, ix: int) -> CEGenerator:
-    tx = ctx.task()
+def handle(ctx: SourceContext, record: Record, ix: int) -> CEGenerator:
+    ctx = ctx.task()
     if ctx.source.name == "legalentity":
         record_type = get_type(record)
         if record_type == "Company":
-            entity = make_company(tx, record)
+            yield make_company(ctx, record)
         else:
-            entity = make_legalentity(tx, record)
-        tx.emit(entity)
+            yield make_legalentity(ctx, record)
     elif ctx.source.name == "person":
-        entity = make_person(tx, record)
-        tx.emit(entity)
-    yield from tx
+        person = make_person(ctx, record)
+        if person is not None:
+            yield person
+    yield from ctx

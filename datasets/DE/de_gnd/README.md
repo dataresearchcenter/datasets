@@ -4,19 +4,18 @@ This scraper creates `Person`, `Company`, `LegalEntity` entities from the Integr
 
 ## run the whole thing
 
-Set up a postgres database and tell prefect.io to use it. Also, start a redis server and tell investigraph to use it:
+Set up a postgres database or kvrocks store to write statements to in parallel.
 
     export REDIS_URL=redis://localhost:6379/0
-    export PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg:///investigraph
-    export FTM_STORE_URI=postgresql///investigraph
+    export FTMQ_STORE_URI=postgresql///ftm  # redis://localhost fpr kvrocks
 
-    investigraph run -c de_gnd/config.yml --chunk-size 10000 --no-aggregate --fragments-uri postgresql:///ftm
+    investigraph extract | parallel --pipe -j8 -N10000 --roundrobin investigraph transform
 
 This will emit the entity fragments directly into the postgres database and avoids in-memory aggregation.
 
-After the whole process, export the `ftm store` to a file:
+After the whole process, export entities to a file:
 
-    ftm store iterate -d de_gnd > ./data/de_gnd/entities.ftm.json
+    ftmq -i $FTMQ_STORE_URI -d de_gnd > ./data/de_gnd/entities.ftm.json
 
 ## testing
 

@@ -1,18 +1,25 @@
+import httpx
 from typing import Any
-import requests
 
+from anystore.decorators import anycache, error_handler
 from bs4 import BeautifulSoup
+from anystore.logging import get_logger
+from investigraph.settings import Settings
 
 
+settings = Settings()
+CACHE = settings.cache.to_store()
 VOCAB_CONFIG = {"place": "Tg", "profession": "Ts"}
 
+log = get_logger(f"investigraph.datasets.de_gnd.{__name__}")
 
-def get_value(record, datafield: str):
+
+def get_value(record, datafield: str) -> str:
     try:
         key = record.find("datafield", {"tag": datafield})
         value = key.find("subfield", {"code": "a"})
         return value.get_text()
-    except:
+    except Exception:
         return ""
 
 
@@ -28,38 +35,22 @@ def get_params(gndId: str, vocab_type: str) -> dict[str, Any]:
     return params
 
 
-def request_data(gndId: str, vocab_type: str) -> str | None:
-    sru_url = "https://services.dnb.de/sru/authorities"
-    try:
-        response = requests.get(sru_url, params=get_params(gndId, vocab_type))
-        response.raise_for_status()
-        if response.status_code == 200:
-            return response.text
-    except requests.exceptions.RequestException as e:
-        print(f"API Request Error: {e}")
-
-
-def process_xml(xml_text):
-    soup = BeautifulSoup(xml_text, "xml")
-    records = soup.find_all("record")
-    return records
-
-
-def extract_title(records, gndId: str, vocab_type: str) -> str:
-    for record in records:
-        recordId = get_value(record, "024")
-        if gndId == recordId:
-            if vocab_type == "place":
-                return get_value(record, "151")
-            else:
-                return get_value(record, "150")
-    print(f"GND Id: {gndId} not found")
-    return ""
-
-
+@anycache(store=CACHE)
+@error_handler(max_retries=10)
 def get_title_from_sru_request(gndId: str, vocab_type: str) -> str:
-    response = request_data(gndId, VOCAB_CONFIG[vocab_type])
+    value = ""
+    sru_url = "https://services.dnb.de/sru/authorities"
+    response = httpx.get(sru_url, params=get_params(gndId, vocab_type))
     if response is not None:
-        records = process_xml(response)
-        return extract_title(records, gndId, vocab_type)
-    return ""
+        soup = BeautifulSoup(response.text, "xml")
+        records = soup.find_all("record")
+        for record in records:
+            recordId = get_value(record, "024")
+            if gndId == recordId:
+                if vocab_type == "place":
+                    value = get_value(record, "151")
+                else:
+                    value = get_value(record, "150")
+    if not value:
+        log.warning(f"GND Id: {gndId} not found")
+    return value

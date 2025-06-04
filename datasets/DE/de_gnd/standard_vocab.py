@@ -1,28 +1,21 @@
-from functools import cache
-import requests
-
+import httpx
+from anystore import anycache
 from bs4 import BeautifulSoup
+from anystore.logging import get_logger
+from investigraph.settings import Settings
+
+settings = Settings()
+CACHE = settings.cache.to_store()
+
+log = get_logger(f"investigraph.datasets.de_gnd.{__name__}")
 
 
-@cache
-def request_standard_vocab() -> str:
+@anycache(store=CACHE, serialization_mode="json")
+def get_standard_vocab() -> dict[str, str]:
     url = "https://d-nb.info/standards/vocab/gnd/gnd-sc.html"
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        if response.status_code == 200:
-            return response.text
-    except requests.exceptions.RequestException as e:
-        print("Request error:", e)
-        return ""
-
-
-def process_html(html: str):
-    soup = BeautifulSoup(html, "html")
-    return soup.find_all("div", class_="card-header")
-
-
-def build_vocab(records) -> dict[str:str]:
+    res = httpx.get(url)
+    soup = BeautifulSoup(res.text, "html")
+    records = soup.find_all("div", class_="card-header")
     vocab = {}
     for record in records:
         title = record.find("h4").text
@@ -31,13 +24,11 @@ def build_vocab(records) -> dict[str:str]:
     return vocab
 
 
-@cache
+# @anycache(store=CACHE)
 def get_title_from_standard_vocab(gnd_id: str) -> str:
-    html = request_standard_vocab()
-    records = process_html(html)
-    vocab = build_vocab(records)
+    vocab = get_standard_vocab()
     try:
         return vocab[gnd_id]
     except KeyError:
-        print(f"{gnd_id} not in GND standard vocab.")
+        log.warning(f"{gnd_id} not in GND standard vocab.")
         return gnd_id
