@@ -6,3 +6,5 @@ COPY ./datasets/GB/gb_pricepaid /datasets/gb_pricepaid
 
 COPY Makefile /Makefile
 COPY catalogs /catalogs
+
+ENV INVESTIGRAPH_ARCHIVE_URI s3://memorious/investigraph
