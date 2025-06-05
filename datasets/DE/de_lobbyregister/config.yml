@@ -19,6 +19,12 @@ publisher:
   name: Deutscher Bundestag
   description: German Parliament
   url: https://www.lobbyregister.bundestag.de
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+content_type: structured
 
 extract:
   sources:

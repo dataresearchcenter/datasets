@@ -4,7 +4,7 @@ from banal import ensure_dict
 from followthemoney.util import make_entity_id
 from ftmq.util import clean_string, make_fingerprint, get_country_code
 from investigraph.exceptions import DataError
-from investigraph.model import Context
+from investigraph.model import SourceContext, TaskContext
 from investigraph.types import CEGenerator, Record
 from investigraph.util import join_text, make_fingerprint_id
 from nomenklatura.entity import CE
@@ -18,8 +18,8 @@ class EntityType(Enum):
 DEFAULT_COUNTRY = {"code": "de"}
 
 
-def make_address(context: Context, data: Record) -> CE:
-    proxy = context.make("Address")
+def make_address(context: TaskContext, data: Record) -> CE:
+    proxy = context.make_proxy("Address")
     city = data["city"]
     country = data.pop("country", DEFAULT_COUNTRY)["code"]
     zipCode = None
@@ -45,8 +45,8 @@ def make_address(context: Context, data: Record) -> CE:
     return proxy
 
 
-def make_person(context: Context, org_ident: str, data: Record) -> CE | None:
-    proxy = context.make("Person")
+def make_person(context: TaskContext, org_ident: str, data: Record) -> CE | None:
+    proxy = context.make_proxy("Person")
     title = data.pop("academicDegreeBefore", None)
     firstName = data.pop("firstName", data.get("commonFirstName"))
     lastName = data.pop("lastName", None)
@@ -73,9 +73,9 @@ def make_person(context: Context, org_ident: str, data: Record) -> CE | None:
 
 
 def make_representation(
-    context: Context, agent: CE, client: CE, role: str | None = "Auftraggeber"
+    context: TaskContext, agent: CE, client: CE, role: str | None = "Auftraggeber"
 ) -> CE:
-    rel = context.make("Representation")
+    rel = context.make_proxy("Representation")
     ident = make_entity_id(client.id, agent.id)
     rel.id = context.make_slug("representation", ident)
     rel.add("client", client)
@@ -85,9 +85,9 @@ def make_representation(
 
 
 def init_organization(
-    context: Context, data: Record, schema: str | None = "Organization"
+    context: TaskContext, data: Record, schema: str | None = "Organization"
 ) -> CE:
-    proxy = context.make(schema)
+    proxy = context.make_proxy(schema)
     if data.get("referenceName") and data.get("referenceDetailsPageUrl"):
         data["name"] = data.pop("referenceName")
         ident = data["referenceDetailsPageUrl"].split("/")[-1]
@@ -102,7 +102,7 @@ def init_organization(
     return proxy
 
 
-def make_organization(context: Context, proxy: CE, data: Record) -> CE:
+def make_organization(context: TaskContext, proxy: CE, data: Record) -> CE:
     proxy.add("name", data.get("name"))
     legalForm = data.get("legalForm", {})
     proxy.add("legalForm", legalForm.get("de"))
@@ -157,7 +157,7 @@ def make_organization(context: Context, proxy: CE, data: Record) -> CE:
         person = make_person(context, proxy.id, person_data)
         if person:
             context.emit(person)
-            rel = context.make("Employment")
+            rel = context.make_proxy("Employment")
             rel.id = context.make_slug(
                 "employment", make_entity_id(person.id, proxy.id)
             )
@@ -166,13 +166,13 @@ def make_organization(context: Context, proxy: CE, data: Record) -> CE:
             context.emit(rel)
 
     for membership in data.pop("memberships", []):
-        org = context.make("Organization")
+        org = context.make_proxy("Organization")
         name = membership.pop("membership")
         org.id = context.make_slug("org", make_fingerprint_id(name))
         org.add("name", name)
         context.emit(org)
 
-        rel = context.make("Membership")
+        rel = context.make_proxy("Membership")
         rel.id = context.make_slug("membership", make_entity_id(proxy.id, org.id))
         rel.add("organization", org)
         rel.add("member", proxy)
@@ -181,9 +181,9 @@ def make_organization(context: Context, proxy: CE, data: Record) -> CE:
     return proxy
 
 
-def make_ministry(context: Context, data: Record) -> CE:
+def make_ministry(context: TaskContext, data: Record) -> CE:
     ident = data.pop("shortTitle")
-    proxy = context.make("PublicBody")
+    proxy = context.make_proxy("PublicBody")
     proxy.id = context.make_slug(ident)
     proxy.add("name", data.pop("title"))
     proxy.add("weakAlias", ident)
@@ -192,14 +192,14 @@ def make_ministry(context: Context, data: Record) -> CE:
     return proxy
 
 
-def make_law(context: Context, data: Record, project: CE) -> CE:
-    proxy = context.make("Article")
+def make_law(context: TaskContext, data: Record, project: CE) -> CE:
+    proxy = context.make_proxy("Article")
     title = data.pop("shortTitle")
     proxy.id = context.make_slug("law", title)
     proxy.add("title", title)
     proxy.add("summary", data.pop("title"))
     proxy.add("sourceUrl", data.pop("url"))
-    rel = context.make("Documentation")
+    rel = context.make_proxy("Documentation")
     rel.id = context.make_id("affected-law", project.id, proxy.id)
     rel.add("document", proxy)
     rel.add("entity", project)
@@ -207,8 +207,8 @@ def make_law(context: Context, data: Record, project: CE) -> CE:
     return proxy
 
 
-def make_bill(context: Context, data: Record, project: CE, org: CE) -> CE:
-    proxy = context.make("Project")
+def make_bill(context: TaskContext, data: Record, project: CE, org: CE) -> CE:
+    proxy = context.make_proxy("Project")
     title = data.pop("title", data.get("customTitle"))
     if title is None:
         raise DataError("No title for `make_bill`")
@@ -216,14 +216,14 @@ def make_bill(context: Context, data: Record, project: CE, org: CE) -> CE:
     proxy.add("name", title)
     proxy.add("date", data.pop("publicationDate", data.get("customDate")))
 
-    rel = context.make("UnknownLink")
+    rel = context.make_proxy("UnknownLink")
     rel.id = context.make_id("draft-bill", project.id, proxy.id)
     rel.add("subject", project)
     rel.add("object", proxy)
     rel.add("role", "Gesetzesentwurf")
     context.emit(rel)
 
-    participant = context.make("ProjectParticipant")
+    participant = context.make_proxy("ProjectParticipant")
     participant.id = context.make_id("draft-bill-participant", org.id, proxy.id)
     participant.add("participant", org)
     participant.add("project", proxy)
@@ -233,7 +233,7 @@ def make_bill(context: Context, data: Record, project: CE, org: CE) -> CE:
     for ministry in data.pop("leadingMinistries"):
         participant = make_ministry(context, ministry)
         context.emit(participant)
-        rel = context.make("ProjectParticipant")
+        rel = context.make_proxy("ProjectParticipant")
         rel.id = context.make_id("bill-participant", proxy.id, participant.id)
         rel.add("project", proxy)
         rel.add("participant", participant)
@@ -242,8 +242,8 @@ def make_bill(context: Context, data: Record, project: CE, org: CE) -> CE:
         context.emit(rel)
 
 
-def make_project(context: Context, data: Record, org: CE) -> CE:
-    proxy = context.make("Project")
+def make_project(context: TaskContext, data: Record, org: CE) -> CE:
+    proxy = context.make_proxy("Project")
     ident = data.pop("regulatoryProjectNumber")
     proxy.id = context.make_slug(ident)
     proxy.add("projectId", ident)
@@ -252,7 +252,7 @@ def make_project(context: Context, data: Record, org: CE) -> CE:
     proxy.add("keywords", [i["de"] for i in data.get("fieldsOfInterest", [])])
     proxy.add("sourceUrl", data.get("pdfUrl"))
 
-    rel = context.make("ProjectParticipant")
+    rel = context.make_proxy("ProjectParticipant")
     rel.id = context.make_id("participant", proxy.id, org.id)
     rel.add("project", proxy)
     rel.add("participant", org)
@@ -266,7 +266,7 @@ def make_project(context: Context, data: Record, org: CE) -> CE:
 
     if data.get("printedMattersPresent"):
         for matter in data["printedMatters"]:
-            doc = context.make("Document")
+            doc = context.make_proxy("Document")
             foreign_id = matter.pop("printingNumber")
             doc.id = context.make_slug("document", foreign_id)
             doc.add("title", matter.get("title"))
@@ -276,7 +276,7 @@ def make_project(context: Context, data: Record, org: CE) -> CE:
                 doc.add("sourceUrl", url)
                 doc.add("fileName", url.split("/")[-1])
             context.emit(doc)
-            rel = context.make("Documentation")
+            rel = context.make_proxy("Documentation")
             rel.id = context.make_id("matter", proxy.id, doc.id)
             rel.add("document", doc)
             rel.add("entity", proxy)
@@ -285,7 +285,7 @@ def make_project(context: Context, data: Record, org: CE) -> CE:
             for ministry in matter.pop("leadingMinistries"):
                 ministry = make_ministry(context, ministry)
                 context.emit(ministry)
-                rel = context.make("Documentation")
+                rel = context.make_proxy("Documentation")
                 rel.id = context.make_id("matter", doc.id, ministry.id)
                 rel.add("document", doc)
                 rel.add("entity", ministry)
@@ -295,8 +295,8 @@ def make_project(context: Context, data: Record, org: CE) -> CE:
     return proxy
 
 
-def make_contract(context: Context, data: Record, org: CE) -> CE:
-    proxy = context.make("Contract")
+def make_contract(context: TaskContext, data: Record, org: CE) -> CE:
+    proxy = context.make_proxy("Contract")
     description = clean_string(data.pop("description"))
     proxy.id = context.make_id("contract", org.id, description)
     proxy.add("title", description)
@@ -325,7 +325,7 @@ def make_contract(context: Context, data: Record, org: CE) -> CE:
             comp = init_organization(context, company_data, "Company")
             comp = make_organization(context, org, company_data)
             context.emit(comp)
-            rel = context.make("Employment")
+            rel = context.make_proxy("Employment")
             rel.id = context.make_id("contractor-employment", comp.id, supplier.id)
             rel.add("employer", comp)
             rel.add("employee", supplier)
@@ -337,7 +337,7 @@ def make_contract(context: Context, data: Record, org: CE) -> CE:
 
     for supplier in suppliers:
         if supplier:
-            award = context.make("ContractAward")
+            award = context.make_proxy("ContractAward")
             award.id = context.make_id("award", proxy.id, supplier.id)
             award.add("contract", proxy)
             award.add("supplier", supplier)
@@ -347,18 +347,18 @@ def make_contract(context: Context, data: Record, org: CE) -> CE:
     return proxy
 
 
-def make_statement(context: Context, data: Record, org: CE) -> CE:
+def make_statement(context: TaskContext, data: Record, org: CE) -> CE:
     project = make_project(context, data, org)
     context.emit(project)
 
     dates = [i["sendingDate"] for i in data["recipientGroups"]]
-    proxy = context.make("Article")
+    proxy = context.make_proxy("Article")
     proxy.id = context.make_id("statement", project.id, org.id, *dates)
     proxy.add("title", f"Stellungnahme von {org.caption} zu {project.caption}")
     proxy.add("summary", data.pop("text")["text"])
     proxy.add("publishedAt", dates)
 
-    rel = context.make("Documentation")
+    rel = context.make_proxy("Documentation")
     rel.id = context.make_id("project-statement", project.id, proxy.id)
     rel.add("document", proxy)
     rel.add("entity", project)
@@ -368,12 +368,12 @@ def make_statement(context: Context, data: Record, org: CE) -> CE:
 
     for group in data.pop("recipientGroups"):
         for recipient in group.pop("recipients"):
-            org = context.make("PublicBody")
+            org = context.make_proxy("PublicBody")
             org.id = context.make_id("statement-recipient", recipient["code"])
             org.add("name", recipient["de"])
             org.add("topics", "gov")
             context.emit(org)
-            rel = context.make("Documentation")
+            rel = context.make_proxy("Documentation")
             rel.id = context.make_id(
                 "statement-recipient-rel", proxy.id, org.id, *dates
             )
@@ -386,7 +386,7 @@ def make_statement(context: Context, data: Record, org: CE) -> CE:
     return proxy
 
 
-def parse_record(context: Context, data: Record):
+def parse_record(context: TaskContext, data: Record):
     registerId = data.pop("registerNumber")
     record = data.pop("registerEntryDetails")
     proxy_data = data.pop("lobbyistIdentity")
@@ -400,7 +400,7 @@ def parse_record(context: Context, data: Record):
             return
         proxy.id = context.make_slug(registerId)
     else:
-        proxy = context.make(proxy_type.value)
+        proxy = context.make_proxy(proxy_type.value)
         proxy.id = context.make_slug(registerId)
         proxy = make_organization(context, proxy, proxy_data)
 
@@ -425,7 +425,7 @@ def parse_record(context: Context, data: Record):
         start_date = data["donators"].get("relatedFiscalYearStart")
         end_date = data["donators"].get("relatedFiscalYearEnd")
         for item in data["donators"].pop("donators"):
-            payer = context.make("LegalEntity")
+            payer = context.make_proxy("LegalEntity")
             name = item.pop("name")
             payer.id = context.make_slug(
                 "donator",
@@ -435,7 +435,7 @@ def parse_record(context: Context, data: Record):
             payer.add("address", item.get("location"))
             context.emit(payer)
 
-            payment = context.make("Payment")
+            payment = context.make_proxy("Payment")
             payment.id = context.make_id(
                 "payment", payer.id, proxy.id, start_date, end_date
             )
@@ -479,7 +479,7 @@ def parse_record(context: Context, data: Record):
         context.emit(make_project(context, project, proxy))
 
     for payment in data.pop("publicAllowances").pop("publicAllowances", []):
-        payer = context.make("PublicBody")
+        payer = context.make_proxy("PublicBody")
         payer_name = payment.pop("name")
         payer.id = context.make_slug(payer_name)
         if payer.id:
@@ -487,7 +487,7 @@ def parse_record(context: Context, data: Record):
             payer.add("legalForm", payment.get("type", {}).get("de"))
             context.emit(payer)
             description = clean_string(payment.pop("description"))
-            payment = context.make("Payment")
+            payment = context.make_proxy("Payment")
             payment.id = context.make_id(
                 "payment", payer.id, proxy.id, make_fingerprint(description)
             )
@@ -501,7 +501,7 @@ def parse_record(context: Context, data: Record):
             context.emit(payment)
 
 
-def handle(ctx: Context, record: Record, ix: int) -> CEGenerator:
+def handle(ctx: SourceContext, record: Record, ix: int) -> CEGenerator:
     tx = ctx.task()
     parse_record(tx, record)
     yield from tx
