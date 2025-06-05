@@ -26,6 +26,9 @@ jobs:
     needs: data
     runs-on: ubuntu-latest
     container: ghcr.io/dataresearchcenter/datasets:latest
+    defaults:
+      run:
+        working-directory: /datasets
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
