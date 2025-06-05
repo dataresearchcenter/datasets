@@ -26,6 +26,7 @@ dependencies = [
     "beautifulsoup4 (>=4.13.4,<5.0.0)",
     "followthemoney @ git+https://github.com/dataresearchcenter/followthemoney.git@schema/science-identifiers",
     "pygit2 (>=1.18.0,<2.0.0)",
+    "memorious @ git+https://github.com/dataresearchcenter/memorious",
 ]
 
 [project.urls]
