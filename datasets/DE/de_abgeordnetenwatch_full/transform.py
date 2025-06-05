@@ -1,7 +1,8 @@
 from enum import StrEnum
 
 from banal import ensure_dict, ensure_list
-from investigraph import Context
+from investigraph import TaskContext
+from investigraph.model import SourceContext
 from investigraph.types import CE, CEGenerator, Record
 from investigraph.util import join_text
 
@@ -11,8 +12,8 @@ class EntityType(StrEnum):
     MANDATE = "candidacy_mandate"
 
 
-def make_politician(context: Context, data: Record) -> CE:
-    proxy = context.make("Person")
+def make_politician(context: TaskContext, data: Record) -> CE:
+    proxy = context.make_proxy("Person")
     proxy.id = context.make_slug("person", data.pop("id"))
     title = data.get("field_title")
     firstName = data.get("first_name")
@@ -32,16 +33,16 @@ def make_politician(context: Context, data: Record) -> CE:
     return proxy
 
 
-def make_party(context: Context, name: str) -> CE:
-    proxy = context.make("Organization")
+def make_party(context: TaskContext, name: str) -> CE:
+    proxy = context.make_proxy("Organization")
     proxy.id = context.make_slug(name)
     proxy.add("name", name)
     proxy.add("topics", "pol.party")
     return proxy
 
 
-def make_membership(context: Context, person: CE, party: CE) -> CE:
-    proxy = context.make("Membership")
+def make_membership(context: TaskContext, person: CE, party: CE) -> CE:
+    proxy = context.make_proxy("Membership")
     proxy.id = context.make_id(party.id, person.id)
     proxy.add("member", person)
     proxy.add("organization", party)
@@ -54,7 +55,9 @@ def make_party_membership(context, person: CE, party_name: str) -> CEGenerator:
     yield make_membership(context, person, party)
 
 
-def make_fraction_membership(context: Context, person: CE, data: Record) -> CEGenerator:
+def make_fraction_membership(
+    context: TaskContext, person: CE, data: Record
+) -> CEGenerator:
     fraction = data.pop("fraction")
     party = make_party(context, fraction.pop("label"))
     party.add("legalForm", fraction.pop("entity_type"))
@@ -68,12 +71,12 @@ def make_fraction_membership(context: Context, person: CE, data: Record) -> CEGe
 
 
 def make_position(
-    context: Context, name: str, country: str, subnational_area: str | None = None
+    context: TaskContext, name: str, country: str, subnational_area: str | None = None
 ) -> CE:
     parts: list[str] = [name, country]
     if subnational_area is not None:
         parts.append(subnational_area)
-    proxy = context.make("Position")
+    proxy = context.make_proxy("Position")
     proxy.id = context.make_id(*parts)
     proxy.add("name", name)
     proxy.add("country", country)
@@ -82,9 +85,9 @@ def make_position(
 
 
 def make_occupancy(
-    context: Context, person: CE, position: CE, start_date: str, end_date: str
+    context: TaskContext, person: CE, position: CE, start_date: str, end_date: str
 ) -> CE:
-    occupancy = context.make("Occupancy")
+    occupancy = context.make_proxy("Occupancy")
     # Include started and ended strings so that two occupancies, one missing start
     # and and one missing end, don't get normalisted to the same ID
     parts = [
@@ -108,7 +111,7 @@ def make_occupancy(
     return occupancy
 
 
-def make_mandate(context: Context, record: Record, politician: CE) -> CEGenerator:
+def make_mandate(context: TaskContext, record: Record, politician: CE) -> CEGenerator:
     parliament_period_detail = record.pop("parliament_period")
     parliament_detail = parliament_period_detail.pop("parliament")
     parliament_label = parliament_detail["label"]
@@ -142,7 +145,7 @@ def make_mandate(context: Context, record: Record, politician: CE) -> CEGenerato
     yield occupancy
 
 
-def handle(ctx: Context, record: Record, *args, **kwargs) -> CEGenerator:
+def handle(ctx: SourceContext, record: Record, *args, **kwargs) -> CEGenerator:
     tx = ctx.task()
     if record["entity_type"] == EntityType.POLITICIAN:
         politician = make_politician(tx, record)

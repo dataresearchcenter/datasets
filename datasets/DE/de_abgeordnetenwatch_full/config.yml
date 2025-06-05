@@ -4,7 +4,7 @@ url: https://www.abgeordnetenwatch.de
 prefix: de-aw
 coverage:
   frequency: daily
-  start: 2024-06-12
+  start: "2024-06-12"
 summary: >
   Members of the German national legislature (The Bundestag)
   and state legislatures (Landtag).
@@ -30,10 +30,15 @@ publisher:
 data:
   url: "https://www.abgeordnetenwatch.de/api/v2/candidacies-mandates?type=mandate"
   format: JSON
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
 
 resources:
   - name: entities.ftm.json
-    url: https://s3.investigativedata.org/data.ftm.store/de_abgeordnetenwatch_full/entities.ftm.json
+    url: https://data.ftm.store/de_abgeordnetenwatch_full/entities.ftm.json
     mime_type: application/json+ftm
 
 extract:
@@ -43,7 +48,3 @@ extract:
 
 transform:
   handler: ./transform.py:handle
-
-load:
-  index_uri: s3://data.ftm.store/de_abgeordnetenwatch_full/index.json
-  entities_uri: s3://data.ftm.store/de_abgeordnetenwatch_full/entities.ftm.json

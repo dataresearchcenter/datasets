@@ -1,12 +1,12 @@
+import httpx
 import logging
 import os
 import time
 
+from anystore.util import dict_merge
 from banal import as_bool
-from investigraph import Context
-from investigraph.logic import fetch
+from investigraph import SourceContext
 from investigraph.types import Record, RecordGenerator
-from investigraph.util import dict_merge
 
 URL = "https://www.abgeordnetenwatch.de/api/v2/"
 TESTING = as_bool(os.environ.get("TESTING"))
@@ -20,9 +20,10 @@ def make_request(*args, **kwargs) -> Record:
     backoff = 5
     errors = 0
     res = None
+    kwargs["timeout"] = 60
     while errors < MAX_ERRORS:
         try:
-            res = fetch.get(*args, **kwargs)
+            res = httpx.get(*args, **kwargs)
             return res.json()
         except Exception as e:
             log.warning(
@@ -49,7 +50,7 @@ def fetch_iter(
         yield from fetch_iter(url, range_start + chunk_size, **params)
 
 
-def handle(ctx: Context, *args, **kwargs):
+def handle(ctx: SourceContext, *args, **kwargs):
 
     parliaments: dict[int, Record] = {
         i["id"]: i for i in fetch_iter(URL + "parliaments")
