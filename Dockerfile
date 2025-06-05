@@ -7,7 +7,7 @@ COPY ./datasets/GB/gb_ocod /datasets/gb_ocod
 COPY ./datasets/GB/gb_ccod /datasets/gb_ccod
 COPY ./datasets/GB/gb_pricepaid /datasets/gb_pricepaid
 
-COPY ./datasets/XX/us_cpr /datasets/us_cpr
+COPY ./datasets/US/us_cpr /datasets/us_cpr
 
 COPY Makefile /datasets/
 COPY catalogs /datasets/catalogs
@@ -21,6 +21,7 @@ RUN mkdir /datasets/datasets
 RUN touch /datasets/datasets/__init__.py
 RUN chown -R 1000 /datasets
 RUN pip install /datasets
+RUN pip install awscli
 USER 1000
 
 WORKDIR /datasets
