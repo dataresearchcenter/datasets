@@ -1,0 +1,66 @@
+name: gdho
+title: Global Database of Humanitarian Organisations
+prefix: gdho
+summary: |
+  GDHO is a global compendium of organisations that provide aid in humanitarian
+  crises. The database includes basic organisational and operational
+  information on these humanitarian providers, which include international
+  non-governmental organisations (grouped by federation), national NGOs that
+  deliver aid within their own borders, UN humanitarian agencies, and the
+  International Red Cross and Red Crescent Movement.
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/gdho/entities.ftm.json
+    mime_type: application/json+ftm
+publisher:
+  name: Humanitarian Outcomes
+  description: |
+    Humanitarian Outcomes is a team of specialist consultants providing
+    research and policy advice for humanitarian aid agencies and donor
+    governments.
+  url: https://www.humanitarianoutcomes.org
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+content_type: structured
+
+extract:
+  sources:
+    - uri: https://www.humanitarianoutcomes.org/gdho/search/results?format=csv
+      pandas:
+        read:
+          options:
+            encoding: latin
+            skiprows: 1
+            dtype: str
+
+transform:
+  queries:
+    - entities:
+        org:
+          schema: Organization
+          key_literal: gdho
+          keys:
+            - Id
+          properties:
+            name:
+              column: Name
+            weakAlias:
+              column: Abbreviated name
+            legalForm:
+              column: Type
+            website:
+              column: Website
+            country:
+              column: HQ location
+            incorporationDate:
+              column: Year founded
+            dissolutionDate:
+              column: Year closed
+            sector:
+              columns:
+                - Sector
+                - Religious or secular
+                - Religion
