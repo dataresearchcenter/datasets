@@ -27,7 +27,7 @@ pipeline:
   init:
     method: de_sehrgutachten:seed
     params:
-      url: https://www.bundestag.de/ajax/filterlist/de/dokumente/ausarbeitungen/474644-474644
+      url: https://www.bundestag.de/ajax/filterlist/de/dokumente/analysen/474644-474644
       timedelta:
         days: 7
     handle:
