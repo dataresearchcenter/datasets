@@ -1,0 +1,88 @@
+name: eu_farmsubsidies_2022
+title: EU Farmsubsidies (2020-2021)
+prefix: eu-fs
+country: eu
+summary: |
+  Farm subsidies are EU payments to public authorities, companies and farmers
+  who are active in the agricultural sector and/or contribute to its
+  maintenance. Subsidies are financed by taxpayers' money, primarily through
+  the EU, but the Member States also contribute financially in a direct way.
+  Subsidies are part of the EU's Common Agricultural Policy (CAP), which came
+  into force in 1962. All the data presented on this website has either been
+  published directly by EU country governments, or obtained from them by
+  freedom of information requests.
+publisher:
+  name: farmsubsidy.org
+  description: |
+    The aim of farmsubsidy.org is to obtain detailed data relating to payments
+    and recipients of farm subsidies in every EU member state and make this
+    data available in a way that is useful to European citizens.
+    Farmsubsidy.org is run by FragDenStaat, the central contact for all
+    questions relating to freedom of information in Germany.
+  url: https://www.farmsubsidy.org
+category: procurement
+tags:
+  - farmsubsidy
+  - public funding
+  - eu subsidies
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/eu_farmsubsidies_2022/entities.ftm.json
+    mime_type: application/json+ftm
+
+seed:
+  handler: ./extract.py:seed
+  glob:
+    - https://data.farmsubsidy.org/cleaned/*2020*.csv.gz
+    - https://data.farmsubsidy.org/cleaned/*2021*.csv.gz
+
+
+extract:
+  handler: ./extract.py:handle
+  fetch: false
+
+transform:
+  queries:
+    - entities:
+        recipient:
+          schema: LegalEntity
+          id_column: recipient_id
+          properties:
+            name:
+              column: recipient_name
+            address:
+              column: recipient_address
+            country:
+              column: recipient_country
+            website:
+              column: recipient_url
+        payment:
+          schema: Payment
+          id_column: pk
+          properties:
+            purpose:
+              columns:
+                - scheme_code
+                - scheme
+              join: " - "
+            programme:
+              literal: "The Common Agricultural Policy (CAP)"
+            description:
+              column: scheme_description
+            amount:
+              column: amount_original
+            currency:
+              column: currency_original
+            amountEur:
+              column: amount
+            date:
+              column: year
+            beneficiary:
+              entity: recipient
+
+load:
+  index_uri: s3://data.ftm.store/eu_farmsubsidies_2022/index.json
+  entities_uri: s3://data.ftm.store/eu_farmsubsidies_2022/entities.ftm.json
