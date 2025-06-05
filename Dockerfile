@@ -19,6 +19,7 @@ COPY README.md /datasets/
 USER 0
 RUN mkdir /datasets/datasets
 RUN touch /datasets/datasets/__init__.py
+RUN chown -R 1000 /datasets
 RUN pip install /datasets
 USER 1000
 
