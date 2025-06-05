@@ -1,0 +1,38 @@
+name: eu_horizon_2020
+prefix: eu-cordis
+title: CORDIS - EU research projects under Horizon 2020 (2014-2020)
+country: eu
+summary: |
+  This dataset contains information about projects and their results funded by
+  the European Union under the Horizon 2020 framework programme for research
+  and innovation from 2014 to 2020.
+category: procurement
+tags:
+  - financial transparency
+  - public funding
+  - research funding
+  - investigraph.eu
+publisher:
+  name: Publications Office of the European Union
+  url: https://op.europa.eu
+  official: true
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/eu_horizon_2020/entities.ftm.json
+    mime_type: application/json+ftm
+
+extract:
+  sources:
+    - uri: https://cordis.europa.eu/data/cordis-h2020projects-csv.zip
+  handler: ../../util/cordis/extract.py:handle
+
+transform:
+  handler: ../../util/cordis/transform.py:handle
+
+load:
+  index_uri: s3://data.ftm.store/eu_horizon_2020/index.json
+  entities_uri: s3://data.ftm.store/eu_horizon_2020/entities.ftm.json

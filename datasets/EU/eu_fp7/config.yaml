@@ -1,0 +1,37 @@
+name: eu_fp7
+prefix: eu-cordis
+title: CORDIS - EU research projects under FP7 (2007-2013)
+country: eu
+summary: |
+  This dataset contains projects funded by the European Union under the seventh
+  framework programme for Research and technological development (FP7) from
+  2007 to 2013.
+category: procurement
+tags:
+  - financial transparency
+  - public funding
+  - research funding
+publisher:
+  name: Publications Office of the European Union
+  url: https://op.europa.eu
+  official: true
+maintainer:
+  name: "||)·|()"
+  url: https://investigativedata.io
+
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/eu_fp7/entities.ftm.json
+    mime_type: application/json+ftm
+
+extract:
+  sources:
+    - uri: https://cordis.europa.eu/data/cordis-fp7projects-csv.zip
+  handler: ../../util/cordis/extract.py:handle
+
+transform:
+  handler: ../../util/cordis/transform.py:handle
+
+load:
+  index_uri: s3://data.ftm.store/eu_fp7/index.json
+  entities_uri: s3://data.ftm.store/eu_fp7/entities.ftm.json
