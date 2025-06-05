@@ -1,0 +1,72 @@
+name: okfn_publicbodies
+title: A database of public bodies (or organizations)
+prefix: okfnpb
+summary: |
+  Government-run or controlled organizations or entities which may or may not
+  have distinct corporate existence. Examples are Government Ministries or
+  Departments, State-run Health organizations, Police and fire departments
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/okfn_publicbodies/entities.ftm.json
+    mime_type: application/json+ftm
+publisher:
+  name: Open Knowledge Foundation
+  description: |
+    Open Knowledge Foundation (OKFN) is a global, non-profit network that
+    promotes and shares information at no charge, including both content and
+    data.
+  url: https://okfn.org
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+content_type: structured
+
+seed:
+  uri: github://okfn:publicbodies@main
+  glob: "data/*.csv"
+
+transform:
+  queries:
+    - entities:
+        parent:
+          schema: PublicBody
+          key: parent_id
+        body:
+          schema: PublicBody
+          key: id
+          properties:
+            jurisdiction:
+              column: jurisdiction_code
+            country:
+              column: jurisdiction_code
+            name:
+              column: name
+            alias:
+              column: other_names
+              split: ";"
+            weakAlias:
+              column: abbreviation
+            description:
+              column: description
+            classification:
+              column: classification
+            incorporationDate:
+              column: founding_date
+            dissolutionDate:
+              column: dissolution_date
+            website:
+              column: url
+            phone:
+              column: phone
+            email:
+              column: email
+            sourceUrl:
+              column: source_url
+            address:
+              columns:
+                - address
+                - contact
+            parent:
+              entity: parent
