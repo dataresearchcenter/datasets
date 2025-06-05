@@ -7,6 +7,8 @@ COPY ./datasets/GB/gb_ocod /datasets/gb_ocod
 COPY ./datasets/GB/gb_ccod /datasets/gb_ccod
 COPY ./datasets/GB/gb_pricepaid /datasets/gb_pricepaid
 
+COPY ./datasets/XX/us_cpr /datasets/us_cpr
+
 COPY Makefile /datasets/
 COPY catalogs /datasets/catalogs
 COPY build_catalog.py /datasets/
