@@ -40,6 +40,7 @@ WD_NAMES = {
     "wd10": "Kultur, Medien und Sport",
     "wd11": "Europa",
     "pe6": "Europa",
+    "eu6": "Fachbereich Europa",
 }
 
 
