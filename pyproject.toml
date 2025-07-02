@@ -57,5 +57,5 @@ push = true
 
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^9.3.0"
+ipython = "^9.4.0"
 ipdb = "^0.13.13"
