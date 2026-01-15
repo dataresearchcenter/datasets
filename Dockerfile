@@ -1,4 +1,4 @@
-FROM ghcr.io/dataresearchcenter/investigraph:develop
+FROM ghcr.io/dataresearchcenter/investigraph:0.7.0
 
 COPY ./datasets/EU/ec_meetings /datasets/ec_meetings
 COPY ./datasets/EU/eu_transparency_register /datasets/eu_transparency_register
