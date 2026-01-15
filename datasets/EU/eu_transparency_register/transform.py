@@ -1,14 +1,14 @@
 from typing import Any
 
+from followthemoney import EntityProxy
 from followthemoney.util import join_text, make_entity_id
 from ftmq.util import make_fingerprint as fp
-from investigraph import SourceContext, TaskContext
-from investigraph.types import CEGenerator, Record
-from nomenklatura.entity import CE
+from investigraph.model import SourceContext, TaskContext
+from investigraph.types import RecordGenerator, Record
 
 
-def make_address(ctx: TaskContext, prefix: str, data: dict[str, Any]) -> CE | None:
-    proxy = ctx.make_proxy("Address")
+def make_address(ctx: TaskContext, prefix: str, data: dict[str, Any]) -> EntityProxy | None:
+    proxy = ctx.make_entity("Address")
     street = data.get(f"{prefix} office address")
     postalCode = data.get(f"{prefix} office post code")
     postBox = data.get(f"{prefix} office post box")
@@ -30,7 +30,7 @@ def parse_record(ctx: TaskContext, record: dict[str, Any]):
     schema = "Organization"
     if "company" in (record["Form of the entity"] or ""):
         schema = "Company"
-    proxy = ctx.make_proxy(schema)
+    proxy = ctx.make_entity(schema)
     ident = record["Identification Number"]
     proxy.id = ctx.make_slug(ident)
     proxy.add("idNumber", ident)
@@ -84,13 +84,13 @@ def parse_record(ctx: TaskContext, record: dict[str, Any]):
 
 def parse_agents(ctx: TaskContext, record: dict[str, Any]):
     regId = record.pop("orgIdentificationCode")
-    client = ctx.make_proxy("Organization")
+    client = ctx.make_entity("Organization")
     client.id = ctx.make_slug(regId)
     client.add("name", record.pop("orgName"))
     client.add("idNumber", regId)
     ctx.emit(client)
 
-    agent = ctx.make_proxy("Person")
+    agent = ctx.make_entity("Person")
     title, firstName, lastName = (
         record.pop("title", None),
         record.pop("firstName"),
@@ -104,7 +104,7 @@ def parse_agents(ctx: TaskContext, record: dict[str, Any]):
     agent.add("name", agent_name)
     ctx.emit(agent)
 
-    rel = ctx.make_proxy("Representation")
+    rel = ctx.make_entity("Representation")
     rel.id = ctx.make_slug("representation", make_entity_id(client.id, agent.id))
     rel.add("agent", agent)
     rel.add("client", client)
@@ -114,7 +114,7 @@ def parse_agents(ctx: TaskContext, record: dict[str, Any]):
     ctx.emit(rel)
 
 
-def handle(ctx: SourceContext, record: Record, ix: int) -> CEGenerator:
+def handle(ctx: SourceContext, record: Record, ix: int) -> RecordGenerator:
     ctx = ctx.task()
     if ctx.source.name == "organizations":
         parse_record(ctx, record)

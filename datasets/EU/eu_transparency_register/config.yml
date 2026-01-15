@@ -31,7 +31,7 @@ git_repo: https://github.com/dataresearchcenter/datasets
 extract:
   sources:
     - name: organizations
-      uri: https://transparency-register.europa.eu/odplastorganisationxls_en
+      uri: https://ec.europa.eu/transparencyregister/public/files/ODP/download/XLS/latest
       pandas:
         read:
           handler: read_excel
@@ -40,7 +40,7 @@ extract:
             options:
               value: ""
     - name: persons
-      uri: https://transparency-register.europa.eu/odplastaccreditedxml_en
+      uri: https://ec.europa.eu/transparencyregister/public/files/ODP/download/ACCRED_XML/latest
       pandas:
         read:
           handler: read_xml
