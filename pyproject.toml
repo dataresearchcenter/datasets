@@ -19,14 +19,16 @@ classifiers = [
 ]
 requires-python = ">=3.11,<4"
 dependencies = [
-    "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git@develop",
     "httpx (>=0.28.1,<0.29.0)",
     "plyvel (>=1.5.1,<2.0.0)",
     "ijson (>=3.4.0,<4.0.0)",
     "beautifulsoup4 (>=4.13.4,<5.0.0)",
-    "followthemoney @ git+https://github.com/dataresearchcenter/followthemoney.git@schema/science-identifiers",
+    "followthemoney (>=4.5.0,<5.0.0)",
     "pygit2 (>=1.18.0,<2.0.0)",
-    "memorious @ git+https://github.com/dataresearchcenter/memorious",
+    "ftfy (>=6.3.1,<7.0.0)",
+    "lzip (>=1.2.0,<2.0.0)",
+    "investigraph (>=0.7.0,<0.8.0)",
+    "memorious @ git+https://github.com/dataresearchcenter/memorious@v3.0.1",
 ]
 
 [project.urls]
@@ -34,6 +36,12 @@ Homepage = "https://dataresearchcenter.org/library"
 Documentation = "https://github.com/dataresearchcenter/datasets"
 Repository = "https://github.com/dataresearchcenter/datasets"
 Issues = "https://github.com/dataresearchcenter/datasets/issues"
+
+[tool.poetry]
+packages = [
+    { include = "util" }
+]
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
