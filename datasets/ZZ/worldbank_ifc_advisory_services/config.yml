@@ -24,7 +24,7 @@ coverage:
     - zz  # International
   frequency: daily
 
-category: corp
+category: procurement
 
 publisher:
   name: International Finance Corporation (IFC)
