@@ -1,0 +1,54 @@
+name: worldbank_ifc_advisory_services
+title: IFC Advisory Services Projects
+prefix: wb
+
+summary: |
+  Advisory services projects provided by the International Finance Corporation
+  (IFC) to support private sector development in emerging markets through advice,
+  problem solving, and training to companies, industries, and governments.
+
+description: |
+  This dataset contains information about IFC advisory services projects worldwide.
+  Each record represents an individual project with details including project name,
+  country, business line, estimated budget, approval dates, and current status.
+
+  The IFC is a member of the World Bank Group and focuses on private sector
+  development in developing countries. Advisory services complement IFC's
+  investment operations by providing knowledge and expertise.
+
+  Data is updated daily and covers projects from inception to present.
+
+coverage:
+  start: "2001"
+  countries:
+    - zz  # International
+  frequency: daily
+
+category: corp
+
+publisher:
+  name: International Finance Corporation (IFC)
+  description: |
+    The International Finance Corporation is an international financial
+    institution that offers investment, advisory, and asset-management
+    services to encourage private-sector development in less developed
+    countries. The IFC is a member of the World Bank Group.
+  url: https://www.ifc.org
+  country: zz
+  official: true
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+license: https://creativecommons.org/licenses/by/4.0/
+
+extract:
+  handler: util.worldbank.extract:handle
+  sources:
+    - uri: https://datacatalogapi.worldbank.org/dexapps/fone/api/apiservice?datasetId=DS00071&resourceId=RS00072&type=json
+
+transform:
+  handler: ./transform.py:handle

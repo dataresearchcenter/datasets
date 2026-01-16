@@ -11,6 +11,14 @@ COPY ./datasets/GB/gb_pricepaid /datasets/gb_pricepaid
 
 COPY ./datasets/US/us_cpr /datasets/us_cpr
 
+COPY ./datasets/ZZ/worldbank_ifc_advisory_services /datasets/worldbank_ifc_advisory_services
+COPY ./datasets/ZZ/worldbank_ifc_investment_services /datasets/worldbank_ifc_investment_services
+COPY ./datasets/ZZ/worldbank_procurement_awards /datasets/worldbank_procurement_awards
+COPY ./datasets/ZZ/worldbank_project_procurement /datasets/worldbank_project_procurement
+COPY ./datasets/ZZ/worldbank_procurement_notices /datasets/worldbank_procurement_notices
+
+COPY ./util /datasets/util
+
 COPY Makefile /datasets/
 COPY catalogs /datasets/catalogs
 COPY build_catalog.py /datasets/

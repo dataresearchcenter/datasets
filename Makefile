@@ -1,4 +1,4 @@
-CATALOG_NAMES := opensanctions reference-dach index
+CATALOG_NAMES := opensanctions reference-dach worldbank index
 CATALOGS := $(CATALOG_NAMES:%=catalogs/%.json)
 
 all: clean install $(CATALOGS) publish

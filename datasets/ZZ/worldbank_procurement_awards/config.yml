@@ -1,0 +1,53 @@
+name: worldbank_procurement_awards
+title: World Bank Group Corporate Procurement Contract Awards
+prefix: wb
+
+summary: |
+  Contract awards for goods and services procured by World Bank Group
+  institutions (IBRD, IDA, IFC, MIGA, ICSID) for their own corporate use.
+
+description: |
+  This dataset contains information about corporate procurement contract
+  awards made by the World Bank Group. Each record represents a contract
+  awarded to a supplier for goods or services, including consulting,
+  IT services, facilities, and other corporate needs.
+
+  Data includes the supplier name and country, contract amount in USD,
+  commodity category, and the WBG organization that made the procurement.
+
+  Note: This covers corporate procurement (goods/services for WBG's own
+  operations), not development project procurement.
+
+coverage:
+  start: "2015"
+  countries:
+    - zz
+  frequency: monthly
+
+category: procurement
+
+publisher:
+  name: World Bank Group
+  description: |
+    The World Bank Group comprises five institutions: IBRD, IDA, IFC,
+    MIGA, and ICSID. This dataset covers corporate procurement across
+    all these institutions.
+  url: https://www.worldbank.org
+  country: zz
+  official: true
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+license: https://creativecommons.org/licenses/by/4.0/
+
+extract:
+  handler: util.worldbank.extract:handle
+  sources:
+    - uri: https://datacatalogapi.worldbank.org/dexapps/fone/api/apiservice?datasetId=DS00028&resourceId=RS00025&type=json
+
+transform:
+  handler: ./transform.py:handle
