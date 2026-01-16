@@ -18,6 +18,7 @@ jobs:
         dataset:
           - ec_meetings
           - eu_transparency_register
+          - de_lobbyregister
     steps:
       - name: parse and write the dataset
         run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
