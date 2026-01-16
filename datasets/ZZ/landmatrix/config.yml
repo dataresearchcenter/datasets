@@ -1,0 +1,39 @@
+name: landmatrix
+title: Landmatrix.org Investors
+prefix: lmi
+summary: |
+  Investors and involvements from the open access landmatrix dataset. Not (yet)
+  included: Deals & Contracts
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/landmatrix/entities.ftm.json
+    mime_type: application/json+ftm
+publisher:
+  name: The Land Matrix Initiative (LMI)
+  description: |
+    The Land Matrix Initiative (LMI) is an independent global land monitoring
+    initiative made up of a number of global and regional partners. The LMI was
+    originally established in 2009 to address the lack of robust data on LSLAs,
+    and the first version of the Land Matrix database was launched in April
+    2012, providing a systematic overview of large-scale agricultural
+    investments. Today, together with a wealth of global data illustrating the
+    magnitude of LSLAs on an international scale, our four Regional Focal
+    Points (RFPs) in Africa, Asia, Eastern Europe, and Latin America, along
+    with our National Land Observatories (NLOs) in Argentina, Cameroon,
+    Philippines, Senegal and Uganda, capture country-specific data through a
+    critical regional lens.
+  url: https://landmatrix.org
+content_type: structured
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+extract:
+  sources:
+    - uri: "https://landmatrix.org/api/legacy_export/?filters=[]&subset=PUBLIC&format=csv"
+  handler: ./extract.py:handle
+
+transform:
+  handler: ./transform.py:handle

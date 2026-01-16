@@ -27,14 +27,9 @@ git_repo: https://github.com/dataresearchcenter/datasets
 content_type: structured
 
 extract:
+  handler: ./extract.py:handle
   sources:
     - uri: https://www.lobbyregister.bundestag.de/sucheDetailJson?sort=REGISTRATION_DESC
-      pandas:
-        read:
-          handler: json_normalize
-          options:
-            record_path: results
-            max_level: 0
 
 transform:
   handler: ./transform.py:handle
