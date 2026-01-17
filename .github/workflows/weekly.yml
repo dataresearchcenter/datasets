@@ -19,7 +19,7 @@ jobs:
           - worldbank_ifc_advisory_services
           - worldbank_ifc_investment_services
           - worldbank_procurement_awards
-          - worldbank_project_procurement
+          - worldbank_procurement_projects
           - worldbank_procurement_notices
     steps:
       - name: parse and write the dataset

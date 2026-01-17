@@ -26,6 +26,11 @@ coverage:
 
 category: procurement
 
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/worldbank_ifc_investment_services/entities.ftm.json
+    mime_type: application/json+ftm
+
 publisher:
   name: International Finance Corporation (IFC)
   description: |

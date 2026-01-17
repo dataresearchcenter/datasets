@@ -1,4 +1,4 @@
-name: worldbank_project_procurement
+name: worldbank_procurement_projects
 title: World Bank Contract Awards in Investment Project Financing
 prefix: wb
 
@@ -25,6 +25,11 @@ coverage:
   frequency: daily
 
 category: procurement
+
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/worldbank_procurement_projects/entities.ftm.json
+    mime_type: application/json+ftm
 
 publisher:
   name: World Bank Group

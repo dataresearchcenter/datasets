@@ -19,17 +19,29 @@ WBG_ORGS = {
 
 def handle(ctx: SourceContext, record: Record, ix: int) -> Entities:
     """Transform World Bank procurement contract award to FTM entities."""
-    selection_number = record.get("selection_number")
-    if not selection_number:
-        ctx.log.warning("Missing selection_number", row=ix)
-        return
+    selection_number = record.pop("selection_number")
+    contract_description = record.pop("contract_description")
+    supplier_name = record.pop("supplier")
+    award_date = record.pop("award_date")
 
     # Create Contract entity (corporate procurement)
     contract = ctx.make_entity("Contract")
-    contract.id = ctx.make_slug("corporate", selection_number)
-    contract.add("procedureNumber", selection_number)
-    contract.add("title", record.get("contract_description"))
-    contract.add("contractDate", parse_date(record.get("award_date")))
+
+    # Generate ID from selection_number, or fall back to hash of other fields
+    if selection_number and str(selection_number).strip() not in ("", "-"):
+        contract.id = ctx.make_slug("contract", selection_number)
+        contract.add("procedureNumber", selection_number)
+    else:
+        # No selection number - generate ID from contract details
+        contract.id = ctx.make_id(
+            contract_description,
+            supplier_name,
+            award_date,
+            prefix="wb-contract",
+        )
+
+    contract.add("title", contract_description)
+    contract.add("contractDate", parse_date(award_date))
 
     # Amount
     amount = record.get("contract_award_amount")
@@ -71,8 +83,7 @@ def handle(ctx: SourceContext, record: Record, ix: int) -> Entities:
     yield contract
 
     # Create Company entity for supplier
-    supplier_name = record.get("supplier")
-    supplier_country = record.get("supplier_country_code")
+    supplier_country = record.pop("supplier_country_code", None)
     if supplier_name:
         supplier = ctx.make_entity("Company")
         supplier.id = ctx.make_slug(
@@ -90,7 +101,7 @@ def handle(ctx: SourceContext, record: Record, ix: int) -> Entities:
         award.id = ctx.make_id("award", contract.id, supplier.id)
         award.add("contract", contract)
         award.add("supplier", supplier)
-        award.add("date", parse_date(record.get("award_date")))
+        award.add("date", parse_date(award_date))
         if amount:
             award.add("amountUsd", amount)
 

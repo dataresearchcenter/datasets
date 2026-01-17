@@ -26,6 +26,11 @@ coverage:
 
 category: procurement
 
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/worldbank_procurement_notices/entities.ftm.json
+    mime_type: application/json+ftm
+
 publisher:
   name: World Bank Group
   description: |

@@ -53,7 +53,7 @@ COPY --chown=1000:1000 ./datasets/US/us_cpr /datasets/us_cpr
 COPY --chown=1000:1000 ./datasets/ZZ/worldbank_ifc_advisory_services /datasets/worldbank_ifc_advisory_services
 COPY --chown=1000:1000 ./datasets/ZZ/worldbank_ifc_investment_services /datasets/worldbank_ifc_investment_services
 COPY --chown=1000:1000 ./datasets/ZZ/worldbank_procurement_awards /datasets/worldbank_procurement_awards
-COPY --chown=1000:1000 ./datasets/ZZ/worldbank_project_procurement /datasets/worldbank_project_procurement
+COPY --chown=1000:1000 ./datasets/ZZ/worldbank_procurement_projects /datasets/worldbank_procurement_projects
 COPY --chown=1000:1000 ./datasets/ZZ/worldbank_procurement_notices /datasets/worldbank_procurement_notices
 
 USER 1000
