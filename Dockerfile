@@ -1,9 +1,16 @@
-FROM ghcr.io/dataresearchcenter/investigraph:0.7.0 AS base
+FROM python:3.13-slim AS base
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    libleveldb-dev \
+    libgit2-dev \
+    libicu-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 # Stage 1: Install Python dependencies (rarely changes)
 FROM base AS dependencies
-
-USER 0
 
 # Copy only files needed for pip install
 COPY pyproject.toml setup.py README.md /datasets/
@@ -13,6 +20,7 @@ COPY util /datasets/util
 RUN mkdir -p /datasets/datasets && \
     touch /datasets/datasets/__init__.py && \
     pip install --no-cache-dir /datasets awscli && \
+    useradd -m -u 1000 datasets && \
     chown -R 1000 /datasets
 
 # Stage 2: Add build tools (changes occasionally)
