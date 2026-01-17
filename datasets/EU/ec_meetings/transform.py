@@ -77,9 +77,17 @@ def make_organizations(ctx: SourceContext, data: Record) -> RecordGenerator:
 def make_persons(
     ctx: SourceContext, data: Record, body: EntityProxy
 ) -> Generator[EntityProxy, None, None]:
+    # Handle different column names between EC Cabinet and DG sources
+    if "Name of EC/EA representative" in data:
+        name_col = "Name of EC/EA representative"
+        title_col = "Title of EC/EA representative"
+    else:
+        name_col = "Name of EC representative"
+        title_col = "Title of EC representative"
+
     for name, role in zip_things(
-        data.pop("Name of EC/EA representative"),
-        data.pop("Title of EC/EA representative") or "",
+        data.pop(name_col),
+        data.pop(title_col) or "",
         scream=True,
     ):
         yield make_person(ctx, name, role, body)
