@@ -14,6 +14,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
     strategy:
+      fail-fast: false
       matrix:
         dataset:
           - worldbank_ifc_advisory_services
@@ -27,6 +28,7 @@ jobs:
 
   catalog:
     needs: data
+    if: always()
     runs-on: ubuntu-latest
     container: ghcr.io/dataresearchcenter/datasets:latest
     defaults:
