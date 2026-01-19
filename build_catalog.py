@@ -3,27 +3,75 @@ import httpx
 import fnmatch
 from typing import Annotated, Any, Generator
 
-from anystore.decorators import anycache
 from anystore.io import smart_write
 from anystore.logging import configure_logging
-from ftmq.model import Catalog as BaseCatalog, Dataset
+from ftmq.model import Catalog as BaseCatalog, Dataset as BaseDataset
 from structlog import get_logger
 import typer
 
+
+class Dataset(BaseDataset):
+    """Extended Dataset with aleph_url field."""
+
+    aleph_url: str | None = None
+
 configure_logging()
 log = get_logger("datasets.build_catalog")
-ALEPH_URL = "https://search.openaleph.org/api/2/collections?exclude:category=casefile&facet=countries&facet=category&facet_size:category=1000&facet_size:countries=1000&facet_total:category=true&facet_total:countries=true&limit=30&q={foreign_id}&sort=created_at:desc"
+ALEPH_API = "https://search.openaleph.org/api/2/collections"
+
+# Global lookup for Aleph collections: {foreign_id: ui_url}
+_aleph_lookup: dict[str, str] | None = None
 
 
-@anycache
+def _fetch_aleph_collections() -> dict[str, str]:
+    """Fetch all collections from Aleph with pagination and build lookup."""
+    lookup = {}
+    offset = 0
+    limit = 100
+
+    log.info("Fetching Aleph collections...")
+
+    while True:
+        params = {
+            "exclude:category": "casefile",
+            "limit": limit,
+            "offset": offset,
+        }
+        try:
+            res = httpx.get(ALEPH_API, params=params, timeout=30)
+            res.raise_for_status()
+            data = res.json()
+        except Exception as e:
+            log.error("Failed to fetch Aleph collections", error=str(e))
+            break
+
+        results = ensure_list(data.get("results", []))
+        if not results:
+            break
+
+        for collection in results:
+            foreign_id = collection.get("foreign_id")
+            links = collection.get("links") or {}
+            ui_url = links.get("ui")
+            if foreign_id and ui_url:
+                lookup[foreign_id] = ui_url
+
+        total = data.get("total", 0)
+        offset += limit
+
+        if offset >= total:
+            break
+
+    log.info("Fetched Aleph collections", count=len(lookup))
+    return lookup
+
+
 def get_aleph_url(foreign_id: str) -> str | None:
-    res = httpx.get(ALEPH_URL.format(foreign_id=foreign_id))
-    if res.status_code == 200:
-        data = res.json()
-        for collection in ensure_list(data["results"]):
-            if collection["foreign_id"] == foreign_id:
-                log.info("Found Aleph collection", foreign_id=foreign_id)
-                return collection["links"]["ui"]
+    """Look up Aleph URL for a dataset by foreign_id."""
+    global _aleph_lookup
+    if _aleph_lookup is None:
+        _aleph_lookup = _fetch_aleph_collections()
+    return _aleph_lookup.get(foreign_id)
 
 
 class Catalog(BaseCatalog):
@@ -31,7 +79,7 @@ class Catalog(BaseCatalog):
     exclude_datasets: list[str] = []
     patch_metadata: dict[str, Any] = {}
 
-    def patch_dataset(self, ds: Dataset) -> Dataset:
+    def patch_dataset(self, ds: BaseDataset) -> Dataset:
         prefix = self.patch_metadata.get("dataset_prefix")
         if prefix is not None and ds.name not in self.patch_metadata.get(
             "dataset_prefix_ignore", []
@@ -68,14 +116,16 @@ class MultiCatalog(Catalog):
             yield from catalog.get_datasets()
 
     def serialize(self) -> str:
+        import json
+
         seen = set()
-        catalog = Catalog(name=self.name)
+        datasets = []
         for dataset in self.get_datasets():
             if dataset.name not in seen:
-                catalog.datasets.append(dataset)
+                datasets.append(dataset.model_dump(mode="json"))
                 seen.add(dataset.name)
 
-        return catalog.model_dump_json()
+        return json.dumps({"name": self.name, "datasets": datasets})
 
 
 def main(
