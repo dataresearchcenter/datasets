@@ -1,0 +1,40 @@
+name: br_ocds_seges
+prefix: ocds
+country: br
+title: 'OCDS: Secretaria de Gestão e Inovação (Federal Government)'
+summary: Public procurement data from Secretaria de Gestão e Inovação in OCDS format.
+description: |
+  This dataset contains public procurement records from Secretaria de Gestão e Inovação published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: Secretaria de Gestão e Inovação
+  description: |
+    Secretaria de Gestão e Inovação publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/157/
+  country: br
+  official: true
+url: https://data.open-contracting.org/en/publication/157/
+data:
+  url: https://data.open-contracting.org/en/publication/157/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: daily
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/br_ocds_seges/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/157/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

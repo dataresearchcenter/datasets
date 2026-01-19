@@ -1,0 +1,40 @@
+name: us_ocds_portland
+prefix: ocds
+country: us
+title: 'OCDS: Procurement Services of the City of Portland'
+summary: Public procurement data from City of Portland in OCDS format.
+description: |
+  This dataset contains public procurement records from City of Portland published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: City of Portland
+  description: |
+    City of Portland publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/155/
+  country: us
+  official: true
+url: https://data.open-contracting.org/en/publication/155/
+data:
+  url: https://data.open-contracting.org/en/publication/155/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: weekly
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/us_ocds_portland/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/155/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

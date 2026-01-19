@@ -1,0 +1,51 @@
+name: ca_ocds_buyandsell
+title: Canada - Buyandsell.gc.ca
+prefix: ocds
+country: ca
+summary: |
+  Historical public procurement contracts from Canada's federal government through
+  the Buyandsell.gc.ca portal, covering 2013-2015.
+description: |
+  This dataset contains federal government procurement records from Canada's
+  Buyandsell.gc.ca portal, managed by Public Works and Government Services Canada
+  (PWGSC). The data covers multiple contracting lifecycle stages from April 2013
+  to November 2015.
+
+  The dataset encompasses 102,799 parties, 16,379 tenders with 22,879 items,
+  31,134 awards, 50,107 contracts with 50,111 items, 88,741 documents, and 10,848
+  amendments. Planning activities, tenderers, and milestone records are not included.
+  This is a historical dataset that is no longer updated.
+publisher:
+  name: Public Works and Government Services Canada (PWGSC)
+  description: |
+    Public Works and Government Services Canada is the federal government's central
+    purchasing agent and real property manager. PWGSC operated the Buyandsell.gc.ca
+    procurement portal from 2013 to 2015 before transitioning to other systems.
+  url: https://www.tpsgc-pwgsc.gc.ca/
+  country: ca
+  official: true
+url: https://data.open-contracting.org/en/publication/4
+data:
+  url: https://data.open-contracting.org/en/publication/4/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: never
+category: procurement
+coverage:
+  start: '2013-04-19'
+  end: '2015-11-18'
+license: https://open.canada.ca/en/open-government-licence-canada
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/ca_ocds_buyandsell/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/4/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

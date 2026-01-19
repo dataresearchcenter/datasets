@@ -1,0 +1,49 @@
+name: ca_ocds_montreal
+title: Canada - Ville de Montréal
+prefix: ocds
+country: ca
+summary: |
+  Public procurement contracts from the City of Montreal, Canada's second-largest
+  municipality, including tenders, awards, and contracts.
+description: |
+  This dataset contains public contracts published by the Ville de Montréal through
+  their procurement transparency system. Montreal publishes comprehensive procurement
+  data as part of their open data commitments, covering the full contracting process
+  from planning through to implementation.
+
+  The data includes detailed information about parties, planning, tenders, awards,
+  contracts, documents, milestones, and amendments. Coverage begins in August 2011
+  and continues to present with daily updates.
+publisher:
+  name: Ville de Montréal
+  description: |
+    The City of Montreal is the largest municipality in Quebec and the second-largest
+    in Canada. The city government publishes procurement data as part of its open
+    data and transparency initiatives.
+  url: https://ville.montreal.qc.ca/
+  country: ca
+  official: true
+url: https://data.open-contracting.org/en/publication/21
+data:
+  url: https://data.open-contracting.org/en/publication/21/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: daily
+category: procurement
+coverage:
+  start: '2011-08-01'
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/ca_ocds_montreal/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/21/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

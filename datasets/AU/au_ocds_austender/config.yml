@@ -1,0 +1,51 @@
+name: au_ocds_austender
+title: Australia Department of Finance - AusTender
+prefix: ocds
+country: au
+summary: |
+  Australian federal government procurement contracts from AusTender, the centralized
+  procurement information system covering Commonwealth entities.
+description: |
+  This dataset contains public contracts reported under Commonwealth Procurement Rules
+  by Australian federal government entities. Commonwealth entities must report contracts
+  and amendments within 42 days when valued at or above $10,000 for non-corporate
+  Commonwealth entities, with higher thresholds for corporate entities depending on
+  procurement type.
+
+  The data spans from April 2007 to present and includes comprehensive procurement
+  information including parties, planning, tenders, awards, contracts, documents,
+  milestones, and amendments. Data is retrieved monthly from AusTender.
+publisher:
+  name: Department of Finance (Australia)
+  description: |
+    The Department of Finance is the Australian federal government agency responsible
+    for public sector management including procurement policy and systems. AusTender
+    is the federal government's centralized procurement information system that provides
+    transparency in Commonwealth contracting.
+  url: https://www.tenders.gov.au/
+  country: au
+  official: true
+url: https://data.open-contracting.org/en/publication/19
+data:
+  url: https://data.open-contracting.org/en/publication/19/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: unknown
+category: procurement
+coverage:
+  start: '2007-04-01'
+license: https://creativecommons.org/licenses/by/3.0/au/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/au_ocds_austender/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/19/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

@@ -1,0 +1,43 @@
+name: eu_ocds_institutions
+prefix: ocds
+country: eu
+title: 'OCDS: EU Institutions (OpenTender)'
+summary: Public procurement data from EU institutions in OCDS format via OpenTender.
+description: |
+  This dataset contains public procurement records from European Union institutions
+  published in the Open Contracting Data Standard (OCDS) format. The data includes
+  information about procurement planning, tenders, awards, contracts, and
+  implementation, providing transparency in EU institutional spending and contracting.
+
+  Data is sourced via the OpenTender platform which aggregates and standardizes
+  procurement data across European institutions.
+publisher:
+  name: OpenTender
+  description: |
+    OpenTender publishes public procurement data from EU institutions to promote
+    transparency and accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/94/
+  country: eu
+  official: false
+url: https://data.open-contracting.org/en/publication/94/
+data:
+  url: https://data.open-contracting.org/en/publication/94/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: annually
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/eu_ocds_institutions/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/94/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

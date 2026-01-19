@@ -1,0 +1,40 @@
+name: gb_ocds_find_a_tender_service
+prefix: ocds
+country: gb
+title: 'OCDS: Find a Tender Service'
+summary: Public procurement data from Crown Commercial Service in OCDS format.
+description: |
+  This dataset contains public procurement records from Crown Commercial Service published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: Crown Commercial Service
+  description: |
+    Crown Commercial Service publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/41/
+  country: gb
+  official: true
+url: https://data.open-contracting.org/en/publication/41/
+data:
+  url: https://data.open-contracting.org/en/publication/41/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: daily
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/gb_ocds_find_a_tender_service/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/41/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

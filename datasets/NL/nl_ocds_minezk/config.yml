@@ -1,0 +1,41 @@
+name: nl_ocds_minezk
+prefix: ocds
+country: nl
+title: 'OCDS: Ministry of Economic Affairs and Climate Policy'
+summary: Public procurement data from Ministry of Economic Affairs and Climate Policy
+  in OCDS format.
+description: |
+  This dataset contains public procurement records from Ministry of Economic Affairs and Climate Policy published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: Ministry of Economic Affairs and Climate Policy
+  description: |
+    Ministry of Economic Affairs and Climate Policy publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/133/
+  country: nl
+  official: true
+url: https://data.open-contracting.org/en/publication/133/
+data:
+  url: https://data.open-contracting.org/en/publication/133/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: monthly
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/nl_ocds_minezk/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/133/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

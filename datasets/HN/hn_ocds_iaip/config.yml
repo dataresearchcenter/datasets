@@ -1,0 +1,40 @@
+name: hn_ocds_iaip
+prefix: ocds
+country: hn
+title: 'OCDS: Instituto de Acceso a la Información Pública (IAIP)'
+summary: Public procurement data from IAIP in OCDS format.
+description: |
+  This dataset contains public procurement records from IAIP published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: IAIP
+  description: |
+    IAIP publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/113/
+  country: hn
+  official: true
+url: https://data.open-contracting.org/en/publication/113/
+data:
+  url: https://data.open-contracting.org/en/publication/113/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: unknown
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+resources:
+- name: entities.ftm.json
+  url: https://data.ftm.store/hn_ocds_iaip/entities.ftm.json
+  mime_type: application/json+ftm
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/113/download?name=full.jsonl.gz
+transform:
+  handler: util.ocds.transform:handle

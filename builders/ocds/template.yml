@@ -1,0 +1,26 @@
+name: <country_code>_ocds_<identifier>
+prefix: ocds
+country: <country code>
+title: 
+summary:
+...
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/<name>/entities.ftm.json
+    mime_type: application/json+ftm
+
+
+extract:
+  handler: util.ocds.extract:handle
+  sources:
+    - uri: https://data.open-contracting.org/en/publication/<publication_id>/download?name=full.jsonl.gz
+
+transform:
+  handler: util.ocds.transform:handle

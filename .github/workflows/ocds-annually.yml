@@ -1,0 +1,73 @@
+name: ocds_annually
+
+on:
+  schedule:
+    - cron: "0 3 1 1 *"  # January 1st at 03:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    container: ghcr.io/dataresearchcenter/datasets:latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
+    strategy:
+      fail-fast: false
+      matrix:
+        dataset:
+          - at_ocds_austria
+          - be_ocds_belgium
+          - bg_ocds_bulgaria
+          - bo_ocds_agetic
+          - ch_ocds_switzerland
+          - cy_ocds_cyprus
+          - cz_ocds_czechia
+          - de_ocds_germany
+          - dk_ocds_denmark
+          - ee_ocds_estonia
+          - eu_ocds_institutions
+          - fi_ocds_finland
+          - fr_ocds_france
+          - gb_ocds_uk
+          - ge_ocds_georgia
+          - gr_ocds_greece
+          - hr_ocds_croatia
+          - hu_ocds_hungary
+          - ie_ocds_ireland
+          - in_ocds_assam
+          - is_ocds_iceland
+          - lu_ocds_luxembourg
+          - lv_ocds_latvia
+          - mk_ocds_northmacedonia
+          - mt_ocds_malta
+          - mx_ocds_sea_aguascalientes
+          - nl_ocds_netherlands
+          - no_ocds_norway
+          - pl_ocds_poland
+          - pt_ocds_portugal
+          - rs_ocds_serbia
+          - se_ocds_sweden
+          - si_ocds_slovenia
+          - sk_ocds_slovakia
+          - uy_ocds_arce_hist
+    steps:
+      - name: parse and write the dataset
+        run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
+
+  catalog:
+    needs: data
+    if: always()
+    runs-on: ubuntu-latest
+    container: ghcr.io/dataresearchcenter/datasets:latest
+    defaults:
+      run:
+        working-directory: /datasets
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
+    steps:
+      - name: Update the catalog
+        run: "make publish"
