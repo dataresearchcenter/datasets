@@ -67,3 +67,4 @@ push = true
 [tool.poetry.group.dev.dependencies]
 ipython = "^9.3.0"
 ipdb = "^0.13.13"
+bumpver = "^2025.1131"

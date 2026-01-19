@@ -454,6 +454,24 @@ urllib3 = {version = ">=1.25.4,<2.2.0 || >2.2.0,<3", markers = "python_version >
 crt = ["awscrt (==0.29.0)"]
 
 [[package]]
+name = "bumpver"
+version = "2025.1131"
+description = "Bump version numbers in project files."
+optional = false
+python-versions = ">=2.7"
+groups = ["dev"]
+files = [
+    {file = "bumpver-2025.1131-py2.py3-none-any.whl", hash = "sha256:c02527f6ed7887afbc06c07630047b24a9f9d02d544a65639e99bf8b92aaa674"},
+    {file = "bumpver-2025.1131.tar.gz", hash = "sha256:a35fd2d43a5f65f014035c094866bd3bd6c739606f29fd41246d6ec6e839d3f9"},
+]
+
+[package.dependencies]
+click = {version = "*", markers = "python_version >= \"3.6\""}
+colorama = ">=0.4"
+lexid = "*"
+toml = "*"
+
+[[package]]
 name = "certifi"
 version = "2026.1.4"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -703,7 +721,7 @@ version = "8.3.1"
 description = "Composable command line interface toolkit"
 optional = false
 python-versions = ">=3.10"
-groups = ["main"]
+groups = ["main", "dev"]
 files = [
     {file = "click-8.3.1-py3-none-any.whl", hash = "sha256:981153a64e25f12d547d3426c367a4857371575ee7ad18df2a6183ab0545b2a6"},
     {file = "click-8.3.1.tar.gz", hash = "sha256:12ff4785d337a1bb490bb7e9c2b1ee5da3112e94a8622f26a6c77f5d2fc6842a"},
@@ -753,7 +771,6 @@ files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
-markers = {dev = "sys_platform == \"win32\""}
 
 [[package]]
 name = "datapatch"
@@ -1688,6 +1705,18 @@ groups = ["main"]
 files = [
     {file = "legacy_cgi-2.6.4-py3-none-any.whl", hash = "sha256:7e235ce58bf1e25d1fc9b2d299015e4e2cd37305eccafec1e6bac3fc04b878cd"},
     {file = "legacy_cgi-2.6.4.tar.gz", hash = "sha256:abb9dfc7835772f7c9317977c63253fd22a7484b5c9bbcdca60a29dcce97c577"},
+]
+
+[[package]]
+name = "lexid"
+version = "2021.1006"
+description = "Variable width build numbers with lexical ordering."
+optional = false
+python-versions = ">=2.7"
+groups = ["dev"]
+files = [
+    {file = "lexid-2021.1006-py2.py3-none-any.whl", hash = "sha256:5526bb5606fd74c7add23320da5f02805bddd7c77916f2dc1943e6bada8605ed"},
+    {file = "lexid-2021.1006.tar.gz", hash = "sha256:509a3a4cc926d3dbf22b203b18a4c66c25e6473fb7c0e0d30374533ac28bafe5"},
 ]
 
 [[package]]
@@ -4481,6 +4510,18 @@ files = [
 ]
 
 [[package]]
+name = "toml"
+version = "0.10.2"
+description = "Python Library for Tom's Obvious, Minimal Language"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+groups = ["dev"]
+files = [
+    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
+    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
+]
+
+[[package]]
 name = "tqdm"
 version = "4.67.1"
 description = "Fast, Extensible Progress Meter"
@@ -4925,4 +4966,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4"
-content-hash = "0833e9266d6611710e78d1984bb1db9c0c62330e38979aaef6149a71c68082f3"
+content-hash = "c944154831c1bc3a217d9d638c72619bc30d954c3642269af2f2e3f967c39c20"
