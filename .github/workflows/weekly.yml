@@ -17,6 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         dataset:
+          - de_bnetza_mastr
           - worldbank_ifc_advisory_services
           - worldbank_ifc_investment_services
           - worldbank_procurement_awards

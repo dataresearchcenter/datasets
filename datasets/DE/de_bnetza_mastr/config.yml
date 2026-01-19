@@ -1,0 +1,37 @@
+name: de_bnetza_mastr
+title: Marktstammdatenregister der Bundesnetzagentur (MaStR)
+prefix: de-bnetza
+country: de
+
+summary: |
+  Public market participants registered with the German Federal Network Agency (Bundesnetzagentur).
+
+description: |
+  The Marktstammdatenregister (MaStR) is the core register for the German energy market.
+  It contains data on market participants such as grid operators, electricity producers,
+  and energy suppliers. This dataset extracts publicly available information about
+  registered market actors including their registration details, market functions,
+  and activity status.
+
+publisher:
+  name: Bundesnetzagentur
+  description: |
+    The Bundesnetzagentur (Federal Network Agency) is the German regulatory
+    authority for electricity, gas, telecommunications, postal, and railway markets.
+  url: https://www.bundesnetzagentur.de
+  country: de
+  official: true
+
+url: https://www.marktstammdatenregister.de/MaStR/Akteur/Marktakteur/IndexOeffentlich
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/de_bnetza_mastr/entities.ftm.json
+    mime_type: application/json+ftm
+
+extract:
+  sources:
+    - uri: https://www.marktstammdatenregister.de/MaStR/Akteur/MarktakteurJson/GetOeffentlicheMarktakteure
+  handler: ./extract.py:handle
+
+transform:
+  handler: ./transform.py:handle
