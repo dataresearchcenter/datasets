@@ -2,7 +2,7 @@ name: catalog
 
 on:
   schedule:
-    - cron: "13 * * * *"
+    - cron: "13 */12 * * *"
   workflow_dispatch: {}
 
 jobs:
