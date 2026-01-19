@@ -6,11 +6,11 @@ datasets:
   - from_uri: https://data.ftm.store/us_cpr/index.json
 
 include_catalogs:
-  - from_uri: ./catalogs/ocds.yml
   - from_uri: ./catalogs/opensanctions.json
+  - from_uri: ./catalogs/investigraph-eu.yml
   - from_uri: ./catalogs/worldbank.json
   - from_uri: ./catalogs/reference-dach.json
-  - from_uri: ./catalogs/investigraph-eu.yml
+  # - from_uri: ./catalogs/ocds.yml
     patch_metadata:
       tags:
         - investigraph.eu
