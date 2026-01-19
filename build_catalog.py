@@ -60,7 +60,7 @@ class Catalog(BaseCatalog):
 
 
 class MultiCatalog(Catalog):
-    include_catalogs: list[Catalog]
+    include_catalogs: list[Catalog] = []
 
     def get_datasets(self) -> Generator[Dataset, None, None]:
         yield from super().get_datasets()
