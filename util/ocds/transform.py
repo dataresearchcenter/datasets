@@ -36,6 +36,20 @@ def clean_date(date):
     return date
 
 
+def safe_slug(ctx, *parts):
+    """Create a slug from parts, filtering out empty values.
+
+    Returns None if not enough valid parts to create a unique ID.
+    """
+    clean_parts = [str(p).strip() for p in parts if p is not None and str(p).strip()]
+    if len(clean_parts) >= 2:  # Need at least prefix + one identifier
+        try:
+            return ctx.make_slug(*clean_parts)
+        except ValueError:
+            pass
+    return None
+
+
 def get_field_value(data, fields):
     """Extract value from first matching field."""
     if not is_mapping(data):
@@ -66,14 +80,18 @@ def make_organization(ctx, party_data):
 
     # Determine schema
     schema = determine_org_schema(party_data)
-    org = ctx.make_entity(schema)
 
     # Generate ID from OCDS party ID
     party_id = party_data.get("id")
     if not party_id:
         return None, None, None, None, None
 
-    org.id = ctx.make_slug("party", party_id)
+    entity_id = safe_slug(ctx, "party", party_id)
+    if not entity_id:
+        return None, None, None, None, None
+
+    org = ctx.make_entity(schema)
+    org.id = entity_id
 
     # Add name
     name = get_field_value(party_data, NAME_FIELDS)
@@ -93,7 +111,6 @@ def make_organization(ctx, party_data):
 
         # Create Identification entity
         if id_value and scheme:
-            identification = ctx.make_entity("Identification")
             country = None
 
             # Get country from address first
@@ -107,15 +124,18 @@ def make_organization(ctx, party_data):
 
             # Generate ID
             if country:
-                identification.id = ctx.make_slug("id", country, scheme, id_value)
+                id_entity_id = safe_slug(ctx, "id", country, scheme, id_value)
             else:
-                identification.id = ctx.make_slug("id", scheme, id_value)
+                id_entity_id = safe_slug(ctx, "id", scheme, id_value)
 
-            identification.add("number", id_value)
-            identification.add("type", scheme)
-            identification.add("holder", org)
-            identification.add("country", country)
-            identification.add("authority", identifier_data.get("uri"))
+            if id_entity_id:
+                identification = ctx.make_entity("Identification")
+                identification.id = id_entity_id
+                identification.add("number", id_value)
+                identification.add("type", scheme)
+                identification.add("holder", org)
+                identification.add("country", country)
+                identification.add("authority", identifier_data.get("uri"))
 
     # Create Address entity
     address_entity = None
@@ -181,8 +201,12 @@ def make_call_for_tenders(ctx, ocid, tender_data, buyer_entity):
     if not is_mapping(tender_data):
         return None
 
+    entity_id = safe_slug(ctx, "tender", ocid)
+    if not entity_id:
+        return None
+
     cft = ctx.make_entity("CallForTenders")
-    cft.id = ctx.make_slug("tender", ocid)
+    cft.id = entity_id
 
     # Add basic info
     title = get_field_value(tender_data, NAME_FIELDS)
@@ -212,8 +236,12 @@ def make_call_for_tenders(ctx, ocid, tender_data, buyer_entity):
 
 def make_contract(ctx, ocid, contract_id, contract_data, call_for_tenders):
     """Create Contract entity from OCDS contract data."""
+    entity_id = safe_slug(ctx, "contract", ocid, contract_id)
+    if not entity_id:
+        return None
+
     contract = ctx.make_entity("Contract")
-    contract.id = ctx.make_slug("contract", ocid, contract_id)
+    contract.id = entity_id
 
     # Add basic info
     title = get_field_value(contract_data, NAME_FIELDS)
@@ -236,8 +264,12 @@ def make_contract_award(
     ctx, ocid, award_id, award_data, contract_entity, call_for_tenders
 ):
     """Create ContractAward entity from OCDS award data."""
+    entity_id = safe_slug(ctx, "award", ocid, award_id)
+    if not entity_id:
+        return None
+
     award = ctx.make_entity("ContractAward")
-    award.id = ctx.make_slug("award", ocid, award_id)
+    award.id = entity_id
 
     # Link to contract and tender
     award.add("contract", contract_entity)
@@ -350,6 +382,9 @@ def handle(ctx, record, ix):
         contract = make_contract(
             ctx, ocid, contract_id, contract_data, call_for_tenders
         )
+        if not contract:
+            continue
+
         contract_entities[contract_id] = contract
 
         # Link buyer
@@ -387,6 +422,9 @@ def handle(ctx, record, ix):
         award = make_contract_award(
             ctx, ocid, award_id, award_data, contract, call_for_tenders
         )
+        if not award:
+            continue
+
         award_entities[award_id] = award
 
         # Link suppliers
