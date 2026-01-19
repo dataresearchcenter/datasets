@@ -1,34 +1,56 @@
-name: corporate_prosecution_registry
+name: us_cpr
 title: Corporate Prosecution Registry
-country: us
 prefix: us-cpr
+country: us
+
+summary: |
+  Comprehensive database of federal organizational prosecutions in the United States,
+  including deferred and non-prosecution agreements since 1990.
+
 description: |
   The Corporate Prosecution Registry is a joint project of the Legal Data Lab
-  at the University of Virginia School of Law and Duke University School of
-  Law. The goal of this Corporate Prosecution Registry is to provide
-  comprehensive and up-to-date information on federal organizational
-  prosecutions in the United States, so that we can better understand how
-  corporate prosecutions are brought and resolved. We include detailed
-  information about every federal organizational prosecution since 2001, as
-  well as deferred and non-prosecution agreements with organizations since
-  1990.
-publisher:
-  name: Corporate Prosecution Registry
-  url: https://corporate-prosecution-registry.com/
-maintainer:
-  name: DARC
-  url: https://dataresearchcenter.org
-  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
-git_repo: https://github.com/dataresearchcenter/datasets
-content_type: structured
+  at the University of Virginia School of Law and Duke University School of Law.
+
+  The registry provides detailed information about every federal organizational
+  prosecution since 2001, as well as deferred and non-prosecution agreements
+  with organizations since 1990. Data includes the company name, case details,
+  court case numbers, filing dates, and primary crime codes.
+
+  This dataset helps researchers, journalists, and policymakers understand how
+  corporate prosecutions are brought and resolved in the US federal court system.
+
+coverage:
+  start: "1990"
+  countries:
+    - us
+  frequency: monthly
+
 category: court
-frequency: monthly
 
 resources:
   - name: entities.ftm.json
     url: https://data.ftm.store/us_cpr/entities.ftm.json
     mime_type: application/json+ftm
-  
+
+publisher:
+  name: Corporate Prosecution Registry
+  description: |
+    The Corporate Prosecution Registry is a joint project of the Legal Data Lab
+    at the University of Virginia School of Law and Duke University School of Law,
+    providing comprehensive data on federal organizational prosecutions.
+  url: https://corporate-prosecution-registry.com/
+  country: us
+  official: true
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+
+git_repo: https://github.com/dataresearchcenter/datasets
+
+license: https://creativecommons.org/licenses/by/4.0/
+
 extract:
   sources:
     - uri: https://corporate-prosecution-registry.com/media/corp-crime.csv
