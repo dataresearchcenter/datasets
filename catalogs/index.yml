@@ -10,7 +10,7 @@ include_catalogs:
   - from_uri: ./catalogs/opensanctions.json
   - from_uri: ./catalogs/worldbank.json
   - from_uri: ./catalogs/reference-dach.json
-  - from_uri: https://data.ftm.store/investigraph.eu.json
+  - from_uri: ./catalogs/investigraph-eu.yml
     patch_metadata:
       tags:
         - investigraph.eu
