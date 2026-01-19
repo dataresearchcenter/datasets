@@ -43,7 +43,6 @@ jobs:
           - py_ocds_ministerio_de_hacienda
           - rw_ocds_rppa
           - tz_ocds_ppra
-          - ua_ocds_prozorro
           - uy_ocds_arce_api
           # Weekly
           - es_ocds_spain
@@ -126,6 +125,7 @@ jobs:
           - xk_ocds_pprc
           - za_ocds_national_treasury
           # Never (no longer updated - historical data)
+          - ua_ocds_prozorro
           - ca_ocds_buyandsell
           - co_ocds_ani
           - ge_ocds_state_procurement_agency

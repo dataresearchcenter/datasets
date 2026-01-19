@@ -44,7 +44,6 @@ jobs:
           - py_ocds_ministerio_de_hacienda
           - rw_ocds_rppa
           - tz_ocds_ppra
-          - ua_ocds_prozorro
           - uy_ocds_arce_api
     steps:
       - name: parse and write the dataset
