@@ -27,7 +27,7 @@ dependencies = [
     "pygit2 (>=1.18.0,<2.0.0)",
     "ftfy (>=6.3.1,<7.0.0)",
     "lzip (>=1.2.0,<2.0.0)",
-    "investigraph (>=0.7.0,<0.8.0)",
+    "investigraph (>=0.7.1,<0.8.0)",
     "memorious @ git+https://github.com/dataresearchcenter/memorious@v3.0.1",
 ]
 

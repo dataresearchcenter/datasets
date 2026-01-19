@@ -307,14 +307,14 @@ trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python
 
 [[package]]
 name = "anystore"
-version = "0.4.2"
+version = "0.4.3"
 description = "Store and cache things anywhere"
 optional = false
 python-versions = "<4,>=3.11"
 groups = ["main"]
 files = [
-    {file = "anystore-0.4.2-py3-none-any.whl", hash = "sha256:ffb9878af8aeb438842824f46fb637eb9fa5122a898b8b80da33f8d4db3c5c8f"},
-    {file = "anystore-0.4.2.tar.gz", hash = "sha256:5b78ed954a602261478207622c908cc64f3f5fbe0f471d54a707a3dd51ed9e00"},
+    {file = "anystore-0.4.3-py3-none-any.whl", hash = "sha256:b642fb64ed67084e0b190b2c3700d53ca902ceedf89c926848acd936e0a06132"},
+    {file = "anystore-0.4.3.tar.gz", hash = "sha256:bda81e8231908ba4dbecc6c40c2b5bf185548ebf4382c0c150d007c622dc0f4c"},
 ]
 
 [package.dependencies]
@@ -1161,30 +1161,30 @@ wcwidth = "*"
 
 [[package]]
 name = "ftmq"
-version = "4.3.4"
+version = "4.5.0"
 description = "followthemoney query dsl and io helpers"
 optional = false
 python-versions = "<4,>=3.11"
 groups = ["main"]
 files = [
-    {file = "ftmq-4.3.4-py3-none-any.whl", hash = "sha256:41c6dbc8f3b869cd358a4d81e416926ef854cd657fc52045d40376f0efc8b4ab"},
-    {file = "ftmq-4.3.4.tar.gz", hash = "sha256:c44c5d38940271deb9ae1ac210232195303bedec47c68dee6ed65acc2d108915"},
+    {file = "ftmq-4.5.0-py3-none-any.whl", hash = "sha256:3b03d3d7a74ef3f0e8ae6def011c1ec8c914886a6892e96bec19ef06dfb05d35"},
+    {file = "ftmq-4.5.0.tar.gz", hash = "sha256:0571f313d18a8a5ee926f7cdf5b90cda06edcce8e5544fdf58fe4b8316d6fe68"},
 ]
 
 [package.dependencies]
-anystore = ">=0.4.2,<0.5.0"
+anystore = ">=0.4.3,<0.5.0"
 click = ">=8.2.1,<9.0.0"
 click-default-group = ">=1.2.4,<2.0.0"
-followthemoney = ">=4.3.4,<5.0.0"
-nomenklatura = ">=4.3.2,<5.0.0"
+followthemoney = ">=4.5.0,<5.0.0"
+nomenklatura = ">=4.5.3,<5.0.0"
 orjson = ">=3.10.18,<4.0.0"
 pydantic = ">=2.11.3,<3.0.0"
 pyicu = ">=2.15.2,<3.0.0"
-rigour = ">=1.5.0,<2.0.0"
+rigour = ">=1.6.1,<2.0.0"
 
 [package.extras]
 aleph = ["alephclient (>=2.6.0,<3.0.0)", "furl (>=2.1.4,<3.0.0)"]
-lake = ["deltalake (>=1.2.1,<2.0.0)", "duckdb (>=1.4.1,<2.0.0)", "pandas (>=2.3.3,<3.0.0)", "pyarrow (>=21.0.0,<22.0.0)"]
+lake = ["deltalake (>=1.3.2,<2.0.0)", "duckdb (>=1.4.3,<2.0.0)", "pandas (>=2.3.3,<3.0.0)", "pyarrow (>=22.0.0,<23.0.0)"]
 level = ["plyvel (>=1.5.1,<2.0.0)"]
 postgres = ["psycopg[pool] (>=3.2.9,<4.0.0)", "sqlalchemy (>=2.0.36,<3.0.0)"]
 redis = ["fakeredis (>=2.26.2,<3.0.0)", "redis (>=5.2.1,<6.0.0)"]
@@ -1434,22 +1434,22 @@ files = [
 
 [[package]]
 name = "investigraph"
-version = "0.7.0"
+version = "0.7.1"
 description = "etl pipeline for investigations with follow the money data"
 optional = false
 python-versions = "<4,>=3.11"
 groups = ["main"]
 files = [
-    {file = "investigraph-0.7.0-py3-none-any.whl", hash = "sha256:aab1dce3768a7624c590446e1bf6125bed20b30739a019f7bc653f6fb06a39ca"},
-    {file = "investigraph-0.7.0.tar.gz", hash = "sha256:3b94156bc90a39a4cb2ff67a7e22885e6d842ce5aab8ad476fdc8c1379a2bc13"},
+    {file = "investigraph-0.7.1-py3-none-any.whl", hash = "sha256:1fc43d9f2b594531cfcd6414c5c1ff8cb47fa6aa089cfd697e82be0e1af6f346"},
+    {file = "investigraph-0.7.1.tar.gz", hash = "sha256:f4bd67573ba2efdf9d36a2ec1daa7e829f8fd72491533ef1b9650e59e5f2e73a"},
 ]
 
 [package.dependencies]
-anystore = ">=0.4.0,<0.5.0"
+anystore = ">=0.4.3,<0.5.0"
 dateparser = ">=1.2.1,<2.0.0"
-followthemoney = ">=4.3.3,<5.0.0"
-ftmq = ">=4.3.2,<5.0.0"
-runpandarun = ">=0.6.0,<0.7.0"
+followthemoney = ">=4.5.0,<5.0.0"
+ftmq = ">=4.5.0,<5.0.0"
+runpandarun = ">=0.6.1,<0.7.0"
 
 [package.extras]
 level = ["plyvel (>=1.5.1,<2.0.0)"]
@@ -2948,14 +2948,14 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "phonenumbers"
-version = "9.0.21"
+version = "9.0.22"
 description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
 optional = false
 python-versions = ">=2.5"
 groups = ["main"]
 files = [
-    {file = "phonenumbers-9.0.21-py2.py3-none-any.whl", hash = "sha256:3a0f717fddf901a5a424f47c43fb72722cb45bd25ee87331987b00eafe6855bf"},
-    {file = "phonenumbers-9.0.21.tar.gz", hash = "sha256:df4145cba0a8b3ee9c425d5d9b5dbe1b4fceccc68b030ac549ea13c95592b602"},
+    {file = "phonenumbers-9.0.22-py2.py3-none-any.whl", hash = "sha256:645e66cd9a136b3b257b5f941fa97d324124114d31ad3c9f2488682f47ad7ee1"},
+    {file = "phonenumbers-9.0.22.tar.gz", hash = "sha256:eff985c65575749d1d54e07c56c3517d5243e03e08e4a6191761df9aab2278f2"},
 ]
 
 [[package]]
@@ -3595,6 +3595,13 @@ optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
+    {file = "PyYAML-6.0.3-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:c2514fceb77bc5e7a2f7adfaa1feb2fb311607c9cb518dbc378688ec73d8292f"},
+    {file = "PyYAML-6.0.3-cp38-cp38-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:9c57bb8c96f6d1808c030b1687b9b5fb476abaa47f0db9c0101f5e9f394e97f4"},
+    {file = "PyYAML-6.0.3-cp38-cp38-manylinux2014_s390x.manylinux_2_17_s390x.manylinux_2_28_s390x.whl", hash = "sha256:efd7b85f94a6f21e4932043973a7ba2613b059c4a000551892ac9f1d11f5baf3"},
+    {file = "PyYAML-6.0.3-cp38-cp38-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:22ba7cfcad58ef3ecddc7ed1db3409af68d023b7f940da23c6c2a1890976eda6"},
+    {file = "PyYAML-6.0.3-cp38-cp38-musllinux_1_2_x86_64.whl", hash = "sha256:6344df0d5755a2c9a276d4473ae6b90647e216ab4757f8426893b5dd2ac3f369"},
+    {file = "PyYAML-6.0.3-cp38-cp38-win32.whl", hash = "sha256:3ff07ec89bae51176c0549bc4c63aa6202991da2d9a6129d7aef7f1407d3f295"},
+    {file = "PyYAML-6.0.3-cp38-cp38-win_amd64.whl", hash = "sha256:5cf4e27da7e3fbed4d6c3d8e797387aaad68102272f8f9752883bc32d61cb87b"},
     {file = "pyyaml-6.0.3-cp310-cp310-macosx_10_13_x86_64.whl", hash = "sha256:214ed4befebe12df36bcc8bc2b64b396ca31be9304b8f59e25c11cf94a4c033b"},
     {file = "pyyaml-6.0.3-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:02ea2dfa234451bbb8772601d7b8e426c2bfa197136796224e50e35a78777956"},
     {file = "pyyaml-6.0.3-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:b30236e45cf30d2b8e7b3e85881719e98507abed1011bf463a8fa23e9c3e98a8"},
@@ -4045,20 +4052,20 @@ docs = ["cairosvg", "mkdocs", "mkdocs-material", "mkdocstrings[python]", "pillow
 
 [[package]]
 name = "runpandarun"
-version = "0.6.0"
+version = "0.6.1"
 description = "Tell pandas what to do – easy tabular data I/O playbooks"
 optional = false
 python-versions = "<4,>=3.10"
 groups = ["main"]
 files = [
-    {file = "runpandarun-0.6.0-py3-none-any.whl", hash = "sha256:eca086fe32197da0ace28cebe8f1b07d6b5facdfa813213dc827949433ef845d"},
-    {file = "runpandarun-0.6.0.tar.gz", hash = "sha256:933f6332eec02f0956fc67c817ddf5121118e2b16a7b4f9ae5b1058ac52fe6c7"},
+    {file = "runpandarun-0.6.1-py3-none-any.whl", hash = "sha256:d783da22285a76760b34c928063e893e85ed4d86c5a009227db885144c192317"},
+    {file = "runpandarun-0.6.1.tar.gz", hash = "sha256:f296b2e4cc98be76a45b0c4f46c1e6cd723f735a73df1f677804acd2cd3d1877"},
 ]
 
 [package.dependencies]
 banal = ">=1.0.6,<2.0.0"
 datapatch = ">=1.2.4,<2.0.0"
-fsspec = ">=2025.3.2,<2026.0.0"
+fsspec = ">=2025.3.2,<2027.0.0"
 normality = ">=3.0.2,<4.0.0"
 openpyxl = ">=3.1.5,<4.0.0"
 orjson = ">=3.11.4,<4.0.0"
@@ -4066,8 +4073,8 @@ pandas = ">=2.3.3,<3.0.0"
 pydantic = ">=2.12.4,<3.0.0"
 pyicu = ">=2.16,<3.0"
 requests = ">=2.32.5,<3.0.0"
-rigour = ">=1.4.1,<2.0.0"
-s3fs = ">=2025.10.0,<2026.0.0"
+rigour = ">=1.6.1,<2.0.0"
+s3fs = ">=2025.10.0,<2027.0.0"
 sqlalchemy = ">=2.0.44,<3.0.0"
 typer = ">=0.20.0,<0.21.0"
 xlrd = ">=2.0.2,<3.0.0"
@@ -4274,14 +4281,14 @@ files = [
 
 [[package]]
 name = "soupsieve"
-version = "2.8.1"
+version = "2.8.2"
 description = "A modern CSS selector implementation for Beautiful Soup."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "soupsieve-2.8.1-py3-none-any.whl", hash = "sha256:a11fe2a6f3d76ab3cf2de04eb339c1be5b506a8a47f2ceb6d139803177f85434"},
-    {file = "soupsieve-2.8.1.tar.gz", hash = "sha256:4cf733bc50fa805f5df4b8ef4740fc0e0fa6218cf3006269afd3f9d6d80fd350"},
+    {file = "soupsieve-2.8.2-py3-none-any.whl", hash = "sha256:0f4c2f6b5a5fb97a641cf69c0bd163670a0e45e6d6c01a2107f93a6a6f93c51a"},
+    {file = "soupsieve-2.8.2.tar.gz", hash = "sha256:78a66b0fdee2ab40b7199dc3e747ee6c6e231899feeaae0b9b98a353afd48fd8"},
 ]
 
 [[package]]
@@ -4918,4 +4925,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4"
-content-hash = "5668ecbb947bbb4f96f64eb57e5cc95233d03423b25589d1371be398df1f232f"
+content-hash = "0833e9266d6611710e78d1984bb1db9c0c62330e38979aaef6149a71c68082f3"
