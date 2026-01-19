@@ -1,6 +1,6 @@
 name: no_ocds_norway
 prefix: ocds
-country: false
+country: "no"
 title: 'OCDS: OpenTender Norway'
 summary: Public procurement data from OpenTender in OCDS format.
 description: |
@@ -14,7 +14,7 @@ publisher:
     OpenTender publishes public procurement data to promote transparency and
     accountability in government contracting.
   url: https://data.open-contracting.org/en/publication/72/
-  country: false
+  country: "no"
   official: true
 url: https://data.open-contracting.org/en/publication/72/
 data:
