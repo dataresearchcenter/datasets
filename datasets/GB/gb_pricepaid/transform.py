@@ -24,7 +24,7 @@ def getNew(code):
 
 
 def handle(ctx: SourceContext, record: Record, ix: int):
-    proxy = ctx.make_proxy("RealEstate")
+    proxy = ctx.make_entity("RealEstate")
     address = f"{record['houseNumber']} {record['street']}, {record['locality']}, {record['city']} {record['postalCode']}, {record['district']}, {record['county']}, Great Britain"
     proxy.id = ctx.make_fingerprint_id(address)
     proxy.add("address", address)

@@ -1,31 +1,35 @@
-from investigraph.model import Context
-from typing import Any, Generator
-import requests
-import zipfile
-import os
+"""Extract stage for GB OCOD dataset.
+
+Downloads the ZIP file via ctx.open() (with archiving/retry) and extracts CSV records.
+"""
+
 import csv
+import zipfile
+from io import BytesIO, TextIOWrapper
 
-def download(lnk):
-	response = requests.get(lnk)
-	with open("/tmp/latest.zip", "wb") as f:
-		f.write(response.content)
+from investigraph.model import SourceContext
+from investigraph.types import RecordGenerator
 
-def unpack():
-	with zipfile.ZipFile("/tmp/latest.zip", 'r') as arch:
-		arch.extractall("/tmp/")
 
-def handle(ctx: Context) -> Generator[dict[str, Any], None, None]:
-	uri = ctx.source.uri
-	headers = {"Authorization": f"{os.getenv('GB_OCOD_KEY')}", "Accept": "application/json"}
-	res = requests.get(uri, headers=headers)
-	data = res.json()
-	resource_name = [f for f in data['result'].get('resources') if f['name']=="Full File"][0]['file_name']
-	resource_link = requests.get(f"{uri}/{resource_name}", headers=headers).json().get('result', {}).get('download_url')
-	download(resource_link)
-	unpack()
-	filename = f"/tmp/{os.path.splitext(resource_name)[0]}.csv"
-	with open(filename, newline='') as csvfile:
-		reader = csv.DictReader(csvfile)
-		for row in reader:
-			yield {key: (None if value == "" else value) for key, value in row.items()}
+def handle(ctx: SourceContext) -> RecordGenerator:
+    """Extract records from the archived ZIP file."""
+    ctx.log.info("Downloading ZIP file", source=ctx.source.uri)
 
+    with ctx.open() as fh:
+        # Read ZIP content into memory
+        zip_content = BytesIO(fh.read())
+
+    with zipfile.ZipFile(zip_content) as zf:
+        # Find the CSV file in the archive
+        csv_files = [f for f in zf.namelist() if f.endswith(".csv")]
+        if not csv_files:
+            ctx.log.error("No CSV file found in ZIP")
+            return
+
+        csv_filename = csv_files[0]
+        ctx.log.info("Processing CSV", filename=csv_filename)
+
+        with zf.open(csv_filename) as csv_file:
+            reader = csv.DictReader(TextIOWrapper(csv_file, encoding="utf-8"))
+            for row in reader:
+                yield {key: (None if value == "" else value) for key, value in row.items()}

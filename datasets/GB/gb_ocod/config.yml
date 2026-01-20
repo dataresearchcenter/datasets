@@ -25,9 +25,11 @@ maintainer:
   url: https://dataresearchcenter.org
   logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
 
+seed:
+  handler: ./seed.py:handle
+  uri: https://use-land-property-data.service.gov.uk/api/v1/datasets/ocod
+
 extract:
-  sources:
-    - uri: https://use-land-property-data.service.gov.uk/api/v1/datasets/ocod
   handler: ./extract.py:handle
 
 transform:
