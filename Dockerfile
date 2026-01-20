@@ -42,3 +42,5 @@ ENTRYPOINT [ "" ]
 
 ENV INVESTIGRAPH_ARCHIVE_URI=s3://memorious/investigraph
 ENV ANYSTORE_URI=memory://
+ENV FSSPEC_HTTPS='{"client_kwargs": {"timeout": {"total": 3600}}}'
+ENV FSSPEC_HTTP='{"client_kwargs": {"timeout": {"total": 3600}}}'
