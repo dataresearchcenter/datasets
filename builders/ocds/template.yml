@@ -18,9 +18,9 @@ resources:
 
 
 extract:
-  handler: util.ocds.extract:handle
+  handler: common.ocds.extract:handle
   sources:
     - uri: https://data.open-contracting.org/en/publication/<publication_id>/download?name=full.jsonl.gz
 
 transform:
-  handler: util.ocds.transform:handle
+  handler: common.ocds.transform:handle

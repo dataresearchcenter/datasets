@@ -1,6 +1,6 @@
 from ftmq.types import CE, CEGenerator, SDict
 from ftmq.util import make_fingerprint, get_country_code, make_proxy, to_numeric
-from investigraph.model import Context
+from investigraph.model import SourceContext
 
 
 EU = make_proxy(
@@ -12,13 +12,13 @@ EU = make_proxy(
 )
 
 
-def ensure_publisher(ctx: Context, proxy: CE) -> CE:
+def ensure_publisher(ctx: SourceContext, proxy: CE) -> CE:
     proxy.add("publisher", ctx.config.dataset.publisher.name)
     proxy.add("publisherUrl", ctx.config.dataset.publisher.url)
     return proxy
 
 
-def make_project(ctx: Context, record: SDict, ident: str | None = "projectID") -> CE:
+def make_project(ctx: SourceContext, record: SDict, ident: str | None = "projectID") -> CE:
     project = ctx.make("Project")
     ident = record.pop(ident)
     project.id = ctx.make_slug(ident)
@@ -26,14 +26,14 @@ def make_project(ctx: Context, record: SDict, ident: str | None = "projectID") -
     return project
 
 
-def parse_euroscivoc(ctx: Context, record: SDict):
+def parse_euroscivoc(ctx: SourceContext, record: SDict):
     project = make_project(ctx, record)
     project.add("keywords", record.pop("euroSciVocPath").split("/"))
 
     ctx.emit(project)
 
 
-def parse_legalbasis(ctx: Context, record: SDict):
+def parse_legalbasis(ctx: SourceContext, record: SDict):
     project = make_project(ctx, record)
     program, name = record.pop("legalBasis"), record.pop("title")
     project.add("program", f"{program} - {name}")
@@ -41,14 +41,14 @@ def parse_legalbasis(ctx: Context, record: SDict):
     ctx.emit(project)
 
 
-def parse_urls(ctx: Context, record: SDict):
+def parse_urls(ctx: SourceContext, record: SDict):
     project = make_project(ctx, record)
     project.add("sourceUrl", record.pop("physUrl"))
 
     ctx.emit(project)
 
 
-def parse_project(ctx: Context, record: SDict):
+def parse_project(ctx: SourceContext, record: SDict):
     project = make_project(ctx, record, "id")
     acronym, name = record.pop("acronym"), record.pop("title")
     project.add("name", f"{acronym} - {name}")
@@ -98,7 +98,7 @@ SCHEMAS = {
 }
 
 
-def parse_organization(ctx: Context, record: SDict):
+def parse_organization(ctx: SourceContext, record: SDict):
     schema, legal_form = SCHEMAS.get(record.pop("activityType"), ("LegalEntity", None))
     proxy = ctx.make(schema)
     country = record.pop("country").lower()
@@ -161,7 +161,7 @@ HANDLERS = {
 }
 
 
-def handle(ctx: Context, record: SDict, ix: int) -> CEGenerator:
+def handle(ctx: SourceContext, record: SDict, ix: int) -> CEGenerator:
     ctx = ctx.task()
     handler = HANDLERS.get(record.pop("_type"))
     if handler:

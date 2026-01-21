@@ -26,10 +26,10 @@ poetry install
 The transformer is designed to work as an investigraph transform handler:
 
 ```python
-from util.ocds.transform import handle
+from common.ocds.transform import handle
 
 # In your dataset's transform.py:
-from util.ocds.transform import handle
+from common.ocds.transform import handle
 
 # Or use it directly:
 # (investigraph will call it with ctx, record, ix)
@@ -45,14 +45,14 @@ extract:
   handler: ./extract.py:handle
 
 transform:
-  handler: util.ocds.transform:handle
+  handler: common.ocds.transform:handle
 ```
 
 ### Direct usage
 
 ```python
 from investigraph.model import SourceContext
-from util.ocds.transform import handle
+from common.ocds.transform import handle
 
 # Mock or real investigraph context
 ctx = SourceContext(...)

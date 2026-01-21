@@ -5,7 +5,7 @@ USER root
 
 # Copy only files needed for pip install
 COPY pyproject.toml setup.py README.md /datasets/
-COPY util /datasets/util
+COPY common /datasets/common
 
 # Create required structure and install
 RUN mkdir -p /datasets/datasets && \
@@ -42,3 +42,4 @@ ENTRYPOINT [ "" ]
 
 ENV INVESTIGRAPH_ARCHIVE_URI=s3://memorious/investigraph
 ENV ANYSTORE_URI=memory://
+ENV INVESTIGRAPH_HTTP_TIMEOUT=3600

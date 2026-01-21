@@ -33,8 +33,8 @@ resources:
   url: https://data.ftm.store/hr_ocds_croatia/entities.ftm.json
   mime_type: application/json+ftm
 extract:
-  handler: util.ocds.extract:handle
+  handler: common.ocds.extract:handle
   sources:
   - uri: https://data.open-contracting.org/en/publication/45/download?name=full.jsonl.gz
 transform:
-  handler: util.ocds.transform:handle
+  handler: common.ocds.transform:handle
