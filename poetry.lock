@@ -950,13 +950,13 @@ dev = ["build", "bump2version", "coverage (>=4.1)", "mypy", "pytest", "pytest-co
 
 [[package]]
 name = "followthemoney"
-version = "4.5.0"
+version = "4.5.1"
 description = "A data model for anti corruption data modeling and analysis."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "followthemoney-4.5.0-py3-none-any.whl", hash = "sha256:3cbd708f980e1bfe1ba9381817a8f539c9d02ce5becc3134fa360774002854e1"},
+    {file = "followthemoney-4.5.1-py3-none-any.whl", hash = "sha256:1407e6d89d6401938d49b004dc1aa1d2794f18fb88dcf42a96d18cf0ea9d182a"},
 ]
 
 [package.dependencies]
