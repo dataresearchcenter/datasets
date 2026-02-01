@@ -26,7 +26,7 @@ data_url: https://fragdenstaat.de/api/
 
 pipeline:
   init:
-    method: de_fragdenstaat:seed
+    method: ./operations.py:seed
     params:
       url: https://fragdenstaat.de/api/v1/document
     handle:
@@ -38,9 +38,9 @@ pipeline:
       pass: store
 
   store:
-    method: utils.operations:store
-
-leakrfc:
-  sync:
-    memorious:
-      key_template: "{{ publicbody.jurisdiction | default('unknown') }}/{{ publicbody.name | default('unknown') | replace('/', ' ') }}/{{ last_modified_at[:4] }}/{{ last_modified_at[5:7] }}/{{ id }} - {{ title.replace('/', ' ') }}"
+    method: lakehouse
+    params:
+      compute_path:
+        method: template
+        params:
+          template: "{{ publicbody.jurisdiction | default('unknown') }}/{{ publicbody.name | default('unknown') | replace('/', ' ') }}/{{ last_modified_at[:4] }}/{{ last_modified_at[5:7] }}/{{ id }} - {{ title.replace('/', ' ') }}"

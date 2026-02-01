@@ -1,19 +1,20 @@
 from typing import Any
 
-from anystore.decorators import anycache
 from banal import ensure_dict
 from memorious.logic.context import Context
-
-from utils.cache import make_url_cache_key
-from utils.operations import cached_emit
+from memorious.util import make_url_key
 
 DEFAULT_URL = "https://fragdenstaat.de/api/v1/document"
 
 
-@anycache(key_func=make_url_cache_key)
 def get_publicbody(context: Context, url: str | None) -> dict[str, Any]:
     if url:
+        key = f"fds-bodies/{make_url_key(url)}"
+        cached = context.tags.get(key)
+        if cached:
+            return cached
         res = context.http.get(url)
+        context.tags.put(key, res.json)
         return res.json
     return {}
 
@@ -40,10 +41,11 @@ def seed(context, data):
                 "url": document["file_url"],
                 "source_url": document["site_url"],
                 "publicbody": reduce_publicbody(publicbody),
+                "foreign_id": document["id"],
             }
 
             if data["url"]:
-                cached_emit(context, data)
+                context.emit(data=data)
 
     if res.json["meta"]["next"] is not None:
         context.recurse(data={"url": res.json["meta"]["next"]})
