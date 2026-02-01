@@ -3,7 +3,7 @@ from ftmq.util import get_country_code
 from investigraph.model import SourceContext
 from investigraph.types import Record
 
-from util.worldbank import parse_date
+from common.worldbank import parse_date
 
 
 def handle(ctx: SourceContext, record: Record, ix: int) -> Entities:

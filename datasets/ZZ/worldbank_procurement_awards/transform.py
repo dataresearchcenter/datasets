@@ -4,7 +4,7 @@ from investigraph.model import SourceContext
 from investigraph.types import Record
 from investigraph.util import make_fingerprint_id
 
-from util.worldbank import parse_date
+from common.worldbank import parse_date
 
 
 # World Bank Group organizations

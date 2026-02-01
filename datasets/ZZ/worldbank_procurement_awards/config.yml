@@ -26,11 +26,6 @@ coverage:
 
 category: procurement
 
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/worldbank_procurement_awards/entities.ftm.json
-    mime_type: application/json+ftm
-
 publisher:
   name: World Bank Group
   description: |
@@ -50,7 +45,7 @@ git_repo: https://github.com/dataresearchcenter/datasets
 license: https://creativecommons.org/licenses/by/4.0/
 
 extract:
-  handler: util.worldbank.extract:handle
+  handler: common.worldbank.extract:handle
   sources:
     - uri: https://datacatalogapi.worldbank.org/dexapps/fone/api/apiservice?datasetId=DS00028&resourceId=RS00025&type=json
 
