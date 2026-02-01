@@ -16,16 +16,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dataset:
-          - de_bnetza_mastr
-          - worldbank_ifc_advisory_services
-          - worldbank_ifc_investment_services
-          - worldbank_procurement_awards
-          - worldbank_procurement_projects
-          - worldbank_procurement_notices
+        include:
+          - dataset: de_bnetza_mastr
+            runner: investigraph
+          - dataset: worldbank_ifc_advisory_services
+            runner: investigraph
+          - dataset: worldbank_ifc_investment_services
+            runner: investigraph
+          - dataset: worldbank_procurement_awards
+            runner: investigraph
+          - dataset: worldbank_procurement_projects
+            runner: investigraph
+          - dataset: worldbank_procurement_notices
+            runner: investigraph
+          - dataset: de_fragdenstaat
+            runner: memorious
     steps:
-      - name: parse and write the dataset
-        run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
+      - name: Run ${{ matrix.runner }} for ${{ matrix.dataset }}
+        run: make ${{ matrix.runner }} dataset=${{ matrix.dataset }} DATASETS_DIR=.
+        working-directory: /datasets
 
   catalog:
     needs: data

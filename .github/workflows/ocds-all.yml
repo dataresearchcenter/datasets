@@ -154,7 +154,8 @@ jobs:
           - pt_ocds_impic
     steps:
       - name: parse and write the dataset
-        run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
+        run: make investigraph dataset=${{ matrix.dataset }} DATASETS_DIR=.
+        working-directory: /datasets
 
   catalog:
     needs: data
