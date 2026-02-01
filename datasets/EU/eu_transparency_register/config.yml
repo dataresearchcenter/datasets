@@ -11,10 +11,6 @@ summary: |
   EU level, by whom and on whose behalf – and the resources devoted to such
   interest representation activities (including financial support and
   sponsorship).
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/eu_transparency_register/entities.ftm.json
-    mime_type: application/json+ftm
 publisher:
   name: European Commission Secretariat-General
   description: |

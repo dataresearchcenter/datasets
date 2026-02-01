@@ -27,11 +27,6 @@ coverage:
 
 category: court
 
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/us_cpr/entities.ftm.json
-    mime_type: application/json+ftm
-
 publisher:
   name: Corporate Prosecution Registry
   description: |

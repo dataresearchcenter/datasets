@@ -15,10 +15,6 @@ publisher:
     His Majesty's Land Registry is a non-ministerial department of His Majesty's Government,
     created in 1862 to register the ownership of land and property in England and Wales.
   url: https://use-land-property-data.service.gov.uk/datasets/ocod
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/gb_ocod/entities.ftm.json
-    mime_type: application/json+ftm
 git_repo: https://github.com/dataresearchcenter/datasets
 maintainer:
   name: DARC

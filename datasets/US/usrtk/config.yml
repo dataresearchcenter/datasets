@@ -19,7 +19,6 @@ maintainer:
   name: "||)·|()"
   url: https://investigativedata.io
 content_type: documents
-aleph_url: https://aleph.investigativedata.org/datasets/585
 
 pipeline:
   init:
@@ -60,9 +59,7 @@ pipeline:
       fetch: fetch
 
   store:
-    method: directory
-
-leakrfc:
-  sync:
-    memorious:
-      key_template: "{{ title }}/{{ url.split('/')[-1].replace('-', ' ') }}"
+    method: lakehouse
+    params:
+      compute_path:
+        template: "{{ title }}/{{ url.split('/')[-1].replace('-', ' ') }}"

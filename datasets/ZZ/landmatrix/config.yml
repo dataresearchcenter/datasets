@@ -4,10 +4,6 @@ prefix: lmi
 summary: |
   Investors and involvements from the open access landmatrix dataset. Not (yet)
   included: Deals & Contracts
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/landmatrix/entities.ftm.json
-    mime_type: application/json+ftm
 publisher:
   name: The Land Matrix Initiative (LMI)
   description: |
