@@ -25,7 +25,7 @@ content_type: documents
 
 pipeline:
   init:
-    method: de_sehrgutachten:seed
+    method: ./operations.py:seed
     params:
       url: https://www.bundestag.de/ajax/filterlist/de/dokumente/analysen/474644-474644
       timedelta:
@@ -39,7 +39,7 @@ pipeline:
       pass: parse
 
   parse:
-    method: de_sehrgutachten:parse
+    method: ./operations.py:parse
     handle:
       fetch: fetch
       download: download
@@ -50,4 +50,10 @@ pipeline:
       pass: store
 
   store:
-    method: utils.operations:store
+    method: lakehouse
+    params:
+      compute_path:
+        method: template
+        params:
+          template: "{{ publisher.name }}/{{ published_at[:4] }}/{{ file_name }}"
+

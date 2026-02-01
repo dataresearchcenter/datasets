@@ -1,17 +1,15 @@
 # https://github.com/okfde/sehrgutachten/blob/master/app/scrapers/wd_ausarbeitungen_scraper.rb
 
-import re
 from datetime import datetime, timedelta
+import re
 from urllib.parse import urljoin
 
 from banal import ensure_dict
 from furl import furl
-from memorious.logic.context import Context
-from servicelayer import env
 
-from utils import Data
-from utils import get_value_from_xpath as x
-from utils.operations import cached_emit
+from anystore.types import SDict
+from memorious.helpers.xpath import extract_xpath as x
+from memorious.logic.context import Context
 
 MONTHS = (
     "januar",
@@ -54,25 +52,28 @@ def _clean_date(value: str | None) -> str | None:
             return datetime.strptime(value, "%d.%m.%Y").date().isoformat()
 
 
-def seed(context: Context, data: Data):
+def seed(context: Context, data: SDict):
     f = furl(context.params["url"])
-    if not env.to_bool("FULL_RUN"):
-        start_date = env.get("START_DATE")
-        if start_date:
-            start_date = datetime.fromisoformat(start_date).date()
-        else:
-            start_date = (
+    if not context.env.full_run:
+        start_date = (
+            context.env.start_date
+            or (
                 datetime.now()
                 - timedelta(**ensure_dict(context.params.get("timedelta")))
             ).date()
+        )
         start_date = start_date.strftime("%s000")
+        end_date = datetime.now().date().strftime("%s000")
         f.args["startdate"] = start_date
+        f.args["enddate"] = end_date
+        f.args["startfield"] = "date"
+        f.args["endfield"] = "date"
     f.args["limit"] = 10
     data["url"] = f.url
     context.emit(data=data)
 
 
-def parse(context: Context, data: Data):
+def parse(context: Context, data: SDict):
     res = context.http.rehash(data)
 
     rows = res.html.xpath('//table[@class="table bt-table-data"]/tbody/tr')
@@ -86,38 +87,45 @@ def parse(context: Context, data: Data):
 
         try:
             title = x(row, ".//div[@class='bt-documents-description']/p/strong")
+            if not title:
+                title = x(
+                    row, ".//div[@class='bt-documents-description']/p/strong/strong"
+                )  # wtf
             detail_data = {
                 "url": url,
                 "title": title,
-                "key": url.split("/")[-1],
+                "file_name": url.split("/")[-1],
                 "published_at": _clean_date(x(row, './td[@data-th="Datum"]/p')),
                 "keywords": x(row, './td[@data-th="Thema"]/p'),
                 "category": x(row, './td[@data-th="Dokumenttyp"]/p'),
-                "publisher": context.crawler.config["publisher"],
+                "publisher": context.crawler.config.publisher.model_dump(mode="json"),
                 "reference": "",
             }
 
-            wd_match = re.match(
-                r"(?P<wd>wd|pe|eu)\s*(?P<wd_id>\d+)[\s-]+(?P<doc_id>\d+\/\d+)",
-                detail_data["title"],
-                re.IGNORECASE,
-            )
-
-            if wd_match:
-                wd_id = wd_match.group("wd").lower() + wd_match.group("wd_id")
-                wd_id_nice = f"{wd_match.group('wd')} {wd_match.group('wd_id')}"
-                wd_name = WD_NAMES.get(wd_id, wd_id_nice)
-                detail_data["publisher"].update(
-                    {
-                        "id": wd_id,
-                        "name": f"{wd_id_nice} - {wd_name}",
-                        "url": f"https://www.bundestag.de/dokumente/analysen/{wd_id}",
-                    }
+            if title is not None:
+                wd_match = re.search(
+                    r"(?P<wd>wd|pe|eu)\s*(?P<wd_id>\d+)[\s-]+(?P<doc_id>\d+\/\d+)",
+                    title,
+                    re.IGNORECASE,
                 )
-                detail_data["reference"] = wd_match.group("doc_id")
-                detail_data["foreign_id"] = "-".join((wd_id, wd_match.group("doc_id")))
 
-            cached_emit(context, {**data, **detail_data}, "download")
+                if wd_match:
+                    wd_id = wd_match.group("wd").lower() + wd_match.group("wd_id")
+                    wd_id_nice = f"{wd_match.group('wd')} {wd_match.group('wd_id')}"
+                    wd_name = WD_NAMES.get(wd_id, wd_id_nice)
+                    detail_data["publisher"].update(
+                        {
+                            "id": wd_id,
+                            "name": f"{wd_id_nice} - {wd_name}",
+                            "url": f"https://www.bundestag.de/dokumente/analysen/{wd_id}",
+                        }
+                    )
+                    detail_data["reference"] = wd_match.group("doc_id")
+                    detail_data["foreign_id"] = "-".join(
+                        (wd_id, wd_match.group("doc_id"))
+                    )
+
+            context.emit("download", data={**data, **detail_data})
 
         except Exception as e:
             context.log.error(f"Error at `{url}`: {e}")
