@@ -4,13 +4,13 @@ FROM ghcr.io/dataresearchcenter/investigraph:main AS base
 USER root
 
 # Copy only files needed for pip install
-COPY pyproject.toml setup.py README.md Makefile /datasets/
+COPY pyproject.toml setup.py README.md Makefile requirements.txt /datasets/
 COPY common /datasets/common
 
 # Create required structure and install
 RUN mkdir -p /datasets/datasets && \
-    touch /datasets/datasets/__init__.py && \
-    pip install --no-cache-dir /datasets awscli && \
+    pip install -q --no-cache-dir --no-deps -r /datasets/requirements.txt && \
+    pip install -q --no-cache-dir --no-deps /datasets && \
     chown -R 1000 /datasets
 
 # Stage 2: Add build tools (changes occasionally)
