@@ -14,10 +14,6 @@ summary: |
 category: poi
 tags:
   - lobbyism
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/ec_meetings/entities.ftm.json
-    mime_type: application/json+ftm
 publisher:
   name: European Commission Secretariat-General
   description: |
