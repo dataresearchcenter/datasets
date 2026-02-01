@@ -2583,7 +2583,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/memorious"
 reference = "HEAD"
-resolved_reference = "1b7431716df535aeda95838a98582c6b3dcd6609"
+resolved_reference = "2918f5e33c645a998b9f8750d3bd00e4634a7a60"
 
 [[package]]
 name = "multidict"

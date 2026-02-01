@@ -1,5 +1,5 @@
 # Stage 1: Install Python dependencies (rarely changes)
-FROM ghcr.io/dataresearchcenter/investigraph:0.7.1 AS base
+FROM ghcr.io/dataresearchcenter/investigraph:main AS base
 
 USER root
 
@@ -40,7 +40,6 @@ USER 1000
 WORKDIR /datasets
 ENTRYPOINT [ "" ]
 
-ENV INVESTIGRAPH_ARCHIVE_URI=s3://memorious/investigraph
-ENV ANYSTORE_URI=memory://
 ENV INVESTIGRAPH_HTTP_TIMEOUT=3600
+ENV MEMORIOUS_MAX_RUNTIME=18000  
 ENV LAKEHOUSE_PUBLIC_URL_PREFIX="https://data.openaleph.org/{{ dataset }}"
