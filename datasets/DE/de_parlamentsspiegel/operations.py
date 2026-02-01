@@ -1,14 +1,13 @@
 import re
 from datetime import datetime, timedelta
+import httpx
 
+from anystore.types import SDict
 from banal import ensure_dict
 from furl import furl
 from lxml.html import HtmlElement
 from memorious.logic.context import Context
-from servicelayer import env
 
-from utils import Data
-from utils.operations import cached_emit
 
 X_NEXT = ".//a[@class='page-link text-dark']/@data-seite"
 X_ROWS = ".//div[@class='ps-vorgang']"
@@ -26,9 +25,10 @@ X_METADATA = {
 }
 
 RE_REF = re.compile(r".*\s(\d{1,2}\/\d+).*")
+RE_SACHSEN_PDF = re.compile(r"https://ws\.landtag\.sachsen\.de/images/[^'\"&\s]+\.pdf")
 
 
-def extract_meta(el: HtmlElement) -> Data:
+def extract_meta(el: HtmlElement) -> SDict:
     data = {}
     for key, xpath in X_METADATA.items():
         value = el.xpath(xpath)
@@ -50,12 +50,30 @@ def extract_term(value: str) -> str:
     return value.split("/")[0]
 
 
-def seed(context: Context, data: Data) -> None:
+def extract_sachsen_pdf_url(viewer_url: str) -> str | None:
+    """
+    Extract actual PDF URL from Sachsen EDAS viewer.
+    The viewer.aspx is a frameset, the actual PDF URL is in viewer_navigation.aspx.
+    """
+    f = furl(viewer_url)
+    nav_url = f.copy()
+    nav_url.path = "/viewer/viewer_navigation.aspx"
+    try:
+        res = httpx.get(str(nav_url), timeout=30)
+        match = RE_SACHSEN_PDF.search(res.text)
+        if match:
+            return match.group(0)
+    except httpx.RequestError:
+        pass
+    return None
+
+
+def seed(context: Context, data: SDict) -> None:
     f = furl(context.params["url"])
     f.args["qyZeitBis"] = "heute"
-    if not env.to_bool("FULL_RUN"):
+    if not context.env.full_run:
         start_date = (
-            env.get("START_DATE")
+            context.env.start_date
             or (
                 datetime.now()
                 - timedelta(**ensure_dict(context.params.get("timedelta")))
@@ -64,15 +82,15 @@ def seed(context: Context, data: Data) -> None:
             .isoformat()
         )
         f.args["qyZeitAb"] = start_date
-        if env.get("END_DATE"):
-            f.args["qyZeitBis"] = env.get("END_DATE")
+        if context.env.end_date:
+            f.args["qyZeitBis"] = context.env.end_date
 
     data["url"] = f.url
     data["page"] = 0
     context.emit(data=data)
 
 
-def parse(context: Context, data: Data):
+def parse(context: Context, data: SDict):
     res = context.http.rehash(data)
     for row in res.html.xpath(X_ROWS):
         header = row.xpath(X_ROW_HEADER)
@@ -94,24 +112,52 @@ def parse(context: Context, data: Data):
                 "category": category,
                 "doc_type": doc_type,
                 "date": datetime.strptime(date, "%d.%m.%Y").date().isoformat(),
-                "doc_id": doc_id[0].replace(".ps-detail-", ""),
+                "foreign_id": doc_id[0].replace(".ps-detail-", ""),
                 "url": pdf_url[0],
                 "reference": reference[0],
                 "reference_id": reference_id,
                 "legislative_term": legislative_term,
                 "title": title[0],
             }
+            detail_data["keywords"] = [
+                k.strip() for k in detail_data["subject"].split(";")
+            ]
 
-            # FIXME
-            if state not in ("Sachsen", "Rheinland-Pfalz"):
-                cached_emit(context, detail_data, "download")
+            if state == "Rheinland-Pfalz":
+                # RP has redirects to it's parliament index page for some pdf
+                # urls. We need to check first and only emit actual pdf urls.
+                try:
+                    head_res = httpx.head(detail_data["url"], follow_redirects=True)
+                    content_type = head_res.headers.get("content-type", "")
+                    if "application/pdf" not in content_type:
+                        context.log.warning(
+                            f"Skipping non-PDF URL for `{detail_data.get('foreign_id')}`: {content_type}",
+                            url=detail_data["url"],
+                        )
+                        continue
+                except httpx.RequestError as e:
+                    context.log.error(f"Failed to check URL {detail_data['url']}: {e}")
+                    continue
+            elif state == "Sachsen":
+                # Sachsen uses an ASPX viewer, extract actual PDF URL
+                pdf_url = extract_sachsen_pdf_url(detail_data["url"])
+                if pdf_url:
+                    detail_data["url"] = pdf_url
+                else:
+                    context.log.warning(
+                        f"Could not extract PDF URL for `{detail_data.get('foreign_id')}`",
+                        url=detail_data["url"],
+                    )
+                    continue
+
+            context.emit("download", data=detail_data)
 
     next_pages = set()
     for page in res.html.xpath(X_NEXT):
         next_pages.add(int(page))
     for page in sorted(next_pages):
         page = page - 1  # 0-indexed
-        if page > data["page"]:
+        if page > data.get("page", 0):
             f = furl(data["url"])
             f.args["page"] = page
             context.emit("fetch", data={**data, "url": f.url, "page": page})
