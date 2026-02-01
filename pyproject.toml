@@ -4,6 +4,7 @@ version = "2025.6.4.0"
 description = "DARC Data Library"
 authors = [
     { name = "Alexandra Ștefănescu", email = "alex@dataresearchcenter.org" },
+    { name = "Karina Shedrofsky", email = "karina@dataresearchcenter.org" },
     { name = "Jan Strozyk", email = "jan@dataresearchcenter.org" },
     { name = "Simon Wörpel", email = "simon@dataresearchcenter.org" },
 ]
@@ -17,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.11,<4"
+requires-python = ">=3.11,<3.14"
 dependencies = [
     "httpx (>=0.28.1,<0.29.0)",
     "plyvel (>=1.5.1,<2.0.0)",
@@ -27,8 +28,10 @@ dependencies = [
     "pygit2 (>=1.18.0,<2.0.0)",
     "ftfy (>=6.3.1,<7.0.0)",
     "lzip (>=1.2.0,<2.0.0)",
-    "investigraph (>=0.7.1,<0.8.0)",
+    "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git",
     "memorious @ git+https://github.com/dataresearchcenter/memorious",
+    "pycountry (>=24.6.1,<25.0.0)",
+    "ftm-lakehouse @ git+https://github.com/openaleph/ftm-lakehouse.git",
 ]
 
 [project.urls]

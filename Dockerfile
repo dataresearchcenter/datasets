@@ -4,7 +4,7 @@ FROM ghcr.io/dataresearchcenter/investigraph:0.7.1 AS base
 USER root
 
 # Copy only files needed for pip install
-COPY pyproject.toml setup.py README.md /datasets/
+COPY pyproject.toml setup.py README.md Makefile /datasets/
 COPY common /datasets/common
 
 # Create required structure and install
@@ -43,3 +43,4 @@ ENTRYPOINT [ "" ]
 ENV INVESTIGRAPH_ARCHIVE_URI=s3://memorious/investigraph
 ENV ANYSTORE_URI=memory://
 ENV INVESTIGRAPH_HTTP_TIMEOUT=3600
+ENV LAKEHOUSE_PUBLIC_URL_PREFIX="https://data.openaleph.org/{{ dataset }}"
