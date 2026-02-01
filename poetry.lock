@@ -339,7 +339,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/anystore.git"
 reference = "chore/refactor"
-resolved_reference = "7163fe567f7df2d780ab29dba14c9417808e2a8f"
+resolved_reference = "42802800a7fffd09d4d63d4b40341e4d3f3b53cd"
 
 [[package]]
 name = "arro3-core"
@@ -1329,7 +1329,7 @@ api = ["fastapi (>=0.128.0,<0.129.0)", "pyjwt (>=2.11.0,<3.0.0)", "uvicorn (>=0.
 type = "git"
 url = "https://github.com/openaleph/ftm-lakehouse.git"
 reference = "HEAD"
-resolved_reference = "67e8f2fa4bf7da1cbcdef9b718717e8851fd6c30"
+resolved_reference = "0fc8724bd7d287536dbceab12c5a994aacf5b9d5"
 
 [[package]]
 name = "ftmq"
@@ -1368,7 +1368,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/ftmq.git"
 reference = "HEAD"
-resolved_reference = "f13ad8521f4a9876c0e644909b2e02ca3768a4dc"
+resolved_reference = "242706aa69f82803025409ff5306cff4c5e53d0c"
 
 [[package]]
 name = "furl"
@@ -1662,7 +1662,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/investigraph-etl.git"
 reference = "HEAD"
-resolved_reference = "64642786375ffbe0b135c5b1665804f188b7a7cd"
+resolved_reference = "e0879781d90fb53dd7bbeb75cc81e58329fc1d5e"
 
 [[package]]
 name = "ipdb"
@@ -2583,7 +2583,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/memorious"
 reference = "HEAD"
-resolved_reference = "2918f5e33c645a998b9f8750d3bd00e4634a7a60"
+resolved_reference = "f35dc8b1a91550949cb90b5c72b0777d7dbea1ff"
 
 [[package]]
 name = "multidict"
@@ -2991,7 +2991,7 @@ pydantic-settings = ">=2.10.1,<3.0.0"
 type = "git"
 url = "https://github.com/openaleph/openaleph-procrastinate.git"
 reference = "HEAD"
-resolved_reference = "b187fde79b21197bda171df18606ae036e1e524c"
+resolved_reference = "1aff536be7a00a77a97891789fd9e72fec707475"
 
 [[package]]
 name = "openpyxl"
@@ -4396,14 +4396,14 @@ requests = ">=2.0.1,<3.0.0"
 
 [[package]]
 name = "rich"
-version = "14.3.1"
+version = "14.3.2"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 optional = false
 python-versions = ">=3.8.0"
 groups = ["main"]
 files = [
-    {file = "rich-14.3.1-py3-none-any.whl", hash = "sha256:da750b1aebbff0b372557426fb3f35ba56de8ef954b3190315eb64076d6fb54e"},
-    {file = "rich-14.3.1.tar.gz", hash = "sha256:b8c5f568a3a749f9290ec6bddedf835cec33696bfc1e48bcfecb276c7386e4b8"},
+    {file = "rich-14.3.2-py3-none-any.whl", hash = "sha256:08e67c3e90884651da3239ea668222d19bea7b589149d8014a21c633420dbb69"},
+    {file = "rich-14.3.2.tar.gz", hash = "sha256:e712f11c1a562a11843306f5ed999475f09ac31ffb64281f73ab29ffdda8b3b8"},
 ]
 
 [package.dependencies]
