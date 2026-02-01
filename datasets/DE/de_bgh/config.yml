@@ -20,29 +20,14 @@ maintainer:
 coverage:
   frequency: daily
 content_type: documents
-data_url: https://juris.bundesgerichtshof.de/cgi-bin/rechtsprechung/list.py?Gericht=bgh&Art=en
-aleph_url: https://aleph.investigativedata.org/datasets/581
+data_url: https://www.bundesgerichtshof.de/SiteGlobals/Forms/Suche/EntscheidungssucheBGH_Formular.html
 
 pipeline:
   init:
-    method: utils.operations:init
-    handle:
-      pass: dates
-
-  dates:
-    # method: dates
-    method: de_bgh:dates
+    method: ./operations.py:seed
     params:
-      format: "%Y-%m"
-      end: 2000-01
+      url: https://www.bundesgerichtshof.de/SiteGlobals/Forms/Suche/EntscheidungssucheBGH_Formular.html
       days: 30
-    handle:
-      pass: seed
-
-  seed:
-    method: seed
-    params:
-      url: https://juris.bundesgerichtshof.de/cgi-bin/rechtsprechung/list.py?Gericht=bgh&Art=en&Datum=%(date)s
     handle:
       pass: fetch
 
@@ -52,7 +37,7 @@ pipeline:
       pass: parse
 
   parse:
-    method: de_bgh:parse
+    method: ./operations.py:parse
     handle:
       download: download
       fetch: fetch
@@ -63,9 +48,9 @@ pipeline:
       pass: store
 
   store:
-    method: utils.operations:store
-
-leakrfc:
-  sync:
-    memorious:
-      key_template: "{{ department }}/{{ date[:4] }}/{{ date[5:7] }}/{{ reference.replace('/','-') }}.pdf"
+    method: lakehouse
+    params:
+      compute_path:
+        method: template
+        params:
+          template: "{{ department }}/{{ date[:4] }}/{{ date[5:7] }}/{{ reference.replace('/','-') }}.pdf"
