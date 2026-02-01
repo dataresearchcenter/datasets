@@ -1,0 +1,6 @@
+repos:
+  - repo: https://github.com/python-poetry/poetry-plugin-export
+    rev: 1.9.0
+    hooks:
+      - id: poetry-export
+        args: ["--without-hashes", "-o", "requirements.txt"]
