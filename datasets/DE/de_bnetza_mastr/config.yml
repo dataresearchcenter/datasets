@@ -23,11 +23,6 @@ publisher:
   official: true
 
 url: https://www.marktstammdatenregister.de/MaStR/Akteur/Marktakteur/IndexOeffentlich
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/de_bnetza_mastr/entities.ftm.json
-    mime_type: application/json+ftm
-
 extract:
   sources:
     - uri: https://www.marktstammdatenregister.de/MaStR/Akteur/MarktakteurJson/GetOeffentlicheMarktakteure
