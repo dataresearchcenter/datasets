@@ -35,10 +35,6 @@ maintainer:
   url: https://dataresearchcenter.org
   logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
 git_repo: https://github.com/dataresearchcenter/datasets
-resources:
-- name: entities.ftm.json
-  url: https://data.ftm.store/eu_ocds_ted/entities.ftm.json
-  mime_type: application/json+ftm
 extract:
   archive: true
   handler: common.ocds.extract:handle

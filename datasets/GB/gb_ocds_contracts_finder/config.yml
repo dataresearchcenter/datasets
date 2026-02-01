@@ -37,11 +37,6 @@ maintainer:
 
 git_repo: https://github.com/dataresearchcenter/datasets
 
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/gb_ocds_contracts_finder/entities.ftm.json
-    mime_type: application/json+ftm
-
 extract:
   handler: common.ocds.extract:handle
   sources:

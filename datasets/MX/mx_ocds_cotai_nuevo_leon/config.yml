@@ -29,10 +29,6 @@ maintainer:
   url: https://dataresearchcenter.org
   logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
 git_repo: https://github.com/dataresearchcenter/datasets
-resources:
-- name: entities.ftm.json
-  url: https://data.ftm.store/mx_ocds_cotai_nuevo_leon/entities.ftm.json
-  mime_type: application/json+ftm
 extract:
   handler: common.ocds.extract:handle
   sources:
