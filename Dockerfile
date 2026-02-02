@@ -10,6 +10,7 @@ COPY common /datasets/common
 # Create required structure and install
 RUN mkdir -p /datasets/datasets && \
     pip install -q --no-cache-dir --no-deps -r /datasets/requirements.txt && \
+    pip install -q --no-cache-dir psycopg-binary==3.3.2 && \
     pip install -q --no-cache-dir --no-deps /datasets && \
     chown -R 1000 /datasets
 
