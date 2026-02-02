@@ -1,5 +1,5 @@
 # Stage 1: Install Python dependencies (rarely changes)
-FROM ghcr.io/dataresearchcenter/investigraph:main AS base
+FROM ghcr.io/dataresearchcenter/investigraph:0.8.0 AS base
 
 USER root
 
@@ -36,10 +36,17 @@ RUN for d in /datasets/_src/*/*; do \
     done && \
     rm -rf /datasets/_src
 
+RUN mkdir -p /home/1000/.duckdb && chown -R 1000 /home/1000
+
 USER 1000
 WORKDIR /datasets
-ENTRYPOINT [ "" ]
+ENTRYPOINT [ "/bin/bash", "-c" ]
 
-ENV INVESTIGRAPH_HTTP_TIMEOUT=3600
+ENV HOME=/home/1000
+
+ENV AWS_REGION=eu-central-1
+ENV MEMORIOUS_HTTP_TIMEOUT=3600
 ENV MEMORIOUS_MAX_RUNTIME=18000  
+ENV FTM_STATEMENT_STORE=leveldb://data.db
+ENV LAKEHOUSE_URI=s3://data.openaleph.org
 ENV LAKEHOUSE_PUBLIC_URL_PREFIX="https://data.openaleph.org/{{ dataset }}"
