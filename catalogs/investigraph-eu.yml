@@ -1,13 +1,14 @@
 datasets:
-  - from_uri: https://data.ftm.store/eu_transparency_register/index.json
-  - from_uri: https://data.ftm.store/ec_meetings/index.json
-  - from_uri: https://data.ftm.store/eu_rrf/index.json
-  - from_uri: https://data.ftm.store/eu_fts/index.json
-  - from_uri: https://data.ftm.store/eu_authorities/index.json
-  - from_uri: https://data.ftm.store/eu_horizon_europe/index.json
-  - from_uri: https://data.ftm.store/eu_horizon_2020/index.json
-  - from_uri: https://data.ftm.store/eu_fp7/index.json
-  - from_uri: https://data.ftm.store/eu_stateaid/index.json
+  - from_uri: https://data.openaleph.org/eu_transparency_register/index.json
+  - from_uri: https://data.openaleph.org/ec_meetings/index.json
+  - from_uri: https://data.openaleph.org/eu_rrf/index.json
+  - from_uri: https://data.openaleph.org/eu_fts/index.json
+  - from_uri: https://data.openaleph.org/eu_authorities/index.json
+  - from_uri: https://data.openaleph.org/eu_horizon_europe/index.json
+  - from_uri: https://data.openaleph.org/eu_horizon_2020/index.json
+  - from_uri: https://data.openaleph.org/eu_fp7/index.json
+  - from_uri: https://data.openaleph.org/eu_stateaid/index.json
+  - from_uri: https://data.openaleph.org/eu_ec_ease/index.json
   # OpenSanctions EU datasets
   - from_uri: https://data.opensanctions.org/datasets/latest/eu_meps/index.json
   - from_uri: https://data.opensanctions.org/datasets/latest/eu_cor_members/index.json

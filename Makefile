@@ -19,8 +19,8 @@ clean:
 	rm -rf catalogs/*.json
 
 publish: catalogs
-	aws --endpoint-url https://s3.investigativedata.org s3 sync --exclude "*" --include "*.json" catalogs s3://data.ftm.store/catalogs/
-	aws --endpoint-url https://s3.investigativedata.org s3 cp catalogs/index.json s3://data.ftm.store/index.json
+	aws --endpoint-url https://s3.investigativedata.org s3 sync --exclude "*" --include "*.json" catalogs s3://$(BUCKET)/catalogs/
+	aws --endpoint-url https://s3.investigativedata.org s3 cp catalogs/index.json s3://$(BUCKET)/index.json
 
 check_dataset:
 	@test -n "$(dataset)" || (echo "dataset is required. Usage: make <target> dataset=<name>" && exit 1)

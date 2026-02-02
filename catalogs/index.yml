@@ -1,9 +1,9 @@
 
 datasets:
-  - from_uri: https://data.ftm.store/gb_ocod/index.json
-  - from_uri: https://data.ftm.store/gb_ccod/index.json
-  - from_uri: https://data.ftm.store/gb_pricepaid/index.json
-  - from_uri: https://data.ftm.store/us_cpr/index.json
+  - from_uri: https://data.openaleph.org/gb_ocod/index.json
+  - from_uri: https://data.openaleph.org/gb_ccod/index.json
+  - from_uri: https://data.openaleph.org/gb_pricepaid/index.json
+  - from_uri: https://data.openaleph.org/us_cpr/index.json
 
 include_catalogs:
   - from_uri: ./catalogs/opensanctions.json
@@ -35,17 +35,10 @@ include_catalogs:
       content_type: documents
       tags:
         - dokukratie
-  - from_uri: https://data.ftm.store/lobbytracker/catalog.json
+  - from_uri: https://data.openaleph.org/lobbytracker/catalog.json
     patch_metadata:
       maintainer:
         name: "DARC"
         url: https://dataresearchcenter.org
       tags:
         - Lobbytracker
-  - from_uri: https://data.investigativecommons.org/index.json
-    patch_metadata:
-      maintainer:
-        name: "DARC"
-        url: https://dataresearchcenter.org
-      tags:
-        - Investigative Commons

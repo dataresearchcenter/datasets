@@ -1,0 +1,6 @@
+datasets:
+  - from_uri: https://data.openaleph.org/de_sehrgutachten/index.json
+  - from_uri: https://data.openaleph.org/de_bgh/index.json
+  - from_uri: https://data.openaleph.org/de_bundestag_dip/index.json
+  - from_uri: https://data.openaleph.org/de_fragdenstaat/index.json
+  - from_uri: https://data.openaleph.org/de_parlamentsspiegel/index.json
