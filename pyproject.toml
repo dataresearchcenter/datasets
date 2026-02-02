@@ -28,10 +28,12 @@ dependencies = [
     "pygit2 (>=1.18.0,<2.0.0)",
     "ftfy (>=6.3.1,<7.0.0)",
     "lzip (>=1.2.0,<2.0.0)",
-    "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git",
-    "memorious @ git+https://github.com/dataresearchcenter/memorious",
     "pycountry (>=24.6.1,<25.0.0)",
-    "ftm-lakehouse @ git+https://github.com/openaleph/ftm-lakehouse.git",
+    "memorious4 (>=4.0.0,<5.0.0)",
+    "investigraph (>=0.8.0,<0.9.0)",
+    "ftm-lakehouse (>=0.2.0,<0.3.0)",
+    "anystore (>=1.0.1,<2.0.0)",
+    "ftmq (>=4.5.2,<5.0.0)",
 ]
 
 [project.urls]

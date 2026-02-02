@@ -305,13 +305,15 @@ trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python
 
 [[package]]
 name = "anystore"
-version = "0.4.3"
+version = "1.0.1"
 description = "Store and cache things anywhere"
 optional = false
-python-versions = ">=3.11,<4"
+python-versions = "<4,>=3.11"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "anystore-1.0.1-py3-none-any.whl", hash = "sha256:4d6c7a4b5b3892d3c3cfbb72f2b6a9e8d780742522d805066138ec1e6f128d07"},
+    {file = "anystore-1.0.1.tar.gz", hash = "sha256:37df667163df4983d5632f5372f47ab5e149c698fc52db7983cfd255f76b0e77"},
+]
 
 [package.dependencies]
 banal = ">=1.0.6,<2.0.0"
@@ -334,12 +336,6 @@ uuid7 = ">=0.1.0,<0.2.0"
 api = ["fastapi (>=0.115.0,<1.0.0)", "uvicorn (>=0.34.0,<1.0.0)"]
 redis = ["fakeredis (>=2.26.2,<3.0.0)", "redis (>=4.0.0)"]
 sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/dataresearchcenter/anystore.git"
-reference = "chore/refactor"
-resolved_reference = "42802800a7fffd09d4d63d4b40341e4d3f3b53cd"
 
 [[package]]
 name = "arro3-core"
@@ -1344,50 +1340,48 @@ wcwidth = "*"
 
 [[package]]
 name = "ftm-lakehouse"
-version = "0.1.2"
+version = "0.2.0"
 description = "Data standard, storage and retrieval for structured and unstructured FollowTheMoney data"
 optional = false
-python-versions = ">=3.11,<3.14"
+python-versions = "<3.14,>=3.11"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "ftm_lakehouse-0.2.0-py3-none-any.whl", hash = "sha256:ad3fe9ca6cc2d3d3f8f0376184da7ed143c4dfd6ff2e5c784778c0ce9473b338"},
+    {file = "ftm_lakehouse-0.2.0.tar.gz", hash = "sha256:34c32c97e0a0226893c626b1c3d2a103d68a13b2de071158f5e19b70a41c716b"},
+]
 
 [package.dependencies]
-anystore = {git = "https://github.com/dataresearchcenter/anystore.git", rev = "chore/refactor"}
+anystore = ">=1.0.0,<2.0.0"
 followthemoney = ">=4.5.1,<5.0.0"
-ftmq = {git = "https://github.com/dataresearchcenter/ftmq.git", extras = ["lake"]}
+ftmq = {version = ">=4.5.2,<5.0.0", extras = ["lake"]}
 jinja2 = ">=3.1.5,<4.0.0"
 
 [package.extras]
 api = ["fastapi (>=0.128.0,<0.129.0)", "pyjwt (>=2.11.0,<3.0.0)", "uvicorn (>=0.40.0,<0.41.0)"]
 
-[package.source]
-type = "git"
-url = "https://github.com/openaleph/ftm-lakehouse.git"
-reference = "HEAD"
-resolved_reference = "0fc8724bd7d287536dbceab12c5a994aacf5b9d5"
-
 [[package]]
 name = "ftmq"
-version = "4.5.1"
+version = "4.5.2"
 description = "followthemoney query dsl and io helpers"
 optional = false
-python-versions = ">=3.11,<3.14"
+python-versions = "<3.14,>=3.11"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "ftmq-4.5.2-py3-none-any.whl", hash = "sha256:e6652fc2bc41b7834165690ac3eb378c84f2c9df19494bd8ee860d3ebfecf765"},
+    {file = "ftmq-4.5.2.tar.gz", hash = "sha256:3599409a2b0787f1d1b185b4e42a57012a22abe869e7b347a127abe1a377cd1f"},
+]
 
 [package.dependencies]
-anystore = {git = "https://github.com/dataresearchcenter/anystore.git", rev = "chore/refactor"}
+anystore = ">=1.0.0,<2.0.0"
 click = ">=8.2.1,<9.0.0"
 click-default-group = ">=1.2.4,<2.0.0"
-deltalake = {version = ">=1.4.1,<2.0.0", optional = true}
-duckdb = {version = ">=1.4.4,<2.0.0", optional = true}
+deltalake = {version = ">=1.4.1,<2.0.0", optional = true, markers = "extra == \"lake\""}
+duckdb = {version = ">=1.4.4,<2.0.0", optional = true, markers = "extra == \"lake\""}
 followthemoney = ">=4.5.1,<5.0.0"
 nomenklatura = ">=4.6.1,<5.0.0"
 orjson = ">=3.10.18,<4.0.0"
-pandas = {version = ">=3.0.0,<4.0.0", optional = true}
-pyarrow = {version = ">=23.0.0,<24.0.0", optional = true}
+pandas = {version = ">=3.0.0,<4.0.0", optional = true, markers = "extra == \"lake\""}
+pyarrow = {version = ">=23.0.0,<24.0.0", optional = true, markers = "extra == \"lake\""}
 pydantic = ">=2.11.3,<3.0.0"
 pyicu = ">=2.15.2,<3.0.0"
 rigour = ">=1.6.2,<2.0.0"
@@ -1399,12 +1393,6 @@ level = ["plyvel (>=1.5.1,<2.0.0)"]
 postgres = ["psycopg[pool] (>=3.2.9,<4.0.0)", "sqlalchemy (>=2.0.36,<3.0.0)"]
 redis = ["fakeredis (>=2.26.2,<3.0.0)", "redis (>=5.2.1,<6.0.0)"]
 sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/dataresearchcenter/ftmq.git"
-reference = "HEAD"
-resolved_reference = "242706aa69f82803025409ff5306cff4c5e53d0c"
 
 [[package]]
 name = "furl"
@@ -1686,21 +1674,22 @@ files = [
 
 [[package]]
 name = "investigraph"
-version = "0.7.1"
+version = "0.8.0"
 description = "etl pipeline for investigations with follow the money data"
 optional = false
-python-versions = ">=3.11,<3.14"
+python-versions = "<3.14,>=3.11"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "investigraph-0.8.0-py3-none-any.whl", hash = "sha256:952cddbf6786bb232e791cc00f144848cfad206aec433696ac436182c509c81b"},
+    {file = "investigraph-0.8.0.tar.gz", hash = "sha256:a1a618e463b58391e1b255c626bbee358358a9ff92791d011c50c8f71be9e42a"},
+]
 
 [package.dependencies]
-anystore = {git = "https://github.com/dataresearchcenter/anystore.git", rev = "chore/refactor"}
+anystore = ">=1.0.1,<2.0.0"
 dateparser = ">=1.2.2,<2.0.0"
 followthemoney = ">=4.5.1,<5.0.0"
-ftm-lakehouse = {git = "https://github.com/openaleph/ftm-lakehouse.git"}
-ftmq = {git = "https://github.com/dataresearchcenter/ftmq.git"}
-memorious = {git = "https://github.com/dataresearchcenter/memorious"}
+ftmq = ">=4.5.2,<5.0.0"
+memorious4 = ">=4.0.0,<5.0.0"
 runpandarun = ">=0.7.0,<0.8.0"
 
 [package.extras]
@@ -1708,12 +1697,6 @@ level = ["plyvel (>=1.5.1,<2.0.0)"]
 postgres = ["psycopg2 (>=2.9.10,<3.0.0)", "sqlalchemy (>=2.0.36,<3.0.0)"]
 redis = ["redis (>=4.0.0)"]
 sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/dataresearchcenter/investigraph-etl.git"
-reference = "HEAD"
-resolved_reference = "e0879781d90fb53dd7bbeb75cc81e58329fc1d5e"
 
 [[package]]
 name = "ipdb"
@@ -2595,23 +2578,25 @@ files = [
 ]
 
 [[package]]
-name = "memorious"
-version = "3.0.1"
+name = "memorious4"
+version = "4.0.0"
 description = "A minimalistic, recursive web crawling library for Python."
 optional = false
-python-versions = ">=3.11,<3.14"
+python-versions = "<3.14,>=3.11"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "memorious4-4.0.0-py3-none-any.whl", hash = "sha256:7e87066073076b0cd046dab38ffe968e03748aa305e92d1d85876268de3c0e3d"},
+    {file = "memorious4-4.0.0.tar.gz", hash = "sha256:987287f4ed0e77f77a0720ad180882f9ab956f47e601fb0f0b7f1d97caa8d20b"},
+]
 
 [package.dependencies]
 alephclient = ">=2.6.0,<3.0.0"
-anystore = {git = "https://github.com/dataresearchcenter/anystore.git", rev = "chore/refactor"}
+anystore = ">=1.0.1,<2.0.0"
 banal = ">=1.0.6,<2.0.0"
 dateparser = ">=1.2.1,<2.0.0"
 followthemoney = ">=4.5.1,<5.0.0"
-ftm-lakehouse = {git = "https://github.com/openaleph/ftm-lakehouse.git"}
-ftmq = {git = "https://github.com/dataresearchcenter/ftmq.git"}
+ftm-lakehouse = ">=0.2.0,<0.3.0"
+ftmq = ">=4.5.2,<5.0.0"
 furl = ">=2.1.0,<3.0.0"
 httpx = ">=0.28.1,<0.29.0"
 jinja2 = ">=3.0.0,<4.0.0"
@@ -2619,7 +2604,7 @@ jq = ">=1.6.0,<2.0.0"
 legacy-cgi = ">=2.6.3,<3.0.0"
 lxml = {version = ">=6.0.2,<7.0.0", extras = ["html-clean"]}
 normality = ">=3.0.2,<4.0.0"
-openaleph-procrastinate = {git = "https://github.com/openaleph/openaleph-procrastinate.git"}
+openaleph-procrastinate = ">=5.2.0,<6.0.0"
 python-dateutil = ">=2.9.0.post0,<3.0.0"
 rigour = ">=1.6.2,<2.0.0"
 stringcase = ">=1.2.0,<2.0.0"
@@ -2629,12 +2614,6 @@ ftp = ["PySocks (==1.7.1)", "requests-ftp (>=0.3.1,<0.4.0)", "requests[security]
 postgres = ["psycopg2 (>=2.9.10,<3.0.0)", "sqlalchemy (>=2.0.36,<3.0.0)"]
 redis = ["fakeredis (>=2.26.2,<3.0.0)", "redis (>=4.0.0,<6.0.0)"]
 sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/dataresearchcenter/memorious"
-reference = "HEAD"
-resolved_reference = "b5e134aafc4d4273c5bbccbc4ff82f64814488e7"
 
 [[package]]
 name = "multidict"
@@ -3031,30 +3010,26 @@ files = [
 
 [[package]]
 name = "openaleph-procrastinate"
-version = "5.1.3"
+version = "5.2.0"
 description = "Task queue logic for OpenAleph built upon procrastinate"
 optional = false
-python-versions = ">=3.11,<3.14"
+python-versions = "<3.14,>=3.11"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "openaleph_procrastinate-5.2.0-py3-none-any.whl", hash = "sha256:8f7cf93ffeb2fdf54258a352e8126100935f2142a5b5ba93009cc9ef05229f53"},
+    {file = "openaleph_procrastinate-5.2.0.tar.gz", hash = "sha256:8e8f47477c5c2536a0cecde7b885d3d7a4abf639c0580ff40daff8fed31b0558"},
+]
 
 [package.dependencies]
-anystore = {git = "https://github.com/dataresearchcenter/anystore.git", rev = "chore/refactor"}
+anystore = ">=1.0.0,<2.0.0"
 cachetools = "<6"
 followthemoney = ">=4.5.1,<5.0.0"
-ftmq = {git = "https://github.com/dataresearchcenter/ftmq.git"}
+ftmq = ">=4.5.2,<5.0.0"
 procrastinate = ">=3.7.2,<4.0.0"
 psycopg = ">=3.3.2,<4.0.0"
 psycopg-pool = ">=3.3.0,<4.0.0"
 pydantic = ">=2.11.7,<3.0.0"
 pydantic-settings = ">=2.10.1,<3.0.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/openaleph/openaleph-procrastinate.git"
-reference = "HEAD"
-resolved_reference = "1aff536be7a00a77a97891789fd9e72fec707475"
 
 [[package]]
 name = "openpyxl"
@@ -5387,4 +5362,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "9c78592b2ff5c93535e1780a5a3d9300155e2a5afcd9c57065f93a7122b3bd46"
+content-hash = "91eb60eea2a6a0a7842a8199a0298bce7d6d21608b8f4764c12e95a19c246b91"
