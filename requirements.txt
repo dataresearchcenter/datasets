@@ -121,7 +121,7 @@ structlog==25.5.0 ; python_version >= "3.11" and python_version < "3.14"
 textual==7.5.0 ; python_version >= "3.11" and python_version < "3.14"
 threadpoolctl==3.6.0 ; python_version >= "3.11" and python_version < "3.14"
 tqdm==4.67.2 ; python_version >= "3.11" and python_version < "3.14"
-typer==0.21.1 ; python_version >= "3.11" and python_version < "3.14"
+typer==0.23.1 ; python_version >= "3.11" and python_version < "3.14"
 typing-extensions==4.15.0 ; python_version >= "3.11" and python_version < "3.14"
 typing-inspection==0.4.2 ; python_version >= "3.11" and python_version < "3.14"
 tzdata==2025.3 ; python_version >= "3.11" and python_version < "3.14" and (platform_system == "Windows" or sys_platform == "win32" or sys_platform == "emscripten")
