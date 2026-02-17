@@ -1,6 +1,41 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/MarcoGorelli/absolufy-imports
+    rev: v0.3.1
+    hooks:
+      - id: absolufy-imports
+
+  - repo: https://github.com/pycqa/isort
+    rev: 7.0.0
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/psf/black
+    rev: 26.1.0
+    hooks:
+      - id: black
+
+  - repo: https://github.com/csachs/pyproject-flake8
+    rev: v7.0.0
+    hooks:
+      - id: pyproject-flake8
+        additional_dependencies: [flake8-bugbear]
+        args: ["--extend-ignore", "E203, E501, W503"]
+        exclude: (test_[\w]+\.py|\.csv|\.json|\.lock)$
+
   - repo: https://github.com/python-poetry/poetry-plugin-export
-    rev: 1.9.0
+    rev: 1.10.0
     hooks:
       - id: poetry-export
         args: ["--without-hashes", "-o", "requirements.txt"]
