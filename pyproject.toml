@@ -29,9 +29,9 @@ dependencies = [
     "ftfy (>=6.3.1,<7.0.0)",
     "lzip (>=1.2.0,<2.0.0)",
     "pycountry (>=24.6.1,<25.0.0)",
-    "memorious4 (>=4.0.0,<5.0.0)",
-    "investigraph (>=0.8.0,<0.9.0)",
-    "ftm-lakehouse (>=0.2.0,<0.3.0)",
+    "memorious4 @ git+https://github.com/dataresearchcenter/memorious",
+    "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git",
+    "ftm-lakehouse @ git+https://github.com/openaleph/ftm-lakehouse.git",
     "anystore (>=1.0.1,<2.0.0)",
     "ftmq (>=4.5.2,<5.0.0)",
 ]
