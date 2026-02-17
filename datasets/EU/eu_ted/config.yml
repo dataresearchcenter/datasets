@@ -1,0 +1,49 @@
+name: eu_ted
+prefix: ocds
+country: eu
+title: Tenders Electronic Daily (TED)
+summary: >
+  European public procurement notices from the Supplement to the
+  Official Journal of the European Union (OJ S), extracted from TED
+  XML bulk archives into OCDS format.
+description: |
+  Tenders Electronic Daily (TED) is the online version of the Supplement to
+  the Official Journal of the European Union, dedicated to European public
+  procurement. It publishes around 700,000 procurement notices per year,
+  including invitations to tender and contract award notices from contracting
+  authorities across EU member states and beyond.
+
+  This dataset extracts structured OCDS (Open Contracting Data Standard)
+  records directly from TED daily XML notice archives, covering buyer and
+  supplier information, contract values, and tender details.
+publisher:
+  name: Publications Office of the European Union
+  description: |
+    The Publications Office of the European Union publishes Tenders Electronic
+    Daily (TED), providing transparency in public procurement across the
+    European Economic Area.
+  url: https://ted.europa.eu/en/
+  country: eu
+  official: true
+url: https://ted.europa.eu/en/
+data:
+  url: https://ted.europa.eu/en/simap/xml-bulk-download
+  format: TED XML
+frequency: daily
+category: procurement
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+seed:
+  handler: ./seed.py:handle
+  first_year: 1993  # TED data available from 1993; override with START_YEAR env var
+  last_year: null    # null = current year; override with END_YEAR env var
+
+extract:
+  handler: ./extract.py:handle
+
+transform:
+  handler: common.ocds.transform:handle
