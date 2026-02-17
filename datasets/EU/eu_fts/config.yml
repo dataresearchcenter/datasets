@@ -28,30 +28,26 @@ maintainer:
   logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
 git_repo: https://github.com/dataresearchcenter/datasets
 
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/eu_fts/entities.ftm.json
-    mime_type: application/json+ftm
-
 extract:
   sources:
-    - uri: ./src/2023_FTS_dataset_en.xlsx
-    - uri: ./src/2022.xlsx
-    - uri: ./src/2021.xlsx
-    - uri: ./src/2020.xlsx
-    - uri: ./src/2019.xlsx
-    - uri: ./src/2018.xlsx
-    - uri: ./src/2017.xlsx
-    - uri: ./src/2016.xlsx
-    - uri: ./src/2015.xlsx
-    - uri: ./src/2014.xlsx
-    - uri: ./src/2013_FTS_data_en.xlsx
-    - uri: ./src/2012_FTS_dataset_en.xlsx
-    - uri: ./src/2011_FTS_dataset_en.xlsx
-    - uri: ./src/2010_FTS_dataset_en.xlsx
-    - uri: ./src/2009_FTS_dataset_en.xlsx
-    - uri: ./src/2008_FTS_dataset_en.xlsx
-    - uri: ./src/2007_FTS_data_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2024_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2023_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2022_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2021_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2020_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2019_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2018_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2017_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2016_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2015_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2014_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2013_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2012_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2011_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2010_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2009_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2008_FTS_dataset_en.xlsx
+    - uri: https://ec.europa.eu/budget/financial-transparency-system/download/2007_FTS_dataset_en.xlsx
   pandas:
     read:
       options:
