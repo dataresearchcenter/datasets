@@ -317,13 +317,15 @@ trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python
 
 [[package]]
 name = "anystore"
-version = "1.0.1"
+version = "1.1.0"
 description = "Store and cache things anywhere"
 optional = false
-python-versions = ">=3.11,<4"
+python-versions = "<4,>=3.11"
 groups = ["main"]
-files = []
-develop = false
+files = [
+    {file = "anystore-1.1.0-py3-none-any.whl", hash = "sha256:8e635203dc059ab2ab7f6b4bca77d3acbea958d814e73ea22d303ba4ba6b3ba0"},
+    {file = "anystore-1.1.0.tar.gz", hash = "sha256:261e1e48a13f981fb372c2023effd11927ad5201325b400f86c2f1127e57d095"},
+]
 
 [package.dependencies]
 banal = ">=1.0.6,<2.0.0"
@@ -347,12 +349,6 @@ uuid7 = ">=0.1.0,<0.2.0"
 api = ["fastapi (>=0.115.0,<1.0.0)", "uvicorn (>=0.34.0,<1.0.0)"]
 redis = ["fakeredis (>=2.26.2,<3.0.0)", "redis (>=4.0.0)"]
 sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/dataresearchcenter/anystore.git"
-reference = "HEAD"
-resolved_reference = "59d5ec1a3ff1ce889587f5c4feaea8dbfef7fac7"
 
 [[package]]
 name = "arro3-core"
@@ -1366,7 +1362,7 @@ files = []
 develop = false
 
 [package.dependencies]
-anystore = {git = "https://github.com/dataresearchcenter/anystore.git"}
+anystore = ">=1.1.0,<2.0.0"
 followthemoney = ">=4.5.3,<5.0.0"
 ftmq = {git = "https://github.com/dataresearchcenter/ftmq.git", extras = ["lake"]}
 httpx = ">=0.28.1,<0.29.0"
@@ -1379,7 +1375,7 @@ api = ["fastapi (>=0.128.0,<0.129.0)", "granian (>=2.7.0,<3.0.0)", "pyjwt (>=2.1
 type = "git"
 url = "https://github.com/openaleph/ftm-lakehouse.git"
 reference = "HEAD"
-resolved_reference = "7208d2cc32204ec3920fcfff0f3669f9ab0eb721"
+resolved_reference = "f71dee6095cc2725295045f3c7faa83741ae1165"
 
 [[package]]
 name = "ftmq"
@@ -1392,13 +1388,13 @@ files = []
 develop = false
 
 [package.dependencies]
-anystore = {git = "https://github.com/dataresearchcenter/anystore.git"}
+anystore = ">=1.1.0,<2.0.0"
 click = ">=8.2.1,<9.0.0"
 click-default-group = ">=1.2.4,<2.0.0"
 deltalake = {version = ">=1.4.2,<2.0.0", optional = true}
 duckdb = {version = ">=1.4.4,<2.0.0", optional = true}
 followthemoney = ">=4.5.3,<5.0.0"
-nomenklatura = ">=4.6.6,<5.0.0"
+nomenklatura = ">=4.6.7,<5.0.0"
 orjson = ">=3.10.18,<4.0.0"
 pandas = {version = ">=3.0.0,<4.0.0", optional = true}
 pyarrow = {version = ">=23.0.0,<24.0.0", optional = true}
@@ -1418,7 +1414,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/ftmq.git"
 reference = "HEAD"
-resolved_reference = "48dfdcb4d00fea4bd96fb4961e7f03720b0e991f"
+resolved_reference = "8c549b822f7b5d0aa09116ac77471e764acaf8f7"
 
 [[package]]
 name = "furl"
@@ -1743,7 +1739,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/investigraph-etl.git"
 reference = "HEAD"
-resolved_reference = "541b5f7025688fba2d9941b5e73566ffbe7f8c79"
+resolved_reference = "ade8adb31013070f69de09272e8d062e48c78a94"
 
 [[package]]
 name = "ipdb"
@@ -2678,7 +2674,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/memorious"
 reference = "HEAD"
-resolved_reference = "b7e808150c7a2c84684f2fe75102249f18cf7ee0"
+resolved_reference = "71a08ba9bfdf5f3ca032a7521a35ec8ab39f61c9"
 
 [[package]]
 name = "mmh3"
@@ -4081,14 +4077,14 @@ typing-extensions = ">=4.14.1"
 
 [[package]]
 name = "pydantic-settings"
-version = "2.13.0"
+version = "2.13.1"
 description = "Settings management using Pydantic"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "pydantic_settings-2.13.0-py3-none-any.whl", hash = "sha256:d67b576fff39cd086b595441bf9c75d4193ca9c0ed643b90360694d0f1240246"},
-    {file = "pydantic_settings-2.13.0.tar.gz", hash = "sha256:95d875514610e8595672800a5c40b073e99e4aae467fa7c8f9c263061ea2e1fe"},
+    {file = "pydantic_settings-2.13.1-py3-none-any.whl", hash = "sha256:d56fd801823dbeae7f0975e1f8c8e25c258eb75d278ea7abb5d9cebb01b56237"},
+    {file = "pydantic_settings-2.13.1.tar.gz", hash = "sha256:b4c11847b15237fb0171e1462bf540e294affb9b86db4d9aa5c01730bdbe4025"},
 ]
 
 [package.dependencies]
@@ -5289,24 +5285,24 @@ files = [
 
 [[package]]
 name = "virtualenv"
-version = "20.36.1"
+version = "20.38.0"
 description = "Virtual Python Environment builder"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "virtualenv-20.36.1-py3-none-any.whl", hash = "sha256:575a8d6b124ef88f6f51d56d656132389f961062a9177016a50e4f507bbcc19f"},
-    {file = "virtualenv-20.36.1.tar.gz", hash = "sha256:8befb5c81842c641f8ee658481e42641c68b5eab3521d8e092d18320902466ba"},
+    {file = "virtualenv-20.38.0-py3-none-any.whl", hash = "sha256:d6e78e5889de3a4742df2d3d44e779366325a90cf356f15621fddace82431794"},
+    {file = "virtualenv-20.38.0.tar.gz", hash = "sha256:94f39b1abaea5185bf7ea5a46702b56f1d0c9aa2f41a6c2b8b0af4ddc74c10a7"},
 ]
 
 [package.dependencies]
 distlib = ">=0.3.7,<1"
-filelock = {version = ">=3.20.1,<4", markers = "python_version >= \"3.10\""}
+filelock = {version = ">=3.24.2,<4", markers = "python_version >= \"3.10\""}
 platformdirs = ">=3.9.1,<5"
 
 [package.extras]
-docs = ["furo (>=2023.7.26)", "proselint (>=0.13)", "sphinx (>=7.1.2,!=7.3)", "sphinx-argparse (>=0.4)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=23.6)"]
-test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=23.1)", "pytest (>=7.4)", "pytest-env (>=0.8.2)", "pytest-freezer (>=0.4.8) ; platform_python_implementation == \"PyPy\" or platform_python_implementation == \"GraalVM\" or platform_python_implementation == \"CPython\" and sys_platform == \"win32\" and python_version >= \"3.13\"", "pytest-mock (>=3.11.1)", "pytest-randomly (>=3.12)", "pytest-timeout (>=2.1)", "setuptools (>=68)", "time-machine (>=2.10) ; platform_python_implementation == \"CPython\""]
+docs = ["furo (>=2023.7.26)", "pre-commit-uv (>=4.1.4)", "proselint (>=0.13)", "sphinx (>=7.1.2,!=7.3)", "sphinx-argparse (>=0.4)", "sphinx-autodoc-typehints (>=3.6.2)", "sphinx-copybutton (>=0.5.2)", "sphinx-inline-tabs (>=2025.12.21.14)", "sphinxcontrib-mermaid (>=2)", "sphinxcontrib-towncrier (>=0.2.1a0)", "towncrier (>=23.6)"]
+test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7)", "packaging (>=23.1)", "pytest (>=7.4)", "pytest-env (>=0.8.2)", "pytest-freezer (>=0.4.8) ; platform_python_implementation == \"PyPy\" or platform_python_implementation == \"GraalVM\" or platform_python_implementation == \"CPython\" and sys_platform == \"win32\" and python_version >= \"3.13\"", "pytest-mock (>=3.11.1)", "pytest-randomly (>=3.12)", "pytest-timeout (>=2.1)", "pytest-xdist (>=3.5)", "setuptools (>=68)", "time-machine (>=2.10) ; platform_python_implementation == \"CPython\""]
 
 [[package]]
 name = "wcwidth"
