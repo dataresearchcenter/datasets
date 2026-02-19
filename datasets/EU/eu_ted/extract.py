@@ -63,27 +63,37 @@ def handle(ctx: C, *args, **kwargs) -> RecordGenerator:
     processed = 0
     total_releases = 0
 
-    with ctx.open() as fh:
-        with tarfile.open(fileobj=fh, mode="r:gz") as tar:
-            for name, xml_fh in _xml_members_from_tar(tar):
-                try:
-                    for release in parse_ted_notice(xml_fh):
-                        release_dict = release.model_dump(
-                            mode="json", exclude_none=True
-                        )
-                        release_dict["__source__"] = "eu_ted"
-                        yield release_dict
-                        total_releases += 1
+    try:
+        with ctx.open() as fh:
+            with tarfile.open(fileobj=fh, mode="r:gz") as tar:
+                for name, xml_fh in _xml_members_from_tar(tar):
+                    try:
+                        for release in parse_ted_notice(xml_fh):
+                            release_dict = release.model_dump(
+                                mode="json", exclude_none=True
+                            )
+                            release_dict["__source__"] = "eu_ted"
+                            yield release_dict
+                            total_releases += 1
 
-                    processed += 1
-                    if processed % 10_000 == 0:
-                        ctx.log.info(
-                            f"Processed {processed} XML files",
-                            releases=total_releases,
+                        processed += 1
+                        if processed % 10_000 == 0:
+                            ctx.log.info(
+                                f"Processed {processed} XML files",
+                                releases=total_releases,
+                            )
+                    except Exception as e:
+                        ctx.log.warning(
+                            "Failed to parse XML file", path=name, error=str(e)
                         )
-                except Exception as e:
-                    ctx.log.warning("Failed to parse XML file", path=name, error=str(e))
-                    continue
+                        continue
+    except Exception as e:
+        ctx.log.warning(
+            "Archive stream interrupted, yielding what was read",
+            uri=ctx.source.uri,
+            error=str(e),
+            processed=processed,
+        )
 
     ctx.log.info(
         f"Completed processing {processed} XML files from archive",

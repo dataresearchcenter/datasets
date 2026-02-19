@@ -39,7 +39,7 @@ git_repo: https://github.com/dataresearchcenter/datasets
 
 seed:
   handler: ./seed.py:handle
-  first_year: 1993  # TED data available from 1993; override with START_YEAR env var
+  first_year: 2004  # Daily packages available from 2004; override with START_YEAR env var
   last_year: null    # null = current year; override with END_YEAR env var
 
 extract:

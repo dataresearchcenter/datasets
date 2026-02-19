@@ -10,7 +10,7 @@ issue, published on business days. The URL format is:
 e.g. https://ted.europa.eu/packages/daily/202600022 for OJ S 022/2026
 
 Environment variables:
-    START_YEAR: Override first year to process (default: from config, 1993)
+    START_YEAR: Override first year to process (default: from config, 2004)
     END_YEAR:   Override last year to process (default: from config, current year)
 """
 
@@ -51,11 +51,11 @@ def handle(ctx: DatasetContext) -> Generator[Source, None, None]:
     Configuration in config.yml:
         seed:
           handler: ./seed.py:handle
-          first_year: 1993   # Optional, defaults to 1993
+          first_year: 2004   # Optional, defaults to 2004
           last_year: null     # Optional, defaults to current year
     """
     first_year = int(
-        os.environ.get("START_YEAR") or getattr(ctx.config.seed, "first_year", 1993)
+        os.environ.get("START_YEAR") or getattr(ctx.config.seed, "first_year", 2004)
     )
     last_year = int(
         os.environ.get("END_YEAR")
