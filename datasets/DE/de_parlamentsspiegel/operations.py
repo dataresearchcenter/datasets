@@ -1,13 +1,12 @@
 import re
 from datetime import datetime, timedelta
-import httpx
 
+import httpx
 from anystore.types import SDict
 from banal import ensure_dict
 from furl import furl
 from lxml.html import HtmlElement
 from memorious.logic.context import Context
-
 
 X_NEXT = ".//a[@class='page-link text-dark']/@data-seite"
 X_ROWS = ".//div[@class='ps-vorgang']"
@@ -17,11 +16,12 @@ X_PDF_URL = "p[@class='ps-dokument']/a[@target='PDFs']/@href"
 X_REFERENCE = "p[@class='ps-dokument']/a[@target='PDFs']/span/text()"
 X_TITLE = "p[@class='ps-dokument']/span[1]/text()"
 
+_X_CLS = ".//p[contains(concat(' ', normalize-space(@class), ' '), ' %s ')]"
 X_METADATA = {
-    "originator": ".//p[contains(concat(' ', normalize-space(@class), ' '), ' ps-urheber ')]/span[2]/text()",
-    "subject": ".//p[contains(concat(' ', normalize-space(@class), ' '), ' ps-sachgebiet ')]/span[2]/text()",
-    "keywords": ".//p[contains(concat(' ', normalize-space(@class), ' '), ' ps-schlagwort ')]/span[2]/text()",
-    "summary": ".//p[contains(concat(' ', normalize-space(@class), ' '), ' ps-abstrakt ')]/span[2]/text()",
+    "originator": _X_CLS % "ps-urheber" + "/span[2]/text()",
+    "subject": _X_CLS % "ps-sachgebiet" + "/span[2]/text()",
+    "keywords": _X_CLS % "ps-schlagwort" + "/span[2]/text()",
+    "summary": _X_CLS % "ps-abstrakt" + "/span[2]/text()",
 }
 
 RE_REF = re.compile(r".*\s(\d{1,2}\/\d+).*")
@@ -50,17 +50,30 @@ def extract_term(value: str) -> str:
     return value.split("/")[0]
 
 
+RE_SACHSEN_POS_DOK = re.compile(r"anzeigeButton_\d+_(\d+)_\w+_\d+_\w+_btn")
+
+
 def extract_sachsen_pdf_url(viewer_url: str) -> str | None:
     """
     Extract actual PDF URL from Sachsen EDAS viewer.
-    The viewer.aspx is a frameset, the actual PDF URL is in viewer_navigation.aspx.
+    The viewer.aspx is a frameset; viewer_navigation.aspx contains document
+    buttons. Loading it with a pos_dok parameter reveals the actual PDF URL
+    in the body onLoad handler.
     """
     f = furl(viewer_url)
     nav_url = f.copy()
     nav_url.path = "/viewer/viewer_navigation.aspx"
     try:
+        # Step 1: Load navigation to get pos_dok from button IDs
         res = httpx.get(str(nav_url), timeout=30)
-        match = RE_SACHSEN_PDF.search(res.text)
+        buttons = RE_SACHSEN_POS_DOK.findall(res.text)
+        if not buttons:
+            return None
+        # Step 2: Reload with pos_dok to get PDF URL from onLoad
+        nav_url.args["pos_dok"] = buttons[0]
+        nav_url.args["dok_id"] = ""
+        res2 = httpx.get(str(nav_url), timeout=30)
+        match = RE_SACHSEN_PDF.search(res2.text)
         if match:
             return match.group(0)
     except httpx.RequestError:
@@ -68,22 +81,23 @@ def extract_sachsen_pdf_url(viewer_url: str) -> str | None:
     return None
 
 
+DE_DATE_FMT = "%d.%m.%Y"
+
+
 def seed(context: Context, data: SDict) -> None:
     f = furl(context.params["url"])
     f.args["qyZeitBis"] = "heute"
     if not context.env.full_run:
-        start_date = (
-            context.env.start_date
-            or (
+        if context.env.start_date:
+            start_date = context.env.start_date.strftime(DE_DATE_FMT)
+        else:
+            start_date = (
                 datetime.now()
                 - timedelta(**ensure_dict(context.params.get("timedelta")))
-            )
-            .date()
-            .isoformat()
-        )
+            ).strftime(DE_DATE_FMT)
         f.args["qyZeitAb"] = start_date
         if context.env.end_date:
-            f.args["qyZeitBis"] = context.env.end_date
+            f.args["qyZeitBis"] = context.env.end_date.strftime(DE_DATE_FMT)
 
     data["url"] = f.url
     data["page"] = 0
@@ -130,8 +144,9 @@ def parse(context: Context, data: SDict):
                     head_res = httpx.head(detail_data["url"], follow_redirects=True)
                     content_type = head_res.headers.get("content-type", "")
                     if "application/pdf" not in content_type:
+                        fid = detail_data.get("foreign_id")
                         context.log.warning(
-                            f"Skipping non-PDF URL for `{detail_data.get('foreign_id')}`: {content_type}",
+                            f"Skipping non-PDF URL for `{fid}`: {content_type}",
                             url=detail_data["url"],
                         )
                         continue

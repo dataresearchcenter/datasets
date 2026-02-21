@@ -31,7 +31,7 @@ pipeline:
   seed:
     method: ./operations.py:seed
     params:
-      url: https://www.parlamentsspiegel.de/suche?query=&detail=true&qyZeitAb=&qyZeitBis=&type=dokument&als=0&size=10&page=0
+      url: https://www.parlamentsspiegel.de/suche?query=&detail=true&qyZeitAb=&qyZeitBis=&type=dokument&als=0&size=50&page=0
       timedelta:
         days: 7
     handle:
