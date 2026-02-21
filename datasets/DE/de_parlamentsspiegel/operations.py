@@ -115,12 +115,24 @@ def parse(context: Context, data: SDict):
         title = row.xpath(X_TITLE)
 
         if all((doc_id, pdf_url, reference, title)):
-            reference_id = extract_ref(reference[0])
-            legislative_term = None
-            if reference_id:
-                legislative_term = extract_term(reference_id)
+            reference_id = extract_ref(reference[0]) or ""
+            legislative_term = extract_term(reference_id) if reference_id else ""
+            # Strip HTTP metadata from previous stage to avoid
+            # polluting the download stage's cache lookup
+            clean = {
+                k: v
+                for k, v in data.items()
+                if k
+                not in (
+                    "request_id",
+                    "content_hash",
+                    "headers",
+                    "status_code",
+                    "retrieved_at",
+                )
+            }
             detail_data = {
-                **data,
+                **clean,
                 **extract_meta(row),
                 "state": state,
                 "category": category,
