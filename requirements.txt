@@ -129,7 +129,7 @@ typing-extensions==4.15.0 ; python_version >= "3.11" and python_version < "3.14"
 typing-inspection==0.4.2 ; python_version >= "3.11" and python_version < "3.14"
 tzdata==2025.3 ; python_version >= "3.11" and python_version < "3.14" and (platform_system == "Windows" or sys_platform == "win32" or sys_platform == "emscripten")
 tzlocal==5.3.1 ; python_version >= "3.11" and python_version < "3.14"
-uc-micro-py==1.0.3 ; python_version >= "3.11" and python_version < "3.14"
+uc-micro-py==2.0.0 ; python_version >= "3.11" and python_version < "3.14"
 urllib3==2.6.3 ; python_version >= "3.11" and python_version < "3.14"
 uuid7==0.1.0 ; python_version >= "3.11" and python_version < "3.14"
 varint==1.0.2 ; python_version >= "3.11" and python_version < "3.14"
