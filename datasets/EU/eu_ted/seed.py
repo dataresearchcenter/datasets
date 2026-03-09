@@ -1,13 +1,15 @@
 """
 Seed stage for EU TED dataset.
 
-Generates Source objects for daily TED XML archive downloads from
-https://ted.europa.eu/packages/daily/
+Generates Source objects for TED XML archive downloads from ted.europa.eu.
 
-Each daily package corresponds to one OJ S (Official Journal Supplement)
-issue, published on business days. The URL format is:
+For past years (before the current year), uses monthly bulk packages:
+    https://ted.europa.eu/packages/monthly/{YYYY-MM}
+    e.g. https://ted.europa.eu/packages/monthly/2024-06
+
+For the current year, uses daily packages:
     https://ted.europa.eu/packages/daily/{year}{issue:05d}
-e.g. https://ted.europa.eu/packages/daily/202600022 for OJ S 022/2026
+    e.g. https://ted.europa.eu/packages/daily/202600022 for OJ S 022/2026
 
 Environment variables:
     START_YEAR: Override first year to process (default: from config, 2004)
@@ -24,65 +26,76 @@ from investigraph.model import DatasetContext, Source
 ISSUES_PER_MONTH = 23
 
 
-def _max_issues(year: int) -> int:
-    """Estimate max OJ S issue number for a given year.
+def _monthly_sources(year: int) -> list[Source]:
+    """Generate monthly Source objects for a past year."""
+    sources = []
+    for month in range(1, 13):
+        year_month = f"{year}-{month:02d}"
+        url = f"https://ted.europa.eu/packages/monthly/{year_month}"
+        sources.append(
+            Source(
+                uri=url,
+                metadata={
+                    "year_month": year_month,
+                    "year": year,
+                    "month": month,
+                },
+            )
+        )
+    return sources
 
-    For past years, use the full-year upper bound (12 * ISSUES_PER_MONTH).
-    For the current year, scale by the current month to avoid generating
-    hundreds of non-existent source URLs.
-    """
+
+def _daily_sources(year: int) -> list[Source]:
+    """Generate daily Source objects for the current year."""
     now = datetime.now()
-    if year < now.year:
-        return 12 * ISSUES_PER_MONTH
-    # Current year: scale to current month
-    return now.month * ISSUES_PER_MONTH
+    max_issue = now.month * ISSUES_PER_MONTH
+    sources = []
+    for issue in range(1, max_issue + 1):
+        oj_number = f"{year}{issue:05d}"
+        url = f"https://ted.europa.eu/packages/daily/{oj_number}"
+        sources.append(
+            Source(
+                uri=url,
+                metadata={
+                    "oj_number": oj_number,
+                    "year": year,
+                    "issue": issue,
+                },
+            )
+        )
+    return sources
 
 
 def handle(ctx: DatasetContext) -> Generator[Source, None, None]:
     """
-    Generate Source objects for TED daily XML archives.
+    Generate Source objects for TED XML archives.
 
-    Yields one Source per OJ S issue (business day) for each year in the
-    configured range, pointing to the daily package URL at ted.europa.eu.
-    Sources are yielded in reverse chronological order (newest first).
+    Uses monthly packages for past years and daily packages for the current
+    year. Sources are yielded in reverse chronological order (newest first).
 
     Environment variables START_YEAR and END_YEAR override config values.
-
-    Configuration in config.yml:
-        seed:
-          handler: ./seed.py:handle
-          first_year: 2004   # Optional, defaults to 2004
-          last_year: null     # Optional, defaults to current year
     """
+    now = datetime.now()
     first_year = int(
         os.environ.get("START_YEAR") or getattr(ctx.config.seed, "first_year", 2004)
     )
     last_year = int(
         os.environ.get("END_YEAR")
         or getattr(ctx.config.seed, "last_year", None)
-        or datetime.now().year
+        or now.year
     )
 
     ctx.log.info(
-        f"Generating sources for TED daily packages from {first_year} to {last_year}"
+        f"Generating sources for TED packages from {first_year} to {last_year}"
+        f" (monthly for past years, daily for {now.year})"
     )
 
     sources = []
     for year in range(first_year, last_year + 1):
-        max_issue = _max_issues(year)
-        for issue in range(1, max_issue + 1):
-            oj_number = f"{year}{issue:05d}"
-            url = f"https://ted.europa.eu/packages/daily/{oj_number}"
-            sources.append(
-                Source(
-                    uri=url,
-                    metadata={
-                        "oj_number": oj_number,
-                        "year": year,
-                        "issue": issue,
-                    },
-                )
-            )
+        if year < now.year:
+            sources.extend(_monthly_sources(year))
+        else:
+            sources.extend(_daily_sources(year))
 
     # Yield in reverse order (newest first)
     for source in reversed(sources):
