@@ -38,7 +38,7 @@ frozenlist==1.8.0 ; python_version >= "3.11" and python_version < "3.14"
 fsspec==2026.2.0 ; python_version >= "3.11" and python_version < "3.14"
 ftfy==6.3.1 ; python_version >= "3.11" and python_version < "3.14"
 ftm-lakehouse @ git+https://github.com/openaleph/ftm-lakehouse.git@5349086d63e33203bce0de174f8cf161b5b167fe ; python_version >= "3.11" and python_version < "3.14"
-ftmq==4.5.7 ; python_version >= "3.11" and python_version < "3.14"
+ftmq==4.6.0 ; python_version >= "3.11" and python_version < "3.14"
 furl==2.1.4 ; python_version >= "3.11" and python_version < "3.14"
 greenlet==3.3.2 ; python_version >= "3.11" and python_version < "3.14" and (platform_machine == "aarch64" or platform_machine == "ppc64le" or platform_machine == "x86_64" or platform_machine == "amd64" or platform_machine == "AMD64" or platform_machine == "win32" or platform_machine == "WIN32")
 h11==0.16.0 ; python_version >= "3.11" and python_version < "3.14"
