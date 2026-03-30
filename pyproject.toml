@@ -72,7 +72,7 @@ push = true
 poetry-plugin-export = ">=1.8"
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^9.3.0"
+ipython = "^9.10.1"
 ipdb = "^0.13.13"
 bumpver = "^2025.1131"
 pre-commit = "^4.5.1"
