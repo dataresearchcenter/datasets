@@ -94,7 +94,7 @@ pycparser==3.0 ; python_version >= "3.11" and python_version < "3.14" and implem
 pydantic-core==2.41.5 ; python_version >= "3.11" and python_version < "3.14"
 pydantic-settings==2.13.1 ; python_version >= "3.11" and python_version < "3.14"
 pydantic==2.12.5 ; python_version >= "3.11" and python_version < "3.14"
-pygit2==1.19.1 ; python_version >= "3.11" and python_version < "3.14"
+pygit2==1.19.2 ; python_version >= "3.11" and python_version < "3.14"
 pygments==2.19.2 ; python_version >= "3.11" and python_version < "3.14"
 pyicu==2.16.1 ; python_version >= "3.11" and python_version < "3.14"
 pyparsing==3.3.2 ; python_version >= "3.11" and python_version < "3.14"
