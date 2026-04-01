@@ -67,7 +67,7 @@ memorious4 @ git+https://github.com/dataresearchcenter/memorious@a4e220df1fabd1a
 mmh3==5.2.1 ; python_version >= "3.11" and python_version < "3.14"
 multidict==6.7.1 ; python_version >= "3.11" and python_version < "3.14"
 mypy-extensions==1.1.0 ; python_version >= "3.11" and python_version < "3.14"
-mypy==1.19.1 ; python_version >= "3.11" and python_version < "3.14"
+mypy==1.20.0 ; python_version >= "3.11" and python_version < "3.14"
 networkx==3.4.2 ; python_version >= "3.11" and python_version < "3.14"
 nomenklatura==4.7.1 ; python_version >= "3.11" and python_version < "3.14"
 normality==3.1.0 ; python_version >= "3.11" and python_version < "3.14"
