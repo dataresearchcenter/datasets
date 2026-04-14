@@ -1,0 +1,53 @@
+name: us_ms_voters
+title: Mississippi State Voter File
+country: us
+prefix: us-ms
+summary: |
+  Mississippi state voter registration records containing voter information and electoral district assignments.
+
+description: |
+  The Mississippi State Voter File contains voter registration data for all registered voters in Mississippi.
+  Includes personal information (name, address), registration details, voting status, and comprehensive
+  electoral district assignments covering federal, state, and local jurisdictions.
+
+  Data includes demographic information, residential and mailing addresses, precinct assignments,
+  and detailed district codes for Congressional, State Senate, State House, and various local districts.
+  Updated regularly by the Mississippi Secretary of State's office.
+
+publisher:
+  name: Mississippi Secretary of State
+  description: |
+    The Mississippi Secretary of State's office maintains official voter registration records
+    and election administration for the state of Mississippi.
+  country: us
+  url: https://www.sos.ms.gov/
+  official: true
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+
+git_repo: https://github.com/dataresearchcenter/datasets
+content_type: structured
+category: gov
+frequency: weekly
+
+resources:
+  - name: entities.ftm.json
+    url: https://data.ftm.store/us_ms_voters/entities.ftm.json
+    mime_type: application/json+ftm
+
+extract:
+  sources:
+    - uri: ./1_19_2026 Statewide Voter File Weekly Distribution.csv
+      name: statewide_voters
+      pandas:
+        read:
+          handler: read_csv
+          options:
+            dtype: str
+            encoding: utf-8
+
+transform:
+  handler: ./transform.py:handle
