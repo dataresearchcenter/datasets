@@ -15,18 +15,16 @@ publisher:
     His Majesty's Land Registry is a non-ministerial department of His Majesty's Government,
     created in 1862 to register the ownership of land and property in England and Wales.
   url: https://use-land-property-data.service.gov.uk/datasets/ccod
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/gb_ccod/entities.ftm.json
-    mime_type: application/json+ftm
 maintainer:
   name: DARC
   url: https://dataresearchcenter.org
   logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
 
+seed:
+  handler: ./seed.py:handle
+  uri: https://use-land-property-data.service.gov.uk/api/v1/datasets/ccod
+
 extract:
-  sources:
-    - uri: https://use-land-property-data.service.gov.uk/api/v1/datasets/ccod
   handler: ./extract.py:handle
 
 transform:

@@ -1,13 +1,12 @@
-from functools import cache
 import os
 import re
 from base64 import b64encode
 from fnmatch import fnmatch
 from typing import Any, Generator
 
-from anystore.util import clean_dict
 import requests
-from investigraph.model import Context, Source
+from anystore.util import clean_dict
+from investigraph.model import Source, SourceContext
 from runpandarun import Playbook
 
 AUTH = tuple(os.environ["DATA_BASIC_AUTH"].split(":"))
@@ -18,7 +17,6 @@ PAT = re.compile(r"a href=\"(?P<url>.*\.csv\.gz)\"")
 BASE_URL = "https://data.farmsubsidy.org/cleaned/"
 
 
-@cache
 def get_play(url: str) -> Playbook:
     return Playbook(
         read={
@@ -29,7 +27,7 @@ def get_play(url: str) -> Playbook:
     )
 
 
-def seed(ctx: Context, *args, **kwargs) -> Generator[Source, None, None]:
+def seed(ctx: SourceContext, *args, **kwargs) -> Generator[Source, None, None]:
     for glob in ctx.config.seed.glob:
         uri = glob.rsplit("/", 1)[0]
         index = requests.get(uri, auth=AUTH)
@@ -39,7 +37,9 @@ def seed(ctx: Context, *args, **kwargs) -> Generator[Source, None, None]:
                 yield Source(uri=url, pandas=get_play(url))
 
 
-def handle(ctx: Context, *args, **kwargs) -> Generator[dict[str, Any], None, None]:
+def handle(
+    ctx: SourceContext, *args, **kwargs
+) -> Generator[dict[str, Any], None, None]:
     df = ctx.source.pandas.run()
     df = df.fillna("").map(str)
     df["recipient_id"] = ctx.config.dataset.prefix + "-" + df["recipient_id"]

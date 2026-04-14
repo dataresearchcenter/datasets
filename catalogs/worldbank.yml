@@ -1,0 +1,6 @@
+datasets:
+  - from_uri: https://data.ftm.store/worldbank_ifc_advisory_services/index.json
+  - from_uri: https://data.ftm.store/worldbank_ifc_investment_services/index.json
+  - from_uri: https://data.ftm.store/worldbank_procurement_awards/index.json
+  - from_uri: https://data.ftm.store/worldbank_procurement_projects/index.json
+  - from_uri: https://data.ftm.store/worldbank_procurement_notices/index.json

@@ -1,0 +1,94 @@
+name: eu_ec_ease
+title: EU EASE - Electronic Access to Commission Documents
+prefix: eu-ease
+
+summary: |
+  Documents released through the European Commission's EASE
+  (Electronic Access to Commission Documents) portal in response to public
+  access requests under Regulation 1049/2001.
+
+description: |
+  The EASE portal is the European Commission's system for publishing documents
+  released in response to freedom of information (FOI) requests. Under EU
+  Regulation 1049/2001, EU citizens and residents have the right to access
+  documents held by EU institutions. When the Commission grants full or partial
+  access to requested documents, they are published on this portal.
+
+  This dataset contains disclosed documents and their metadata including:
+  - Document titles and reference numbers (Ares references)
+  - Disclosure dates and access types (full/partial)
+  - Responsible DGs (Directorates-General) that disclosed the documents
+  - Keywords and associated legal exceptions (where partial access was granted)
+
+  The data is sourced from the EASE public JSON API. For some documents download
+  is not possible due to authentication restriction.
+
+  As of December 2025, the portal contains over 20,000 disclosed documents dating
+  back to 2022, with new documents added regularly as FOI requests are processed.
+
+publisher:
+  name: European Commission
+  description: |
+    The European Commission is the executive branch of the European Union,
+    responsible for proposing legislation, implementing decisions, and managing
+    the day-to-day business of the EU. The Secretariat-General coordinates the
+    Commission's document access regime under Regulation 1049/2001, which
+    guarantees public access to European Parliament, Council, and Commission
+    documents.
+  url: https://ec.europa.eu/transparency/documents-request/search
+  country: eu
+  official: true
+
+data_url: https://ec.europa.eu/transparency/documents-request/search
+category: gov
+content_type: mixed
+license: https://commission.europa.eu/legal-notice_en#copyright-notice
+
+coverage:
+  start: "2022-10-01"
+  frequency: daily
+
+tags:
+  - foi
+  - foia
+  - transparency
+  - access to documents
+  - regulation 1049/2001
+  - european commission
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+
+pipeline:
+  init:
+    method: ./operations.py:seed
+    params:
+      timedelta:
+        days: 7
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    handle:
+      pass: parse
+
+  parse:
+    method: ./operations.py:parse
+    handle:
+      fetch: fetch
+      download: download
+
+  download:
+    method: fetch
+    handle:
+      pass: store
+
+  store:
+    method: lakehouse
+    params:
+      compute_path:
+        method: template
+        params:
+          template: "{{ disclosedBy|default('other') }}/{{ disclosureDate[:4] }}/{{ disclosureDate[5:7] }}/{{ referenceNumber }}/{{ publishedDocumentId }}/{{ file_name }}"

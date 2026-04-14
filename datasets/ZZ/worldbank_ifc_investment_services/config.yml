@@ -1,0 +1,54 @@
+name: worldbank_ifc_investment_services
+title: IFC Investment Services Projects
+prefix: wb
+
+summary: |
+  Investment projects by the International Finance Corporation (IFC) providing
+  financing to private sector companies in developing countries through loans,
+  equity, guarantees, and risk management products.
+
+description: |
+  This dataset contains information about IFC investment projects worldwide.
+  Each record represents an individual investment with details including
+  project name, recipient company, country, industry, investment amounts
+  by type (loan, equity, guarantee, risk management), and project status.
+
+  The IFC is a member of the World Bank Group and is the largest global
+  development institution focused on the private sector in emerging markets.
+
+  Data is updated daily and covers projects from inception to present.
+
+coverage:
+  start: "2000"
+  countries:
+    - zz
+  frequency: daily
+
+category: procurement
+
+publisher:
+  name: International Finance Corporation (IFC)
+  description: |
+    The International Finance Corporation is an international financial
+    institution that offers investment, advisory, and asset-management
+    services to encourage private-sector development in less developed
+    countries. The IFC is a member of the World Bank Group.
+  url: https://www.ifc.org
+  country: zz
+  official: true
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+license: https://creativecommons.org/licenses/by/4.0/
+
+extract:
+  handler: common.worldbank.extract:handle
+  sources:
+    - uri: https://datacatalogapi.worldbank.org/dexapps/fone/api/apiservice?datasetId=DS00499&resourceId=RS00448&type=json
+
+transform:
+  handler: ./transform.py:handle

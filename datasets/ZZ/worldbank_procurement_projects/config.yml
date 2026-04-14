@@ -1,0 +1,56 @@
+name: worldbank_procurement_projects
+title: World Bank Contract Awards in Investment Project Financing
+prefix: wb
+
+summary: |
+  Contract awards for goods, works, and services procured under World Bank
+  investment project financing (development projects) since FY2017.
+
+description: |
+  This dataset contains procurement contract awards for World Bank-financed
+  development projects. Each record represents a contract awarded to a
+  supplier for goods, works, or consulting services as part of a project
+  funded by IBRD loans or IDA credits/grants.
+
+  Unlike corporate procurement, these contracts are for project implementation
+  in borrower countries - infrastructure, consulting, equipment, etc.
+
+  Data includes supplier details, contract amounts, procurement methods,
+  and links to the parent development project.
+
+coverage:
+  start: "2017"
+  countries:
+    - zz
+  frequency: daily
+
+category: procurement
+
+publisher:
+  name: World Bank Group
+  description: |
+    The World Bank provides loans, credits, and grants to developing
+    countries for development projects. This dataset covers procurement
+    under those investment operations.
+  url: https://www.worldbank.org
+  country: zz
+  official: true
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+license: https://creativecommons.org/licenses/by/4.0/
+
+extract:
+  handler: common.worldbank.extract:handle
+  sources:
+    # FY2020 onwards (current)
+    - uri: https://datacatalogapi.worldbank.org/dexapps/fone/api/apiservice?datasetId=DS00005&resourceId=RS00005&type=json
+    # FY2017-FY2019 (historic)
+    - uri: https://datacatalogapi.worldbank.org/dexapps/fone/api/apiservice?datasetId=DS04691&resourceId=RS03957&type=json
+
+transform:
+  handler: ./transform.py:handle

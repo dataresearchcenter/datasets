@@ -1,33 +1,55 @@
-FROM ghcr.io/dataresearchcenter/investigraph:0.7.0
+# Stage 1: Install Python dependencies (rarely changes)
+FROM ghcr.io/dataresearchcenter/investigraph:0.8.0 AS base
 
-COPY ./datasets/DE/de_lobbyregister /datasets/de_lobbyregister
+USER root
 
-COPY ./datasets/EU/ec_meetings /datasets/ec_meetings
-COPY ./datasets/EU/eu_transparency_register /datasets/eu_transparency_register
+# Copy only files needed for pip install
+COPY pyproject.toml setup.py README.md Makefile requirements.txt /datasets/
+COPY common /datasets/common
 
-COPY ./datasets/GB/gb_ocod /datasets/gb_ocod
-COPY ./datasets/GB/gb_ccod /datasets/gb_ccod
-COPY ./datasets/GB/gb_pricepaid /datasets/gb_pricepaid
+# Create required structure and install
+RUN mkdir -p /datasets/datasets && \
+    pip install -q --no-cache-dir --no-deps -r /datasets/requirements.txt && \
+    pip install -q --no-cache-dir awscli && \
+    pip install -q --no-cache-dir psycopg-binary==3.3.2 && \
+    pip install -q --no-cache-dir --no-deps /datasets && \
+    chown -R 1000 /datasets
 
-COPY ./datasets/US/us_cpr /datasets/us_cpr
+# Stage 2: Add build tools (changes occasionally)
+FROM base AS build-tools
 
-COPY Makefile /datasets/
+COPY Makefile build_catalog.py /datasets/
 COPY catalogs /datasets/catalogs
-COPY build_catalog.py /datasets/
-COPY setup.py /datasets/
-COPY pyproject.toml /datasets/
-COPY README.md /datasets/
 
-USER 0
-RUN mkdir /datasets/datasets
-RUN touch /datasets/datasets/__init__.py
 RUN chown -R 1000 /datasets
-RUN pip install /datasets
-RUN pip install awscli
+
+# Stage 3: Add datasets (changes frequently)
+FROM build-tools AS final
+
+# Copy all datasets preserving directory structure, then flatten
+COPY --chown=1000:1000 ./datasets /datasets/_src
+
+# Flatten dataset directories: /datasets/_src/XX/dataset_name -> /datasets/dataset_name
+RUN for d in /datasets/_src/*/*; do \
+        if [ -d "$d" ]; then \
+            name=$(basename "$d"); \
+            mv "$d" "/datasets/$name"; \
+        fi; \
+    done && \
+    rm -rf /datasets/_src
+
+RUN mkdir -p /home/1000/.duckdb && chown -R 1000 /home/1000
+
 USER 1000
-
 WORKDIR /datasets
-ENTRYPOINT [ "" ]
+ENTRYPOINT [ "/bin/bash", "-c" ]
 
-ENV INVESTIGRAPH_ARCHIVE_URI=s3://memorious/investigraph
-ENV ANYSTORE_URI=memory://
+ENV HOME=/home/1000
+
+ENV AWS_REGION=eu-central-1
+ENV MEMORIOUS_HTTP_TIMEOUT=3600
+ENV MEMORIOUS_MAX_RUNTIME=18000  
+ENV FTM_STATEMENT_STORE=leveldb:///tmp/statements.db
+ENV LAKEHOUSE_JOURNAL_URI=sqlite:////tmp/journal.db
+ENV LAKEHOUSE_URI=s3://data.openaleph.org
+ENV LAKEHOUSE_PUBLIC_URL_PREFIX="https://data.openaleph.org/{{ dataset }}"

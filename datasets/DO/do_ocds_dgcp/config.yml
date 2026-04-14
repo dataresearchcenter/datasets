@@ -1,0 +1,46 @@
+name: do_ocds_dgcp
+title: Dominican Republic - Dirección General de Contrataciones Públicas
+prefix: ocds
+country: do
+summary: |
+  Public procurement contracts from the Dominican Republic's DGCP (Dirección General
+  de Contrataciones Públicas), covering federal, local, and central government agencies.
+description: |
+  This dataset contains government procurement records from local and central agencies
+  in the Dominican Republic using the transactional portal managed by DGCP. The data
+  covers the full contracting process including parties, tenders, awards, contracts,
+  documents, and amendments.
+
+  The dataset includes 344,357 parties, 169,354 tenders, 155,287 awards, and 211,802
+  contracts. Certain purchases are excluded from the dataset, such as petty cash
+  transactions under RD$50,000 and foreign service office acquisitions. Data is
+  retrieved monthly with daily updates.
+publisher:
+  name: Dirección General de Contrataciones Públicas (DGCP)
+  description: |
+    DGCP is the Dominican Republic's General Directorate of Public Procurement,
+    responsible for managing and overseeing government procurement processes through
+    their transactional portal. The agency ensures transparency in public contracting.
+  url: https://www.dgcp.gob.do/
+  country: do
+  official: true
+url: https://data.open-contracting.org/en/publication/22
+data:
+  url: https://data.open-contracting.org/en/publication/22/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: daily
+category: procurement
+coverage:
+  start: '2020-02-10'
+license: https://opendatacommons.org/licenses/odbl/1-0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/22/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

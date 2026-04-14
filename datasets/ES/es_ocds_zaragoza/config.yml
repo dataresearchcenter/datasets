@@ -1,0 +1,36 @@
+name: es_ocds_zaragoza
+prefix: ocds
+country: es
+title: 'OCDS: Municipality of Zaragoza'
+summary: Public procurement data from Municipality of Zaragoza in OCDS format.
+description: |
+  This dataset contains public procurement records from Municipality of Zaragoza published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: Municipality of Zaragoza
+  description: |
+    Municipality of Zaragoza publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/1/
+  country: es
+  official: true
+url: https://data.open-contracting.org/en/publication/1/
+data:
+  url: https://data.open-contracting.org/en/publication/1/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: unknown
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/1/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

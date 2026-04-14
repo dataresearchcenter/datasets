@@ -1,0 +1,37 @@
+name: zm_ocds_zppa
+prefix: ocds
+country: zm
+title: 'OCDS: Public Procurement Authority (ZPPA)'
+summary: Public procurement data from Zambia Public Procurement Authority in OCDS
+  format.
+description: |
+  This dataset contains public procurement records from Zambia Public Procurement Authority published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: Zambia Public Procurement Authority
+  description: |
+    Zambia Public Procurement Authority publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/3/
+  country: zm
+  official: true
+url: https://data.open-contracting.org/en/publication/3/
+data:
+  url: https://data.open-contracting.org/en/publication/3/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: monthly
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/3/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

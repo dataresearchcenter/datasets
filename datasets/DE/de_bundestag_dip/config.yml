@@ -26,9 +26,9 @@ stealthy: true
 
 pipeline:
   init:
-    method: de_bundestag_dip:seed
+    method: ./operations.py:seed
     params:
-      url: https://search.dip.bundestag.de/api/v1/drucksache?apikey=I9FKdCn.hbfefNWCY336dL6x62vfwNKpoN2RZ1gp21
+      url: https://search.dip.bundestag.de/api/v1/drucksache?apikey=OSOegLs.PR2lwJ1dwCeje9vTj7FPOt3hvpYKtwKkhw
       timedelta:
         days: 5
     handle:
@@ -40,7 +40,7 @@ pipeline:
       pass: parse
 
   parse:
-    method: de_bundestag_dip:parse
+    method: ./operations.py:parse
     handle:
       cursor: fetch
       download: download
@@ -51,9 +51,9 @@ pipeline:
       pass: store
 
   store:
-    method: utils.operations:store
-
-leakrfc:
-  sync:
-    memorious:
-      key_template: "{{ base }}/{{ meta.wahlperiode }}. Wahlperiode/{{ meta.fundstelle.dokumentart }}/{{ meta.fundstelle.drucksachetyp }}/{{ meta.id }}-{{ meta.fundstelle.pdf_url.split('/')[-1] }}"
+    method: lakehouse
+    params:
+      compute_path:
+        method: template
+        params:
+          template: "{{ base }}/{{ meta.wahlperiode }}. Wahlperiode/{{ meta.fundstelle.dokumentart }}/{{ meta.fundstelle.drucksachetyp }}/{{ meta.id }}-{{ meta.fundstelle.pdf_url.split('/')[-1] }}"

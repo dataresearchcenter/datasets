@@ -1,0 +1,49 @@
+name: mx_ocds_quienesquien
+title: Mexico - QuiénEsQuién.Wiki
+prefix: ocds
+country: mx
+summary: |
+  Mexican public procurement data aggregated from multiple sources including Compranet
+  and other government institutions, compiled by PODER for transparency research.
+description: |
+  This dataset aggregates Mexican public contracting information from multiple sources
+  including Compranet (the government contracting system) spanning 2010-present, plus
+  data from other government institutions and civil society organizations. The data
+  was compiled by PODER (Project on Organizing, Development, Education, and Research)
+  for their QuiénEsQuién.Wiki transparency platform.
+
+  The dataset contains 1,661 contracting processes with party, planning, tender, award,
+  and contract information. This is a snapshot dataset from March 2022 that is no
+  longer being updated. The data is made available under a Creative Commons
+  Attribution-NonCommercial-ShareAlike license.
+publisher:
+  name: PODER (Project on Organizing, Development, Education, and Research)
+  description: |
+    PODER is a Mexican civil society organization focused on corporate accountability,
+    transparency, and anti-corruption research. They compiled this procurement dataset
+    from multiple government and civil society sources for the QuiénEsQuién.Wiki
+    platform, which maps relationships between government contracts and private entities.
+  url: https://www.projectpoder.org/
+  country: mx
+  official: false
+url: https://data.open-contracting.org/en/publication/33
+data:
+  url: https://data.open-contracting.org/en/publication/33/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: never
+category: procurement
+coverage:
+  start: '2022-03-03'
+  end: '2022-03-03'
+license: https://creativecommons.org/licenses/by-nc-sa/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/33/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

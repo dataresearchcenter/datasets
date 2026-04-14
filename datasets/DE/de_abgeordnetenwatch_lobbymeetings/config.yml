@@ -34,7 +34,6 @@ extract:
 
 
 transform:
-  # handler: ./transform.py:handle
   queries:
     - entities:
         politician:

@@ -24,16 +24,16 @@ content_type: documents
 
 pipeline:
   init:
-    method: utils.operations:init
+    method: init
     handle:
       pass: seed
 
   seed:
-    method: de_parlamentsspiegel:seed
+    method: ./operations.py:seed
     params:
-      url: https://www.parlamentsspiegel.de/suche?query=&detail=true&qyZeitAb=&qyZeitBis=&type=dokument&als=0&size=10&page=0
+      url: https://www.parlamentsspiegel.de/suche?query=&detail=true&qyZeitAb=&qyZeitBis=&type=dokument&als=0&size=50&page=0
       timedelta:
-        days: 30
+        days: 7
     handle:
       pass: fetch
 
@@ -43,7 +43,7 @@ pipeline:
       pass: parse
 
   parse:
-    method: de_parlamentsspiegel:parse
+    method: ./operations.py:parse
     handle:
       fetch: fetch
       download: download
@@ -62,9 +62,9 @@ pipeline:
       store: store
 
   store:
-    method: utils.operations:store
-
-leakrfc:
-  sync:
-    memorious:
-      key_template: "{{ state }}/{% if legislative_term %}{{ legislative_term }}. Wahlperiode{% else %}{{ date[:4] }}{% endif %}/{{ category }}/{{ doc_type }}/{% if reference_id %}{{ reference_id.replace('/','-') }} - {% endif %}{{ doc_id }}.{{ _file_name.split('.')[-1] }}"
+    method: lakehouse
+    params:
+      compute_path:
+        method: template
+        params:
+          template: "{{ state }}/{% if legislative_term %}{{ legislative_term }}. Wahlperiode{% else %}{{ date[:4] }}{% endif %}/{{ category }}/{{ doc_type }}/{% if reference_id %}{{ reference_id.replace('/','-') }}-{% endif %}{{ foreign_id }}.{{ url.split('/')[-1] }}"

@@ -1,0 +1,36 @@
+name: ug_ocds_ppda
+prefix: ocds
+country: ug
+title: 'OCDS: Public Procurement and Disposal of Public Assets Authority (PPDA)'
+summary: Public procurement data from PPDA in OCDS format.
+description: |
+  This dataset contains public procurement records from PPDA published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: PPDA
+  description: |
+    PPDA publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/130/
+  country: ug
+  official: true
+url: https://data.open-contracting.org/en/publication/130/
+data:
+  url: https://data.open-contracting.org/en/publication/130/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: monthly
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/130/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

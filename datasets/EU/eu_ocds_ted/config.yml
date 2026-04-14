@@ -1,0 +1,44 @@
+name: eu_ocds_ted
+prefix: ocds
+country: eu
+title: 'OCDS: Tenders Electronic Daily (TED)'
+summary: Public procurement data from EU Tenders Electronic Daily (TED) in OCDS format.
+description: |
+  This dataset contains public procurement records from Tenders Electronic Daily (TED),
+  the online version of the Supplement to the Official Journal of the European Union,
+  published in the Open Contracting Data Standard (OCDS) format.
+
+  TED is the official source for European public procurement notices and publishes
+  procurement opportunities from across the European Economic Area and beyond. The data
+  includes information about procurement planning, tenders, awards, contracts, and
+  implementation for contracts above EU thresholds.
+
+  Data is sourced via the OpenTender platform which aggregates and standardizes
+  procurement data from TED into OCDS format.
+publisher:
+  name: Publications Office of the European Union
+  description: |
+    The Publications Office of the European Union publishes Tenders Electronic Daily
+    (TED), providing transparency in public procurement across the European Economic Area.
+  url: https://ted.europa.eu/
+  country: eu
+  official: true
+url: https://data.open-contracting.org/en/publication/150/
+data:
+  url: https://data.open-contracting.org/en/publication/150/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: daily
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  archive: true
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/150/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

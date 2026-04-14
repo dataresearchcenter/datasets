@@ -1,14 +1,15 @@
+from followthemoney import EntityProxy
 from ftmq.util import make_fingerprint_id
-from investigraph import SourceContext
-from investigraph.types import CE, CEGenerator, Record
+from investigraph.model import SourceContext
+from investigraph.types import RecordGenerator, Record
 from investigraph.util import clean_name as n
 from investigraph.util import make_data_checksum
 from investigraph.util import make_fingerprint as fp
 from investigraph.util import join_text, make_string_id
 
 
-def make_address(ctx: SourceContext, record: Record) -> CE:
-    proxy = ctx.make_proxy("Address")
+def make_address(ctx: SourceContext, record: Record) -> EntityProxy:
+    proxy = ctx.make_entity("Address")
     street = n(record.pop("beneficiary_street"))
     city = n(record.pop("beneficiary_city"))
     postalCode = n(record.pop("beneficiary_postcode"))
@@ -23,8 +24,8 @@ def make_address(ctx: SourceContext, record: Record) -> CE:
     return proxy
 
 
-def make_project(ctx: SourceContext, record: Record) -> CE | None:
-    proxy = ctx.make_proxy("Project")
+def make_project(ctx: SourceContext, record: Record) -> EntityProxy | None:
+    proxy = ctx.make_entity("Project")
     ident = record.pop("project_identifier")
     name = record.pop("project_name")
     if "Information is not available" in (name, ident):
@@ -45,17 +46,18 @@ def make_project(ctx: SourceContext, record: Record) -> CE | None:
     return proxy
 
 
-def make_payer(ctx: SourceContext, record: Record) -> CE | None:
+def make_payer(ctx: SourceContext, record: Record) -> EntityProxy | None:
     name = record.pop("payer")
     if fp(name):
-        proxy = ctx.make_proxy(
-            "PublicBody", id=ctx.make_id(fp(name)), name=name, country="eu"
-        )
+        id_ = ctx.make_id(fp(name))
+        proxy = ctx.make_entity("PublicBody", id_)
+        proxy.add("name", name)
+        proxy.add("country", "eu")
         return proxy
 
 
-def make_payment(ctx: SourceContext, record: Record, beneficiary: CE) -> CE:
-    proxy = ctx.make_proxy("Payment")
+def make_payment(ctx: SourceContext, record: Record, beneficiary: EntityProxy) -> EntityProxy:
+    proxy = ctx.make_entity("Payment")
     proxy.id = ctx.make_id("payment", beneficiary.id, make_data_checksum(record))
     amount = record.pop("payment_amount")
     proxy.add("amountEur", amount)
@@ -70,12 +72,12 @@ def make_payment(ctx: SourceContext, record: Record, beneficiary: CE) -> CE:
 
 def make_project_participation(
     ctx: SourceContext,
-    participant: CE,
-    project: CE,
+    participant: EntityProxy,
+    project: EntityProxy,
     record: Record,
     role: str | None = None,
-) -> CE:
-    proxy = ctx.make_proxy("ProjectParticipant")
+) -> EntityProxy:
+    proxy = ctx.make_entity("ProjectParticipant")
     proxy.id = ctx.make_id(project.id, participant.id)
     proxy.add("participant", participant)
     proxy.add("project", project)
@@ -87,31 +89,31 @@ def make_project_participation(
     return proxy
 
 
-def make_beneficiary(ctx: SourceContext, record: Record) -> CE:
+def make_beneficiary(ctx: SourceContext, record: Record) -> EntityProxy:
     beneficiary_type = record.pop("beneficiary_type")
     name = record.pop("beneficiary_name")
     ident = make_fingerprint_id(name)
     assert ident is not None
 
     if "NATURAL PERSON" in name:
-        proxy = ctx.make_proxy("Person")
+        proxy = ctx.make_entity("Person")
         proxy.id = ctx.make_slug("person", make_data_checksum(record))
     elif beneficiary_type.lower() == "private persons":
-        proxy = ctx.make_proxy("Person")
+        proxy = ctx.make_entity("Person")
         proxy.id = ctx.make_slug("person", make_data_checksum(record))
     elif beneficiary_type.lower() == "private companies":
-        proxy = ctx.make_proxy("Company")
+        proxy = ctx.make_entity("Company")
     elif beneficiary_type.lower() == "public bodies":
-        proxy = ctx.make_proxy("PublicBody")
+        proxy = ctx.make_entity("PublicBody")
     elif beneficiary_type.lower() == "third states":
-        proxy = ctx.make_proxy("PublicBody")
+        proxy = ctx.make_entity("PublicBody")
     elif (
         "agencies" in beneficiary_type.lower()
         or "organisations" in beneficiary_type.lower()
     ):
-        proxy = ctx.make_proxy("Organization")
+        proxy = ctx.make_entity("Organization")
     else:
-        proxy = ctx.make_proxy("LegalEntity")
+        proxy = ctx.make_entity("LegalEntity")
 
     if proxy.id is None:
         proxy.id = ctx.make_slug(ident)
@@ -126,7 +128,7 @@ def make_beneficiary(ctx: SourceContext, record: Record) -> CE:
     return proxy
 
 
-def handle(ctx: SourceContext, record: Record, ix: int) -> CEGenerator:
+def handle(ctx: SourceContext, record: Record, ix: int) -> RecordGenerator:
     # exclude empty beneficiary names
     if fp(record["beneficiary_name"]):
         beneficiary = make_beneficiary(ctx, record)

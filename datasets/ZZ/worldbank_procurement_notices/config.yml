@@ -1,0 +1,53 @@
+name: worldbank_procurement_notices
+title: World Bank Procurement Notices
+prefix: wb
+
+summary: |
+  Procurement notices (tenders) published by World Bank-financed projects,
+  including invitations for bids and requests for expressions of interest.
+
+description: |
+  This dataset contains procurement notices published by implementing agencies
+  for World Bank-financed development projects. Each record represents a
+  tender announcement inviting suppliers to bid on contracts for goods,
+  works, or consulting services.
+
+  Notice types include Invitation for Bids (IFB), Request for Expression
+  of Interest (REoI), and other procurement announcements.
+
+  Data includes bid descriptions, procurement methods, submission deadlines,
+  and links to the parent development project.
+
+coverage:
+  start: "2005"
+  countries:
+    - zz
+  frequency: daily
+
+category: procurement
+
+publisher:
+  name: World Bank Group
+  description: |
+    The World Bank provides loans, credits, and grants to developing
+    countries for development projects. This dataset covers procurement
+    notices under those investment operations.
+  url: https://www.worldbank.org
+  country: zz
+  official: true
+
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+
+license: https://creativecommons.org/licenses/by/4.0/
+
+extract:
+  handler: common.worldbank.extract:handle
+  sources:
+    - uri: https://datacatalogapi.worldbank.org/dexapps/fone/api/apiservice?datasetId=DS00979&resourceId=RS00909&type=json
+
+transform:
+  handler: ./transform.py:handle

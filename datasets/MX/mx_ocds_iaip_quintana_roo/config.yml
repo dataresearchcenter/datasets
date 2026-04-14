@@ -1,0 +1,37 @@
+name: mx_ocds_iaip_quintana_roo
+prefix: ocds
+country: mx
+title: 'OCDS: Instituto de Acceso a la Información y Protección de Datos Personales
+  de Quintana Roo (IDAIPQROO)'
+summary: Public procurement data from IDAIPQROO in OCDS format.
+description: |
+  This dataset contains public procurement records from IDAIPQROO published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: IDAIPQROO
+  description: |
+    IDAIPQROO publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/99/
+  country: mx
+  official: true
+url: https://data.open-contracting.org/en/publication/99/
+data:
+  url: https://data.open-contracting.org/en/publication/99/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: never
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/99/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

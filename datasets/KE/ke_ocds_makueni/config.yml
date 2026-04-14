@@ -1,0 +1,36 @@
+name: ke_ocds_makueni
+prefix: ocds
+country: ke
+title: 'OCDS: Makueni County'
+summary: Public procurement data from Makueni County Government in OCDS format.
+description: |
+  This dataset contains public procurement records from Makueni County Government published in the
+  Open Contracting Data Standard (OCDS) format. The data includes information about
+  procurement planning, tenders, awards, contracts, and implementation, providing
+  transparency in public spending and contracting processes.
+publisher:
+  name: Makueni County Government
+  description: |
+    Makueni County Government publishes public procurement data to promote transparency and
+    accountability in government contracting.
+  url: https://data.open-contracting.org/en/publication/13/
+  country: ke
+  official: true
+url: https://data.open-contracting.org/en/publication/13/
+data:
+  url: https://data.open-contracting.org/en/publication/13/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: never
+category: procurement
+license: https://creativecommons.org/licenses/by/4.0/
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/13/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

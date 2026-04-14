@@ -1,0 +1,46 @@
+name: bo_ocds_agetic
+title: Bolivia - AGETIC
+prefix: ocds
+country: bo
+summary: |
+  Public procurement contracts from Bolivia's AGETIC (Agencia de Gobierno Electrónico
+  y Tecnologías de Información y Comunicación), covering federal government contracts
+  from 2019-2020.
+description: |
+  This dataset contains public procurement data published by AGETIC, Bolivia's
+  Electronic Government and Information and Communication Technologies Agency.
+  The data covers federal government procurement processes during 2019 and 2020.
+
+  The dataset includes information about contracting parties, tenders, awards,
+  contracts, and related documentation. This is a historical dataset that is no
+  longer actively updated, with coverage ending in December 2020.
+publisher:
+  name: AGETIC (Agencia de Gobierno Electrónico y Tecnologías de Información y Comunicación)
+  description: |
+    AGETIC is Bolivia's government agency responsible for electronic government
+    services and ICT policy. The agency published this procurement data as part
+    of transparency and open data initiatives.
+  url: https://agetic.gob.bo/
+  country: bo
+  official: true
+url: https://data.open-contracting.org/en/publication/20
+data:
+  url: https://data.open-contracting.org/en/publication/20/download?name=full.jsonl.gz
+  format: OCDS 1.1
+frequency: annually
+category: procurement
+coverage:
+  start: '2019-01-01'
+  end: '2020-12-31'
+license: https://datos.gob.bo/licenses/41
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+extract:
+  handler: common.ocds.extract:handle
+  sources:
+  - uri: https://data.open-contracting.org/en/publication/20/download?name=full.jsonl.gz
+transform:
+  handler: common.ocds.transform:handle

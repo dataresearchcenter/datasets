@@ -10,21 +10,38 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/dataresearchcenter/datasets:latest
     env:
+      HOME: /home/1000
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
     strategy:
+      fail-fast: false
       matrix:
-        dataset:
-          - ec_meetings
-          - eu_transparency_register
-          - de_lobbyregister
+        include:
+          - dataset: ec_meetings
+            runner: investigraph
+          - dataset: eu_transparency_register
+            runner: investigraph
+          - dataset: de_lobbyregister
+            runner: investigraph
+          - dataset: de_bundestag_dip
+            runner: memorious
+          - dataset: de_sehrgutachten
+            runner: memorious
+          - dataset: de_bgh
+            runner: memorious
+          - dataset: de_parlamentsspiegel
+            runner: memorious
+          - dataset: eu_ec_ease
+            runner: memorious
     steps:
-      - name: parse and write the dataset
-        run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
+      - name: Run ${{ matrix.runner }} for ${{ matrix.dataset }}
+        run: make ${{ matrix.runner }} dataset=${{ matrix.dataset }} DATASETS_DIR=.
+        working-directory: /datasets
 
   catalog:
     needs: data
+    if: always()
     runs-on: ubuntu-latest
     container: ghcr.io/dataresearchcenter/datasets:latest
     defaults:

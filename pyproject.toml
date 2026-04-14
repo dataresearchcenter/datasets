@@ -4,6 +4,7 @@ version = "2025.6.4.0"
 description = "DARC Data Library"
 authors = [
     { name = "Alexandra Ștefănescu", email = "alex@dataresearchcenter.org" },
+    { name = "Karina Shedrofsky", email = "karina@dataresearchcenter.org" },
     { name = "Jan Strozyk", email = "jan@dataresearchcenter.org" },
     { name = "Simon Wörpel", email = "simon@dataresearchcenter.org" },
 ]
@@ -17,7 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.11,<4"
+requires-python = ">=3.11,<3.14"
 dependencies = [
     "httpx (>=0.28.1,<0.29.0)",
     "plyvel (>=1.5.1,<2.0.0)",
@@ -27,8 +28,12 @@ dependencies = [
     "pygit2 (>=1.18.0,<2.0.0)",
     "ftfy (>=6.3.1,<7.0.0)",
     "lzip (>=1.2.0,<2.0.0)",
-    "investigraph (>=0.7.0,<0.8.0)",
-    "memorious @ git+https://github.com/dataresearchcenter/memorious@v3.0.1",
+    "pycountry (>=24.6.1,<25.0.0)",
+    "memorious4 @ git+https://github.com/dataresearchcenter/memorious",
+    "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git",
+    "ftm-lakehouse @ git+https://github.com/openaleph/ftm-lakehouse.git",
+    "anystore (>=1.0.1,<2.0.0)",
+    "ftmq (>=4.5.2,<5.0.0)",
 ]
 
 [project.urls]
@@ -39,7 +44,7 @@ Issues = "https://github.com/dataresearchcenter/datasets/issues"
 
 [tool.poetry]
 packages = [
-    { include = "util" }
+    { include = "common" }
 ]
 
 
@@ -63,7 +68,11 @@ push = true
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "README.md" = ["{version}"]
 
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^9.3.0"
 ipdb = "^0.13.13"
+bumpver = "^2025.1131"
+pre-commit = "^4.5.1"

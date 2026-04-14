@@ -20,17 +20,20 @@ jobs:
       FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
       GB_OCOD_KEY: ${{ secrets.GB_OCOD_KEY }}
     strategy:
+      fail-fast: false
       matrix:
         dataset:
           - gb_ocod
-          - gb_ccod 
+          - gb_ccod
           - gb_pricepaid
     steps:
       - name: parse and write the dataset
-        run: "investigraph run -c /datasets/${{ matrix.dataset }}/config.yml --entities-uri s3://data.ftm.store/${{ matrix.dataset }}/entities.ftm.json --index-uri s3://data.ftm.store/${{ matrix.dataset }}/index.json"
+        run: make investigraph dataset=${{ matrix.dataset }} DATASETS_DIR=.
+        working-directory: /datasets
 
   catalog:
     needs: data
+    if: always()
     runs-on: ubuntu-latest
     container: ghcr.io/dataresearchcenter/datasets:latest
     defaults:
