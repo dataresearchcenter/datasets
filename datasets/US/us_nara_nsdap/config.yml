@@ -1,0 +1,46 @@
+name: us_nara_nsdap
+title: NARA NSDAP Membership Records
+prefix: us-nara-nsdap
+description: >
+  Digitized records of the NSDAP (Nationalsozialistische Deutsche Arbeiterpartei)
+  membership and master files held by the U.S. National Archives and Records
+  Administration (NARA) as part of Record Group 242, "National Archives
+  Collection of Foreign Records Seized". The collection comprises the NSDAP
+  central party membership index cards (A3340-MFKL series) microfilmed by NARA
+  and now made available as PDF objects via the National Archives Catalog.
+category: library
+publisher:
+  name: U.S. National Archives and Records Administration
+  url: https://www.archives.gov/
+  country: us
+  official: true
+data_url: https://catalog.archives.gov/id/12044361
+maintainer:
+  name: DARC
+  url: https://dataresearchcenter.org
+  logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
+git_repo: https://github.com/dataresearchcenter/datasets
+coverage:
+  frequency: never
+content_type: documents
+
+pipeline:
+  init:
+    method: ./operations.py:seed
+    params:
+      source: ./src/urls.json
+    handle:
+      pass: fetch
+
+  fetch:
+    method: fetch
+    handle:
+      pass: store
+
+  store:
+    method: lakehouse
+    params:
+      compute_path:
+        method: template
+        params:
+          template: "{{ file_name }}"
