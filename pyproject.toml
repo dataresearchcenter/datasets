@@ -14,26 +14,25 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.13,<3.15"
 dependencies = [
     "httpx (>=0.28.1,<0.29.0)",
     "plyvel (>=1.5.1,<2.0.0)",
     "ijson (>=3.4.0,<4.0.0)",
     "beautifulsoup4 (>=4.13.4,<5.0.0)",
-    "followthemoney (>=4.5.0,<5.0.0)",
+    "followthemoney (>=4.10.0,<5.0.0)",
     "pygit2 (>=1.18.0,<2.0.0)",
     "ftfy (>=6.3.1,<7.0.0)",
     "lzip (>=1.2.0,<2.0.0)",
     "pycountry (>=24.6.1,<25.0.0)",
-    "memorious4 (>=4.0.1,<5.0.0)",
+    "memorious4 @ git+https://github.com/dataresearchcenter/memorious.git",
     "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git",
-    "ftm-lakehouse (>=0.4.0,<0.5.0)",
-    "anystore (>=1.1.9,<2.0.0)",
-    "ftmq (>=4.8.1,<5.0.0)",
+    "ftm-lakehouse @ git+https://github.com/openaleph/ftm-lakehouse.git",
+    "anystore (>=1.2.5,<2.0.0)",
+    "ftmq (>=4.10.0,<5.0.0)",
 ]
 
 [project.urls]
