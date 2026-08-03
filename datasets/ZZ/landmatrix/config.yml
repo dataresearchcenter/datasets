@@ -1,9 +1,30 @@
 name: landmatrix
-title: Landmatrix.org Investors
+title: Landmatrix.org Land Deals & Investors
 prefix: lmi
+license: http://creativecommons.org/licenses/by/4.0/
 summary: |
-  Investors and involvements from the open access landmatrix dataset. Not (yet)
-  included: Deals & Contracts
+  Large-scale land acquisitions ("deals") worldwide and the investors behind
+  them, from the open access Land Matrix database.
+description: |
+  The Land Matrix documents large-scale land acquisitions (LSLAs) in low- and
+  middle-income countries: agricultural, forestry, mining, tourism and renewable
+  energy projects in which land is leased, bought or conceded to an investor.
+
+  Each deal records the target country, the size of the land area, what the land
+  is used or intended for, and how far negotiation and implementation have
+  progressed. Around it hang the land grant itself, the signed contracts with
+  their dates and durations, the individual locations the deal covers with their
+  coordinates, and the investors involved: the operating company that holds the
+  deal and the ultimate parent companies behind it. The investor side carries the
+  investor network itself: parent/subsidiary relations, joint ventures and lender
+  relationships, including ownership percentages and loan amounts where known.
+
+  Coverage is crowd-sourced and curated by the Land Matrix partners, so
+  completeness varies by country and by deal. Only publicly released records are
+  included; investors whose identity is not known are kept as placeholder
+  entities so that the deal chain stays traversable. Deals are built from both
+  the json api and the wider legacy csv export, which cover the same records but
+  expose different fields.
 publisher:
   name: The Land Matrix Initiative (LMI)
   description: |
@@ -28,7 +49,12 @@ git_repo: https://github.com/dataresearchcenter/datasets
 
 extract:
   sources:
-    - uri: "https://landmatrix.org/api/legacy_export/?filters=[]&subset=PUBLIC&format=csv"
+    - name: deals
+      uri: "https://landmatrix.org/api/deals/?format=json&subset=PUBLIC"
+    - name: investors
+      uri: "https://landmatrix.org/api/investors/?format=json&subset=PUBLIC"
+    - name: legacy
+      uri: "https://landmatrix.org/api/legacy_export/?filters=[]&subset=PUBLIC&format=csv"
   handler: ./extract.py:handle
 
 transform:
