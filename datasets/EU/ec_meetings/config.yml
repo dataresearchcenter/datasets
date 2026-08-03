@@ -1,5 +1,5 @@
 name: ec_meetings
-title: European Commission - Meetings with interest representatives
+title: European Commission - Meetings with interest representatives and missions
 prefix: ec
 country: eu
 summary: |
@@ -11,6 +11,23 @@ summary: |
   meaning and scope of the conditionality and complementary transparency
   measures provided for in the Interinstitutional Agreement establishing the
   mandatory Transparency Register.
+description: |
+  This dataset covers the meetings held with interest representatives by the
+  commissioners of the Von der Leyen (2024-2029), Von der Leyen (2019-2024) and
+  Juncker (2014-2019) colleges, by the members of their cabinets, by the
+  directorates-general and by the executive agencies. It also covers the
+  missions of the commissioners, published every two months under Article 6(2)
+  of the Code of Conduct for the Members of the European Commission, including
+  the reimbursed travel, accommodation, daily allowance and miscellaneous costs.
+
+  Meetings become `Event` entities organized by the hosting body or
+  commissioner, involving the commission representatives that attended and the
+  interest representatives that were met. Missions become `Event` entities
+  spanning their start and end date, with the reimbursed amounts kept as notes.
+
+  Note that the portal no longer publishes the Transparency Register id of the
+  interest representatives it lists, so organisations are keyed by their
+  fingerprinted name and cannot be linked to the register by identifier.
 category: poi
 tags:
   - lobbyism
@@ -27,22 +44,20 @@ maintainer:
   logo_url: https://cdn.investigativedata.org/style/logos/darc/svg/DARC-Logo-RGB-Horizontal-Neg.svg
 git_repo: https://github.com/dataresearchcenter/datasets
 
+# One source per section of https://ec.europa.eu/transparency-initiative/meetings/.
+# The handler walks each section table to its hosts, and takes the rows from the
+# xlsx export every host detail page links to. The commissioners section covers
+# three colleges and yields the meetings of the commissioners, the meetings of
+# their cabinets and their missions.
 extract:
-  pandas:
-    read:
-      options:
-        skiprows: 1
-    operations:
-      - handler: DataFrame.fillna
-        options:
-          value: ""
+  handler: ./extract.py:handle
   sources:
-    - name: ec_juncker
-      uri: https://ec.europa.eu/transparencyinitiative/meetings/dataxlsx.do?name=meetingscommissionrepresentatives1419
-    - name: ec_leyen
-      uri: https://ec.europa.eu/transparencyinitiative/meetings/dataxlsx.do?name=meetingscommissionrepresentatives1924
-    - name: dc_meetings
-      uri: https://ec.europa.eu/transparencyinitiative/meetings/dataxlsx.do?name=meetingsdirectorgenerals
+    - name: commissioners
+      uri: https://ec.europa.eu/transparency-initiative/meetings/listcommissioners?collegeid=0
+    - name: dg
+      uri: https://ec.europa.eu/transparency-initiative/meetings/listdg
+    - name: ea
+      uri: https://ec.europa.eu/transparency-initiative/meetings/listea
 
 transform:
   handler: ./transform.py:handle
