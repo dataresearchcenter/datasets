@@ -1,0 +1,69 @@
+name: eu_rrf
+prefix: eu-rrf
+title: "Recovery and Resilience Fund: 100 largest final recipients per country"
+category: procurement
+tags:
+  - financial transparency
+  - public funding
+
+publisher:
+  name: Publications Office of the European Union
+  url: https://op.europa.eu
+  official: true
+
+maintainer:
+  name: "Data and Research Center – DARC"
+  url: https://dataresearchcenter.org
+git_repo: https://github.com/dataresearchcenter/datasets
+
+extract:
+  pandas:
+    read:
+      options:
+        dtype: str
+  sources:
+    - uri: ./src/top100.xlsx
+
+transform:
+  queries:
+    - entities:
+        beneficiary:
+          schema: LegalEntity
+          keys:
+            - Country
+            - "Identification number <br/>(for legal persons)"
+          properties:
+            name:
+              column: "Recipient"
+            country:
+              column: "Country"
+            registrationNumber:
+              column: "Identification number <br/>(for legal persons)"
+        payer:
+          schema: PublicBody
+          key: Country
+          properties:
+            name:
+              column: "Country"
+        payment:
+          schema: Payment
+          key_literal: payment
+          keys:
+            - Country
+            - "Identification number <br/>(for legal persons)"
+            - "Amounts (€)"
+          properties:
+            payer:
+              entity: payer
+            beneficiary:
+              entity: beneficiary
+            amountEur:
+              column: "Amounts (€)"
+            amount:
+              column: "Amounts (€)"
+            currency:
+              literal: "EUR"
+            purpose:
+              column: "Associated measure(s)"
+            programme:
+              literal: "Recovery and Resilience Fund"
