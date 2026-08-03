@@ -1,10 +1,11 @@
+import os
 from enum import Enum
 
 from banal import ensure_dict
 from followthemoney import E
 from followthemoney.util import make_entity_id
 from ftmq.types import Entities
-from ftmq.util import clean_string, make_fingerprint, get_country_code
+from ftmq.util import clean_string, get_country_code, make_fingerprint
 from investigraph.exceptions import DataError
 from investigraph.model import SourceContext, TaskContext
 from investigraph.types import Record
@@ -30,6 +31,88 @@ def format_euro_range(amounts: dict | None) -> str | None:
 
 
 DEFAULT_COUNTRY = {"code": "de"}
+
+
+def clean_path(value: str, limit: int | None = None) -> str:
+    """A single archive path component - no separators, no runaway length."""
+    value = " ".join(value.replace("/", "-").replace("\\", "-").split())
+    if limit is not None and len(value) > limit:
+        # back off to the last word boundary instead of cutting mid-word
+        value = value[:limit].rsplit(" ", 1)[0]
+    return value.strip(" .-,")
+
+
+def lobbyist_folders(org: E) -> list[str]:
+    """Archive folders for everything belonging to one register entry."""
+    return ["Lobbyisten", join_text(org.first("idNumber"), "-", org.caption)]
+
+
+def archive_document(
+    context: TaskContext, proxy: E, url: str, title: str, folders: list[str]
+) -> None:
+    """Archive a referenced file and add what the lakehouse knows about it.
+
+    Does nothing without a `LAKEHOUSE_URI` - there is nowhere to put the file
+    then, and the entity keeps its `sourceUrl` either way.
+    """
+    if not os.environ.get("LAKEHOUSE_URI"):
+        return
+    suffix = url.rsplit("/", 1)[-1].rsplit(".", 1)
+    name = f"{clean_path(title, 120)}.{suffix[-1] if len(suffix) > 1 else 'pdf'}"
+    path = "/".join([*(clean_path(f) for f in folders), name])
+    try:
+        file = context.fetch(
+            url, id=proxy.id, key=path, name=name, title=title, sourceUrl=url
+        )
+    except Exception as exc:
+        context.log.warning("Cannot archive document", url=url, error=str(exc))
+        return
+    proxy.add("contentHash", file.checksum)
+    proxy.add("fileSize", file.size)
+    proxy.add("mimeType", file.mimetype)
+    proxy.add("parent", file.parent)
+    for folder in file.make_parents():
+        context.emit(folder)
+
+
+def make_document(
+    context: TaskContext,
+    entity: E,
+    url: str,
+    *,
+    role: str,
+    title: str,
+    folders: list[str],
+    key: str | None = None,
+    dates: list[str] | None = None,
+) -> E:
+    """Emit a `Document` for a pdf the register references, tied to `entity`.
+
+    The document is keyed by `key` where the source offers something more
+    stable than the url (which changes whenever a file is republished), so an
+    updated file replaces the old one instead of piling up next to it. Where a
+    `LAKEHOUSE_URI` is configured the file is archived under `folders` on top
+    of that, and the resulting checksum and folder are added to the same entity.
+    """
+    proxy = context.make_entity("Document")
+    proxy.id = context.make_id(role, entity.id, key or url)
+    proxy.add("title", title)
+    proxy.add("sourceUrl", url)
+    proxy.add("fileName", url.split("/")[-1])
+    proxy.add("mimeType", "application/pdf")
+    proxy.add("date", dates)
+
+    archive_document(context, proxy, url, title, folders)
+    context.emit(proxy)
+
+    rel = context.make_entity("Documentation")
+    rel.id = context.make_id("documentation", entity.id, proxy.id)
+    rel.add("document", proxy)
+    rel.add("entity", entity)
+    rel.add("role", role)
+    rel.add("date", dates)
+    context.emit(rel)
+    return proxy
 
 
 def make_address(context: TaskContext, data: Record) -> E:
@@ -81,7 +164,7 @@ def make_person(context: TaskContext, org_ident: str, data: Record) -> E | None:
         gov_func = data.get("recentGovernmentFunction", {})
         func_type = gov_func.get("type", {})
         func_type_code = func_type.get("code") if isinstance(func_type, dict) else None
-        func_type_name = func_type.get("de") if isinstance(func_type, dict) else None
+        # func_type_name = func_type.get("de") if isinstance(func_type, dict) else None
 
         # Extract position name and organization based on function type
         position_name = None
@@ -92,7 +175,11 @@ def make_person(context: TaskContext, org_ident: str, data: Record) -> E | None:
             if isinstance(func, dict):
                 position_name = func.get("de")
             if hr.get("functionPosition"):
-                position_name = f"{position_name} ({hr['functionPosition']})" if position_name else hr["functionPosition"]
+                position_name = (
+                    f"{position_name} ({hr['functionPosition']})"
+                    if position_name
+                    else hr["functionPosition"]
+                )
             # Create PublicBody for Bundestag
             org_entity = context.make_entity("PublicBody")
             org_entity.id = context.make_slug("org", "bundestag")
@@ -115,7 +202,9 @@ def make_person(context: TaskContext, org_ident: str, data: Record) -> E | None:
                         position_name = f"{position_name}, {ministry_title}"
                     # Create PublicBody for the specific ministry
                     org_entity = context.make_entity("PublicBody")
-                    org_entity.id = context.make_slug("org", ministry_short or make_fingerprint(ministry_title))
+                    org_entity.id = context.make_slug(
+                        "org", ministry_short or make_fingerprint(ministry_title)
+                    )
                     org_entity.add("name", ministry_title)
                     org_entity.add("weakAlias", ministry_short)
                     org_entity.add("country", "de")
@@ -148,7 +237,9 @@ def make_person(context: TaskContext, org_ident: str, data: Record) -> E | None:
         if position_name:
             # Create Position entity
             position = context.make_entity("Position")
-            position.id = context.make_id("position", func_type_code or "gov", make_fingerprint(position_name))
+            position.id = context.make_id(
+                "position", func_type_code or "gov", make_fingerprint(position_name)
+            )
             position.add("name", position_name)
             position.add("country", "de")
             if org_entity:
@@ -295,7 +386,9 @@ def make_organization(context: TaskContext, proxy: E, data: Record) -> E:
 def make_ministry(context: TaskContext, data: Record) -> E:
     ident = data.pop("shortTitle")
     proxy = context.make_entity("PublicBody")
-    proxy.id = context.make_slug("org", ident)  # Add "org" prefix for namespace consistency
+    proxy.id = context.make_slug(
+        "org", ident
+    )  # Add "org" prefix for namespace consistency
     proxy.add("name", data.pop("title"))
     proxy.add("weakAlias", ident)
     proxy.add("country", "de")
@@ -324,7 +417,8 @@ def make_bill(context: TaskContext, data: Record, project: E, org: E) -> E:
     title = data.pop("title", data.get("customTitle"))
     if title is None:
         raise DataError("No title for `make_bill`")
-    # Include project.id to ensure uniqueness - same bill title for different projects = different IDs
+    # Include project.id to ensure uniqueness - same bill title for different
+    # projects = different IDs
     proxy.id = context.make_id("draft-bill", project.id, title)
     proxy.add("name", title)
     proxy.add("date", data.pop("publicationDate", data.get("customDate")))
@@ -344,15 +438,33 @@ def make_bill(context: TaskContext, data: Record, project: E, org: E) -> E:
     context.emit(participant)
 
     for ministry in data.pop("leadingMinistries"):
+        # `make_ministry` pops the titles, so read the urls first
+        project_url = ministry.get("draftBillProjectUrl")
+        document_url = ministry.get("draftBillDocumentUrl")
         participant = make_ministry(context, ministry)
         context.emit(participant)
         rel = context.make_entity("ProjectParticipant")
         rel.id = context.make_id("bill-participant", proxy.id, participant.id)
         rel.add("project", proxy)
         rel.add("participant", participant)
-        rel.add("sourceUrl", ministry.get("draftBillProjectUrl"))
-        rel.add("sourceUrl", ministry.get("draftBillDocumentUrl"))
+        rel.add("sourceUrl", project_url)
+        rel.add("sourceUrl", document_url)
         context.emit(rel)
+
+        if document_url:
+            make_document(
+                context,
+                proxy,
+                document_url,
+                role="Referentenentwurf",
+                title=join_text("Referentenentwurf:", title),
+                folders=[
+                    "Referentenentwürfe",
+                    participant.first("weakAlias") or participant.caption,
+                ],
+            )
+
+    return proxy
 
 
 def make_project(context: TaskContext, data: Record, org: E) -> E:
@@ -363,7 +475,8 @@ def make_project(context: TaskContext, data: Record, org: E) -> E:
     proxy.add("name", data.get("title", data.get("regulatoryProjectTitle")))
     proxy.add("description", clean_string(data.get("description")))
     proxy.add("keywords", [i["de"] for i in data.get("fieldsOfInterest", [])])
-    proxy.add("sourceUrl", data.get("pdfUrl"))
+    # a `pdfUrl` here belongs to the statement this project was built from, not
+    # to the project - `make_statement` documents it on the statement itself
 
     rel = context.make_entity("ProjectParticipant")
     rel.id = context.make_id("participant", proxy.id, org.id)
@@ -381,13 +494,23 @@ def make_project(context: TaskContext, data: Record, org: E) -> E:
         for matter in data["printedMatters"]:
             doc = context.make_entity("Document")
             foreign_id = matter.pop("printingNumber")
+            # keyed by the printing number so the same paper stays one entity
+            # across all the projects referencing it
             doc.id = context.make_slug("document", foreign_id)
             doc.add("title", matter.get("title"))
-            doc.add("publisher", matter.pop("issuer"))
+            issuer = matter.pop("issuer")
+            doc.add("publisher", issuer)
             url = matter.get("documentUrl")
             if url:
                 doc.add("sourceUrl", url)
                 doc.add("fileName", url.split("/")[-1])
+                archive_document(
+                    context,
+                    doc,
+                    url,
+                    join_text("Drucksache", foreign_id, "-", matter.get("title")),
+                    ["Drucksachen", issuer or "Unbekannt"],
+                )
             context.emit(doc)
             rel = context.make_entity("Documentation")
             rel.id = context.make_id("matter", proxy.id, doc.id)
@@ -468,7 +591,10 @@ def make_statement(context: TaskContext, data: Record, org: E) -> E:
     proxy = context.make_entity("Article")
     proxy.id = context.make_id("statement", project.id, org.id, *dates)
     proxy.add("title", f"Stellungnahme von {org.caption} zu {project.caption}")
-    proxy.add("bodyText", data.pop("text")["text"])
+    text = data.pop("text", None)
+    if isinstance(text, dict):
+        text = text.get("text")
+    proxy.add("bodyText", text)
     proxy.add("publishedAt", dates)
 
     rel = context.make_entity("Documentation")
@@ -479,12 +605,26 @@ def make_statement(context: TaskContext, data: Record, org: E) -> E:
     rel.add("role", "Stellungnahme")
     context.emit(rel)
 
+    # the statement as it was handed in
+    statement_url = data.get("pdfUrl")
+    if statement_url:
+        make_document(
+            context,
+            proxy,
+            statement_url,
+            role="Stellungnahme",
+            title=join_text("Stellungnahme", org.caption, "zu", project.caption),
+            folders=[*lobbyist_folders(org), "Stellungnahmen"],
+            dates=dates,
+        )
+
     for group in data.pop("recipientGroups"):
         recipients = group.pop("recipients", {})
         # Handle parliament recipients (have code/de/en structure)
         for recipient in recipients.get("parliament", []):
             recipient_org = context.make_entity("PublicBody")
-            # Use make_slug with "org" prefix for consistency - allows merging with other PublicBody refs
+            # Use make_slug with "org" prefix for consistency - allows merging
+            # with other PublicBody refs
             recipient_org.id = context.make_slug("org", recipient["code"].lower())
             recipient_org.add("name", recipient["de"])
             recipient_org.add("country", "de")
@@ -553,7 +693,8 @@ def parse_record(context: TaskContext, data: Record):
         "notes", [i["de"] for i in activities.pop("typesOfExercisingLobbyWork", [])]
     )
     proxy.add("sourceUrl", record.pop("detailsPageUrl"))
-    proxy.add("sourceUrl", record.pop("pdfUrl"))
+    entry_url = record.pop("pdfUrl")
+    proxy.add("sourceUrl", entry_url)
     proxy.add(
         "status",
         "active" if data["accountDetails"]["activeLobbyist"] else "inactive",  # noqa
@@ -579,12 +720,31 @@ def parse_record(context: TaskContext, data: Record):
     funding = data.get("mainFundingSources", {})
     funding_sources = [s.get("de") for s in funding.get("mainFundingSources", [])]
     if funding_sources:
-        proxy.add("notes", f"Funding sources: {', '.join(filter(None, funding_sources))}")
+        proxy.add(
+            "notes", f"Funding sources: {', '.join(filter(None, funding_sources))}"
+        )
 
     membership = data.get("membershipFees", {})
     membership_range = format_euro_range(membership.get("totalMembershipFees"))
     if membership_range:
         proxy.add("notes", f"Membership fees: {membership_range}")
+
+    context.emit(proxy)
+
+    # the register entry itself, republished as a pdf on every version
+    entry = record.get("registerEntryId")
+    version = record.get("version")
+    if entry_url:
+        make_document(
+            context,
+            proxy,
+            entry_url,
+            role="Registereintrag",
+            title=join_text("Registereintrag", registerId, "-", proxy.caption),
+            key=f"{entry}-{version}",
+            folders=[*lobbyist_folders(proxy), "Registereintrag"],
+            dates=[(record.get("validFromDate") or "").split("T")[0] or None],
+        )
 
     # Add annual report as Document entity
     annual = data.get("annualReports", {})
@@ -592,28 +752,29 @@ def parse_record(context: TaskContext, data: Record):
     fiscal_start = annual.get("lastFiscalYearStart")
     fiscal_end = annual.get("lastFiscalYearEnd")
     if report_url:
-        report = context.make_entity("Document")
-        # Use fiscal year dates for stable ID (URLs may change), fall back to URL if no dates
-        report.id = context.make_id("annual-report", proxy.id, fiscal_start or fiscal_end or report_url)
-        report.add("title", f"Jahresabschluss {proxy.caption}")
-        report.add("sourceUrl", report_url)
-        report.add("fileName", report_url.split("/")[-1])
-        report.add("mimeType", "application/pdf")
-        if fiscal_start:
-            report.add("date", fiscal_start)
-        if fiscal_end:
-            report.add("date", fiscal_end)
-        context.emit(report)
+        make_document(
+            context,
+            proxy,
+            report_url,
+            role="Jahresabschluss",
+            title=join_text("Jahresabschluss", proxy.caption),
+            # fiscal year dates outlive the url, which changes on every upload
+            key=fiscal_start or fiscal_end,
+            folders=[*lobbyist_folders(proxy), "Jahresabschluss"],
+            dates=[d for d in (fiscal_start, fiscal_end) if d],
+        )
 
-        # Link document to entity
-        doc_rel = context.make_entity("Documentation")
-        doc_rel.id = context.make_id("annual-report-rel", proxy.id, report.id)
-        doc_rel.add("document", report)
-        doc_rel.add("entity", proxy)
-        doc_rel.add("role", "Jahresabschluss")
-        context.emit(doc_rel)
-
-    context.emit(proxy)
+    conduct = data.get("codeOfConduct") or {}
+    conduct_url = conduct.get("codeOfConductPdfUrl")
+    if conduct_url:
+        make_document(
+            context,
+            proxy,
+            conduct_url,
+            role="Verhaltenskodex",
+            title=join_text("Verhaltenskodex", proxy.caption),
+            folders=[*lobbyist_folders(proxy), "Verhaltenskodex"],
+        )
 
     if data["donators"].get("donatorsInformationPresent"):
         start_date = data["donators"].get("relatedFiscalYearStart")
