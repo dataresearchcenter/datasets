@@ -1403,7 +1403,7 @@ s3 = ["s3fs (>2024.2.0)"]
 type = "git"
 url = "https://github.com/openaleph/ftm-lakehouse.git"
 reference = "HEAD"
-resolved_reference = "2fbd4ae87aae9155d5d1e67aa30bde45a456bccd"
+resolved_reference = "e088f79a51e2e85c9475ab517c4347c9706a71e2"
 
 [[package]]
 name = "ftmq"
@@ -1792,7 +1792,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/investigraph-etl.git"
 reference = "HEAD"
-resolved_reference = "1c88a68c946aaadb54aff4d078d81b891a85e874"
+resolved_reference = "d2966fa1f29f8e74471d4d67d3199c2614cee2f4"
 
 [[package]]
 name = "ipdb"
