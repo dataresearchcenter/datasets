@@ -19,7 +19,6 @@ import os
 from fingerprints import generate as fp
 from followthemoney import EntityProxy
 from followthemoney.util import join_text, make_entity_id
-from ftm_lakehouse import get_archive
 from ftmq.types import Entities
 from investigraph.model import SourceContext
 from investigraph.types import Record
@@ -168,7 +167,7 @@ def make_documentation(
     for ix, url in enumerate(record.get("minutes") or []):
         path = key if not ix else key.replace(".pdf", f" ({ix + 1}).pdf")
         try:
-            file = get_archive(ctx.dataset).store(
+            file = ctx.fetch(
                 url, key=path, name=path.rsplit("/", 1)[-1], title=title, sourceUrl=url
             )
         except Exception as exc:
