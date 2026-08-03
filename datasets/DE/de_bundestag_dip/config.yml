@@ -28,7 +28,7 @@ pipeline:
   init:
     method: ./operations.py:seed
     params:
-      url: https://search.dip.bundestag.de/api/v1/drucksache?apikey=OSOegLs.PR2lwJ1dwCeje9vTj7FPOt3hvpYKtwKkhw
+      url: https://search.dip.bundestag.de/api/v1/drucksache?apikey=R2BZaee.DjdCyihKZMf8AOjtScubP2EVydegzjmBIQ
       timedelta:
         days: 5
     handle:
