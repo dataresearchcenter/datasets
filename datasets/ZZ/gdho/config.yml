@@ -8,10 +8,6 @@ summary: |
   non-governmental organisations (grouped by federation), national NGOs that
   deliver aid within their own borders, UN humanitarian agencies, and the
   International Red Cross and Red Crescent Movement.
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/gdho/entities.ftm.json
-    mime_type: application/json+ftm
 publisher:
   name: Humanitarian Outcomes
   description: |
