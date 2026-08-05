@@ -1891,7 +1891,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/investigraph-etl.git"
 reference = "HEAD"
-resolved_reference = "b3bcce801c494574c5ae1ca3d7809c7e52d2d71e"
+resolved_reference = "fc906432b158648cb5eaca6b65feec486acaf3a6"
 
 [[package]]
 name = "ipdb"
@@ -2725,7 +2725,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/memorious.git"
 reference = "HEAD"
-resolved_reference = "f69141d9b9f52b1d0095df5d1a39659e7dce03f7"
+resolved_reference = "8069c451ebe05e62719512fd9db4c459eaa3d22b"
 
 [[package]]
 name = "mmh3"
