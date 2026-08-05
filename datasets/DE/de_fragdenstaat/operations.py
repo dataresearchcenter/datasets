@@ -45,6 +45,7 @@ def seed(context, data):
             }
 
             if data["url"]:
+                data["file_name"] = data.get("title") or data["url"].split("/")[-1]
                 context.emit(data=data)
 
     if res.json["meta"]["next"] is not None:

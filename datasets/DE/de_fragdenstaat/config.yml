@@ -43,4 +43,4 @@ pipeline:
       compute_path:
         method: template
         params:
-          template: "{{ publicbody.jurisdiction | default('unknown') }}/{{ publicbody.name | default('unknown') | replace('/', ' ') }}/{{ last_modified_at[:4] }}/{{ last_modified_at[5:7] }}/{{ id }} - {{ title.replace('/', ' ') }}"
+          template: "{{ publicbody.jurisdiction | default('unknown') }}/{{ publicbody.name | default('unknown') | replace('/', ' ') }}/{{ last_modified_at[:4] }}/{{ last_modified_at[5:7] }}/{{ id }} - {{ file_name.replace('/', ' ') }}"
