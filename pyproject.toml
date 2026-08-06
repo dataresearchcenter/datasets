@@ -23,7 +23,7 @@ dependencies = [
     "plyvel (>=1.5.1,<2.0.0)",
     "ijson (>=3.4.0,<4.0.0)",
     "beautifulsoup4 (>=4.13.4,<5.0.0)",
-    "followthemoney (>=4.10.0,<5.0.0)",
+    "followthemoney (>=4.10.1,<5.0.0)",
     "pygit2 (>=1.18.0,<2.0.0)",
     "ftfy (>=6.3.1,<7.0.0)",
     "lzip (>=1.2.0,<2.0.0)",
@@ -31,8 +31,8 @@ dependencies = [
     "memorious4 @ git+https://github.com/dataresearchcenter/memorious.git",
     "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git",
     "ftm-lakehouse @ git+https://github.com/openaleph/ftm-lakehouse.git",
-    "anystore (>=1.2.5,<2.0.0)",
-    "ftmq (>=4.10.0,<5.0.0)",
+    "anystore (>=1.2.6,<2.0.0)",
+    "ftmq @ git+https://github.com/dataresearchcenter/ftmq.git@refactor/ql",
     "python-calamine (>=0.8.2,<1.0.0)",
 ]
 
