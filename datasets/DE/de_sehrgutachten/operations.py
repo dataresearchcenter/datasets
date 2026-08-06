@@ -41,6 +41,14 @@ WD_NAMES = {
 }
 
 
+# a row can hold additional links besides the document itself (e.g. an audio
+# version), so restrict to the main link
+DOC_LINK = (
+    './/a[contains(@class, "e-linkListItem__anchor")]'
+    '[not(ancestor::ul[contains(@class, "e-linkListItem__additionalLinks")])]'
+)
+
+
 REFERENCE = re.compile(
     r"\b(?P<wd>wd|pe|eu)-(?P<wd_id>\d{1,2})-"  # unit, e.g. "WD 3", "EU-6"
     r"(?:3000-)?"  # the "3000" series marker is not part of the id
@@ -106,7 +114,7 @@ def parse(context: Context, data: SDict):
 
     found = 0
     for row in rows:
-        path = x(row, './/a[contains(@class, "e-linkListItem__anchor")]/@href')
+        path = x(row, f"{DOC_LINK}/@href")
         if not path:  # e.g. the "no results" row
             continue
 
@@ -114,9 +122,7 @@ def parse(context: Context, data: SDict):
         found += 1
 
         try:
-            title = x(
-                row, 'normalize-space(.//a[contains(@class, "e-linkListItem__anchor")])'
-            )
+            title = x(row, f"normalize-space({DOC_LINK})")
             detail_data = {
                 "url": url,
                 "title": title,
