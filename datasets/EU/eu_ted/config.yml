@@ -47,3 +47,5 @@ extract:
 
 transform:
   handler: common.ocds.transform:handle
+
+shards: 32
