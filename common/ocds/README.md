@@ -218,7 +218,7 @@ ContractAward: eu-ted-award-ocds-213czf-award2
 
 ## See Also
 
-- `util/ocds/eu_ted/` - TED-specific OCDS extraction
+- `common/ocds/eu_ted/` - TED-specific OCDS extraction
 - [OCDS 1.1.5 Schema](https://standard.open-contracting.org/schema/1__1__5/)
 - [FollowTheMoney Schema](https://followthemoney.tech/explorer/schemata/)
 - [investigraph Documentation](https://investigraph.dev/)
