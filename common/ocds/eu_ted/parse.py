@@ -11,6 +11,8 @@ from lxml import etree
 from pydantic import BaseModel
 
 from common.ocds.eu_ted import extractors, model
+from common.ocds.eu_ted import eform_extractors as eform
+import traceback
 
 # Implemented form types
 IMPLEMENTED_OLD_FORMS = ["F01", "F02", "F03"]
@@ -21,6 +23,8 @@ IMPLEMENTED_EFORMS = [
     "result",
     "dir-awa-pre",
     "cont-modif",
+    # "can-standard",
+    # "cn-standard",
 ]
 
 # eForms namespaces
@@ -31,7 +35,44 @@ EFORMS_NSMAP = {
     "efbc": "http://data.europa.eu/p27/eforms-ubl-extension-basic-components/1",
     "efext": "http://data.europa.eu/p27/eforms-ubl-extensions/1",
     "ext": "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2",
+    "can": "urn:oasis:names:specification:ubl:schema:xsd:ContractAwardNotice-2",
 }
+
+def extract_all_cpvs(
+    tender: model.Tender,
+    doc_sec_coded: etree._Element,
+    doc_sec_forms: etree._Element
+) -> model.Tender:
+
+    cpv: list = doc_sec_coded.findall(
+        ".//ORIGINAL_CPV", namespaces=doc_sec_coded.nsmap
+        )
+    if cpv is not None:
+        cpvCode = []
+        cpvName = []
+        for item in cpv:
+            if item is not None:
+                cpvCode.append(item.get("CODE"))
+                cpvName.append(item.text)
+        cpvCode = list(dict.fromkeys(cpvCode))
+        cpvName = list(dict.fromkeys(cpvName))
+        tender.cpvCode = cpvCode
+        tender.cpvName = cpvName
+
+    # Check CPV codes in both sections match
+    other_cpv: list = doc_sec_forms.findall(
+        ".//CPV_CODE", namespaces=doc_sec_forms.nsmap
+        )
+    other_cpv = list(dict.fromkeys(other_cpv))
+    if other_cpv is not None:
+        tempCPV = []
+        for item in other_cpv:
+            if item is not None:
+                tempCPV.append(item.get("CODE"))
+        if set(tender.cpvCode) != set(tempCPV):
+            print("\033[38;5;208mError: CPV code lists are not same.\033[0m")
+
+    return tender
 
 
 def ted_notice_to_ocds_releases(
@@ -124,7 +165,7 @@ def ted_notice_to_ocds_releases(
         cb_pl = doc_sec_forms.find(
             ".//CONTRACTING_BODY/PROCUREMENT_LAW", namespaces=doc_sec_forms.nsmap
         )
-        if cb_pl is not None and cb_pl:
+        if cb_pl is not None and len(cb_pl):
             tender.procurementMethodDetails = cb_pl[0].text
 
         # Extract communication details
@@ -145,6 +186,9 @@ def ted_notice_to_ocds_releases(
         tender.title = extractors.extract_title(elem, doc_sec_trans)
         tender.description = extractors.extract_description(elem)
         tender.value = extractors.extract_value(doc_sec_forms, "tender")
+
+        # Extract all CPV
+        tender = extract_all_cpvs(tender, doc_sec_coded, doc_sec_forms)
 
         # Process awards for F03 forms
         if form_type == "F03":
@@ -407,6 +451,52 @@ def _generate_ocid(
 
     return ocid_prefix + str(uuid.uuid5(uuid.NAMESPACE_URL, ocid_suffix))
 
+def _get_eform_metadata(
+    root: etree._Element
+    ):
+    # get publication date
+    publication = (
+        root.findtext(".//efac:Publication/efbc:PublicationDate", namespaces=EFORMS_NSMAP)
+        or root.findtext(".//cbc:IssueDate", namespaces=EFORMS_NSMAP)
+        or root.findtext(".//efac:SettledContract/cbc:IssueDate", namespaces=EFORMS_NSMAP)
+        or root.findtext(".//cac:ContractAwardNotice/cbc:IssueDate", namespaces=EFORMS_NSMAP)
+    )
+
+    # no publication date in the eForm
+    # if not publication or not publication[0].text:
+    #     return None
+    # if publication is None:
+    #     return None
+    # print(f"pub: {publication.tag} {publication.text}")
+    # date_str = publication[0].text
+    # print(f"date: {publication} ")
+    date_str = publication
+    if date_str is None:
+        return None
+    # print(f"date: {date_str} ")
+    # Remove timezone part if present
+    if date_str.endswith("Z"):
+        date_str = date_str[:-1]
+    elif "+" in date_str:
+        date_str = date_str.split("+")[0]
+    elif "-" in date_str and date_str.count("-") > 2:
+        date_str = date_str.rsplit("-", 1)[0]
+    
+    pub_date = datetime.strptime(date_str, "%Y-%m-%d")
+
+    form_type_elem = root.find(
+        ".//cbc:NoticeTypeCode",
+        namespaces=EFORMS_NSMAP
+        )
+
+    form_type_name = form_type_elem.get("listName")
+    form_type_text = form_type_elem.text
+
+    return {
+    "date": pub_date,
+    "type": form_type_name,
+    "subtype": form_type_text,
+    }
 
 def parse_eform_notice(root: etree._Element) -> Generator[BaseModel, None, None]:
     """
@@ -415,16 +505,17 @@ def parse_eform_notice(root: etree._Element) -> Generator[BaseModel, None, None]
     :param root: Root element of the eForms XML
     :return: Generator of OCDS releases
     """
-    # Check for eForm type
-    eform_type_elem = root.find(".//cbc:NoticeTypeCode", EFORMS_NSMAP)
-    if eform_type_elem is None:
-        return
 
-    eform_type = eform_type_elem.get("listName")
+    # # Check for eForm type
+    # eform_type_elem = root.find(".//cbc:NoticeTypeCode", EFORMS_NSMAP)
+    # if eform_type_elem is None:
+    #     return
 
-    # Only process implemented eForms
-    if eform_type not in IMPLEMENTED_EFORMS:
-        return
+    # eform_type = eform_type_elem.get("listName")
+
+    # # Only process implemented eForms
+    # if eform_type not in IMPLEMENTED_EFORMS:
+    #     return
 
     try:
         # Extract basic notice information
@@ -433,45 +524,246 @@ def parse_eform_notice(root: etree._Element) -> Generator[BaseModel, None, None]
             return
         doc_id = doc_id_elem.text
 
-        date_elem = root.find(".//cbc:IssueDate", EFORMS_NSMAP)
-        if date_elem is None:
+        meta  = _get_eform_metadata(root)
+        if meta is None:
             return
 
-        date_str = date_elem.text
-        # Remove timezone part if present
-        if date_str.endswith("Z"):
-            date_str = date_str[:-1]
-        elif "+" in date_str:
-            date_str = date_str.split("+")[0]
-        elif "-" in date_str and date_str.count("-") > 2:
-            date_str = date_str.rsplit("-", 1)[0]
+        # if meta.get("type") not in ["competition", "planning", "result", "cont-modif", "dir-awa-pre"]:
+        #     print(f"name:{meta.get("type")} text:{meta.get("subtype")}")
 
-        pub_date = datetime.strptime(date_str, "%Y-%m-%d")
+        pub_date = meta.get("date")
+        if pub_date is None:
+            return
 
-        # Create basic release
-        ocid = "ocds-jyvdv7-" + str(uuid.uuid5(uuid.NAMESPACE_URL, doc_id))
+        # Create release and tender
         release = model.Release(
-            ocid=ocid,
-            id=str(uuid.uuid5(uuid.NAMESPACE_URL, doc_id)),
+            ocid="",  # Will be set later
+            id="",  # Will be set later
             date=pub_date,
-            tag=[model.Tag.tender],
+            tag=[],  # Will be set based on form type
             initiationType=model.InitiationType.tender,
         )
+
+        tender = model.Tender(id="")  # Will be set to OCID later
+        release.tender = tender
+
+        form_type = meta.get("type")
+        if form_type is None:
+            return
+        # print(f"form type: {form_type}")
+        # Initialize parties list for all organizations
+        parties = []
+
+        # Set release tags and tender status based on form type
+        if form_type == "planning": #F01
+            notice_type = meta.get("subtype")
+            if notice_type in ("pin-only", "pin-rtl"):
+                release.tag = [model.Tag.planning]
+                tender.status = model.Status.planned
+        elif form_type == "competition": #F02
+            notice_type = meta.get("subtype")
+            if notice_type == "pin-cfc-standard" or notice_type == "pin-cfc-social": # F01
+                release.tag = [model.Tag.planning, model.Tag.tender]
+                tender.status = model.Status.active
+            else: # F02
+                release.tag = [model.Tag.tender]
+                tender.status = model.Status.active
+        elif form_type == "result": #F03
+            release.tag = [model.Tag.award, model.Tag.contract]
+            tender.status = model.Status.complete
+
+        # do we really need uuid component here?
+        ocid = "ocds-jyvdv7-" + str(uuid.uuid5(uuid.NAMESPACE_URL, doc_id))
+        # ocid = "ocds-jyvdv7-" + str(doc_id)
+        release.ocid = ocid
 
         # Extract title and description
         title_elem = root.find(".//cac:ProcurementProject/cbc:Name", EFORMS_NSMAP)
         if title_elem is not None:
-            release.tender = model.Tender(
-                id=str(uuid.uuid4()),
-                title=title_elem.text,
-            )
+            release.tender.title = title_elem.text
+
+        release.tender.id = release.ocid
+        # release.tender.id = str(uuid.uuid4())
+
+        # # Extract tender details
+        # tender.title = extractors.extract_title(elem, doc_sec_trans)
+        release.tender.description = eform.extract_eform_description(root, EFORMS_NSMAP)
+        # HERE
+        # tender.value = extractors.extract_value(doc_sec_forms, "tender")
+
+        cpv_elems: List = root.findall(".//cbc:ItemClassificationCode", EFORMS_NSMAP)
+
+        if cpv_elems is not None and len(cpv_elems) > 0:
+            arr = []
+            for item in cpv_elems:
+                arr.append(item.text)
+
+            cpvCode = list(dict.fromkeys(arr))
+            if len(cpvCode) > 0 and release.tender is not None:
+                release.tender.cpvCode = cpvCode
+                # print(cpvCode)
+
+        organizations = eform.extract_orgs(root, EFORMS_NSMAP)
+
+        # extract all eform buyers, first is the primary buyer for OCDS format
+        buyers = None
+        buyers_dict= eform.extract_contracting_parties(root,EFORMS_NSMAP, organizations)
+        if len(buyers_dict) > 0:
+            first = True
+            for key,value in buyers_dict.items():
+                parties.append(value)
+                #OCDS supports only one buyer; additional go to parties only
+                if first:
+                    release.buyer = value
+                    first = False
+
+        release.parties = parties
+
+        # Find ProcurementProjectLot
+        proc_proj_lot_elems = root.findall("cac:ProcurementProjectLot", namespaces=EFORMS_NSMAP)
+
+        # Process awards for F03 forms - 
+        if form_type == "result":
+            release.awards = []
+            release.contracts = []
+
+            notice_result = root.find(
+                ".//efac:NoticeResult", namespaces=EFORMS_NSMAP
+                )
+            if notice_result is None:
+                print("No .//efac:NoticeResult")
+                return
+            
+            amount_elem = notice_result.find(".//cbc:TotalAmount", namespaces=EFORMS_NSMAP)
+            amount = None
+            currency = None
+            if amount_elem is not None:
+                amount = amount_elem.text
+                currency = amount_elem.get("currencyID")
+            
+            lot_result_elems=notice_result.findall(".//efac:LotResult", namespaces=EFORMS_NSMAP)
+
+            if len(lot_result_elems) > 0:
+                # RES-0001
+                docs = []
+                lot_id = None
+                award_date = None
+                signed_date = None
+                for lot_result_elem in lot_result_elems:
+                    decision_reason = None
+                    lot_res_id = lot_result_elem.findtext(".//cbc:ID", namespaces=EFORMS_NSMAP) # RES-0001 - do we really need this? kind of top level
+                    lot_results = eform.get_lot_result_details(lot_result_elem, root, notice_result, EFORMS_NSMAP, organizations)
+                    contract_details = None
+                    if lot_results.get("CON") is not None:
+                        contract_details = eform.get_contract_details(root, EFORMS_NSMAP, lot_results.get("CON"))#, opt_award_date)
+                        award_date = contract_details.get("AWARD")
+                        signed_date = contract_details.get("SIGN")
+                    result_code = lot_results.get("result-status")
+                    lot_id = lot_results.get("LOT")
+                    if lot_id is not None:
+                        docs.append(lot_id)
+                    value = None
+                    tender_parties = None
+                    tender_party_id = None
+                    if result_code == "selec-w" or result_code == "open-nw":
+                        # settled_con = eform.get_settled_contract_details(notice_result, EFORMS_NSMAP, lot_results.get("CON"))
+                        lot_tender_details= eform.get_lot_tender_details(notice_result, root, EFORMS_NSMAP, lot_results.get("TEN"), amount, currency)
+                        if lot_tender_details is not None:
+                            value = lot_tender_details.get("value")
+                        else:
+                            print(f".//efac:LotTender not available")
+
+                        if lot_tender_details is not None:
+                            tender_party_id  = lot_tender_details.get("TPA")
+                            # print(f"0001 tendering_party_id: {tender_party_id}")
+                            tender_parties = eform.get_tendering_party_details(notice_result, root, EFORMS_NSMAP, tender_party_id)
+                        else:
+                            print(f"Find tender party without ID?")
+                    else:
+                        decision_reason = eform.extract_decision_reason(notice_result, EFORMS_NSMAP, lot_res_id)
+                    
+                    award_title=None
+                    award_descr=None
+                    award_period = dict()
+                    award_items = []
+
+                    # Find the ProcurementProjectLot
+                    if proc_proj_lot_elems is not None:
+                        for lot in proc_proj_lot_elems:
+                            curr_id = lot.findtext(".//cbc:ID", namespaces=EFORMS_NSMAP)
+                            if curr_id == lot_id:
+                                award_title = lot.findtext(".//cac:ProcurementProject/cbc:Name", namespaces=EFORMS_NSMAP)
+                                award_descr = lot.findtext(".//cac:ProcurementProject/cbc:Description", namespaces=EFORMS_NSMAP)
+                                award_period["startDate"] = eform._extract_award_date_str(lot.findtext(".//cac:ProcurementProject/cac:PlannedPeriod/cbc:StartDate", namespaces=EFORMS_NSMAP))
+                                award_period["endDate"] = eform._extract_award_date_str(lot.findtext(".//cac:ProcurementProject/cac:PlannedPeriod/cbc:EndDate", namespaces=EFORMS_NSMAP))
+                                lot_cpv = lot.findtext(".//cac:ProcurementProject/cac:MainCommodityClassification/cbc:ItemClassificationCode", namespaces=EFORMS_NSMAP)
+                                award_items.append({"classification":{"scheme": "CPV"}, "id": lot_cpv})
+                                eu_funded = eform.extract_eufunded(lot, EFORMS_NSMAP)
+                                if eu_funded is not None:
+                                    award_items.append({"classification": { "scheme": "FUNDING", "id": eu_funded}})
+                                break
+
+                    award_id = str(uuid.uuid4())
+                    award = model.Award(
+                        id=award_id,
+                        title=award_title,
+                        # description=award_descr,
+                        status=model.AwardStatus.active,
+                        date=award_date,
+                        value=value,
+                        items=award_items,
+                        contractPeriod=award_period,
+                        decisionReason=decision_reason,
+                        documents=docs
+                        )
+                    # For now
+                    if result_code == "selec-w" or result_code == "open-nw":
+                        award.status = model.AwardStatus.active
+                    else:
+                        award.status = model.AwardStatus.unsuccessful
+
+                    # Create contract
+                    contract = model.Contract(
+                        id=str(uuid.uuid4()),
+                        awardID=award_id,
+                        title=award_title,
+                        description=award_descr,
+                        status=model.ContractStatus.active,
+                        period=award_period,
+                        value=value,
+                        items=award_items,
+                        dateSigned=signed_date,
+                        documents=docs,
+                    )
+                    release.contracts.append(contract)
+
+                    # Extract suppliers
+                    award.suppliers = []
+                    if tender_parties is not None:
+                        for item in tender_parties:
+                            supplier = organizations.get(item)
+                            supplier.roles = ["supplier"]
+                            parties.append(supplier)
+                            award.suppliers.append(supplier)
+
+                    release.awards.append(award)
+            else:
+                # no LotResult section
+                print(f"no lotResult section")
+
+        # Set parties list
+        release.parties = parties
 
         yield release
 
-    except Exception:
-        # If parsing fails, skip this notice silently
+    # except Exception:
+    #     # If parsing fails, skip this notice silently
+    #     return
+    except Exception as e:
+        # If parsing fails, throw and print the error
+        print(e)
+        traceback.print_exc()
         return
-
 
 def parse_ted_notice(
     xml_source: Union[str, BinaryIO],
@@ -515,21 +807,23 @@ def parse_ted_notice(
 
     # Extract form type
     form_type = sec_forms[0].get("FORM")
-    form_version = sec_forms[0].get("VERSION")
+    # form_version = sec_forms[0].get("VERSION")
 
     if form_type is None:
         try:
             form_type = sec_forms[1].get("FORM")
-            form_version = sec_forms[1].get("VERSION")
+            # form_version = sec_forms[1].get("VERSION")
             if form_type is None:
                 return
         except IndexError:
-            if form_version is None:
-                return
-            else:
-                return
+            # if form_version is None:
+            #     return
+            # else:
+            #     return
+            return
 
     # Normalize form type format
+    # eg: 1_2014 -> F01_2024 ; 15_2014 -> F15_2014
     if form_type[0].isdigit():
         if len(form_type) == 1:
             form_type = f"F0{form_type}"
