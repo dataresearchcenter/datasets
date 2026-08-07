@@ -8,6 +8,7 @@ from investigraph.model import SourceContext as C
 from investigraph.types import RecordGenerator
 
 from common.ocds.eu_ted.parse import parse_ted_notice
+import traceback
 
 log = logging.getLogger(__name__)
 
@@ -58,6 +59,7 @@ def handle(ctx: C, *args, **kwargs) -> RecordGenerator:
         ctx.source.info()
     except (DoesNotExist, FileNotFoundError):
         ctx.log.warning("Source does not exist", uri=ctx.source.uri)
+        traceback.print_exc()
         return
 
     processed = 0
@@ -67,12 +69,15 @@ def handle(ctx: C, *args, **kwargs) -> RecordGenerator:
         with ctx.open() as fh:
             with tarfile.open(fileobj=fh, mode="r:gz") as tar:
                 for name, xml_fh in _xml_members_from_tar(tar):
+                    # print(f"file: {name}")
                     try:
                         for release in parse_ted_notice(xml_fh):
                             release_dict = release.model_dump(
                                 mode="json", exclude_none=True
                             )
                             release_dict["__source__"] = "eu_ted"
+                            release_dict["__uri"] = ctx.source.uri
+                            release_dict["__fl"] = name
                             yield release_dict
                             total_releases += 1
 
@@ -94,7 +99,7 @@ def handle(ctx: C, *args, **kwargs) -> RecordGenerator:
             error=str(e),
             processed=processed,
         )
-
+        traceback.print_exc()
     ctx.log.info(
         f"Completed processing {processed} XML files from archive",
         total_releases=total_releases,
