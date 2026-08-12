@@ -5,15 +5,14 @@ from anystore.types import SDict
 from memorious.logic.context import Context
 from normality import latinize_text, slugify
 
-
 BASE_URL = "https://www.bundesgerichtshof.de"
 
 X_ROWS = ".//tbody/tr"
 X_NEXT = ".//a[contains(@class, 'forward')]/@href"
 X_DEP = "./td[1]/text()"
 X_DATE = "./td[2]/text()"
-X_REF = "./td[4]/text()"
-X_URL = "./td[5]//a/@href"
+X_REF = "./td[3]/text()"
+X_URL = "./td[4]//a/@href"
 
 DATE = "%d.%m.%Y"
 
