@@ -24,6 +24,7 @@ links on the deal and skips the documents.
 import os
 import re
 
+from anystore.util import make_data_checksum
 from followthemoney import EntityProxy
 from ftmq.types import Entities
 from investigraph.model import SourceContext, TaskContext
@@ -458,6 +459,7 @@ def parse_legacy_datasource(ctx: TaskContext, record: Record) -> None:
     try:
         file = ctx.fetch(
             remote,
+            cache_key=make_data_checksum(remote),
             key=f"Data sources/Land deal #{deal}/{datasource_filename(record)}",
             title=record["Publication title"] or None,
             sourceUrl=url or remote,

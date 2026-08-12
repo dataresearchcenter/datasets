@@ -168,7 +168,12 @@ def make_documentation(
         path = key if not ix else key.replace(".pdf", f" ({ix + 1}).pdf")
         try:
             file = ctx.fetch(
-                url, key=path, name=path.rsplit("/", 1)[-1], title=title, sourceUrl=url
+                url,
+                cache_key=make_entity_id(url),
+                key=path,
+                name=path.rsplit("/", 1)[-1],
+                title=title,
+                sourceUrl=url,
             )
         except Exception as exc:
             ctx.log.warning("Cannot archive minutes", url=url, error=str(exc))

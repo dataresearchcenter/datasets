@@ -62,7 +62,13 @@ def archive_document(
     path = "/".join([*(clean_path(f) for f in folders), name])
     try:
         file = context.fetch(
-            url, id=proxy.id, key=path, name=name, title=title, sourceUrl=url
+            url,
+            cache_key=proxy.id,
+            id=proxy.id,
+            key=path,
+            name=name,
+            title=title,
+            sourceUrl=url,
         )
     except Exception as exc:
         context.log.warning("Cannot archive document", url=url, error=str(exc))
