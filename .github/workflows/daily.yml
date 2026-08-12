@@ -11,19 +11,21 @@ jobs:
     container: ghcr.io/dataresearchcenter/datasets:latest
     env:
       HOME: /home/1000
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
+      LAKEHOUSE_URI: ${{ secrets.LAKEHOUSE_URI }}
+      LAKEHOUSE_API_KEY: ${{ secrets.LAKEHOUSE_API_KEY }}
+      LAKEHOUSE_API_SECRET: ${{ secrets.LAKEHOUSE_API_SECRET }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - dataset: ec_meetings
-            runner: investigraph
+          # FIXME: needs better incremental logic
+          # - dataset: ec_meetings
+          #   runner: investigraph
           - dataset: eu_transparency_register
             runner: investigraph
-          - dataset: de_lobbyregister
-            runner: investigraph
+          # FIXME: needs better incremental logic
+          # - dataset: de_lobbyregister
+          #   runner: investigraph
           - dataset: de_bundestag_dip
             runner: memorious
           - dataset: de_sehrgutachten
@@ -39,20 +41,20 @@ jobs:
         run: make ${{ matrix.runner }} dataset=${{ matrix.dataset }} DATASETS_DIR=.
         working-directory: /datasets
 
-  catalog:
-    needs: data
-    if: always()
-    runs-on: ubuntu-latest
-    container: ghcr.io/dataresearchcenter/datasets:latest
-    defaults:
-      run:
-        working-directory: /datasets
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
-    steps:
-      - name: Update the catalog
-        run: "make publish"
-      - name: Notify success
-        run: "anystore io -i ${{ secrets.DATASETS_DAILY_HEARTBEAT }}"
+  # catalog:
+  #   needs: data
+  #   if: always()
+  #   runs-on: ubuntu-latest
+  #   container: ghcr.io/dataresearchcenter/datasets:latest
+  #   defaults:
+  #     run:
+  #       working-directory: /datasets
+  #   env:
+  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #     FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
+  #   steps:
+  #     - name: Update the catalog
+  #       run: "make publish"
+  #     - name: Notify success
+  #       run: "anystore io -i ${{ secrets.DATASETS_DAILY_HEARTBEAT }}"

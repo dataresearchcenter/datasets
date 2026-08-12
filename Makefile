@@ -30,5 +30,5 @@ memorious: check_dataset
 	ftm-lakehouse -d $(dataset) make -c $(DATASETS_DIR)/$(dataset)/config.yml --full
 
 investigraph: check_dataset
-	investigraph run -c $(DATASETS_DIR)/$(dataset)/config.yml --entities-uri s3://$(BUCKET)/$(dataset)/entities.ftm.json --statistics-uri s3://$(BUCKET)/$(dataset)/exports/statistics.json
-	ftm-lakehouse -d $(dataset) make -c $(DATASETS_DIR)/$(dataset)/config.yml --full --force
+	investigraph run -c $(DATASETS_DIR)/$(dataset)/config.yml
+	ftm-lakehouse -d $(dataset) make -c $(DATASETS_DIR)/$(dataset)/config.yml --full
