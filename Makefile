@@ -27,8 +27,8 @@ check_dataset:
 
 memorious: check_dataset
 	memorious run $(DATASETS_DIR)/$(dataset)/config.yml -c $(CONCURRENCY)
-	ftm-lakehouse -d $(dataset) make -c $(DATASETS_DIR)/$(dataset)/config.yml --full
+	ftm-lakehouse -d $(dataset) make -c $(DATASETS_DIR)/$(dataset)/config.yml
 
 investigraph: check_dataset
 	investigraph run -c $(DATASETS_DIR)/$(dataset)/config.yml
-	ftm-lakehouse -d $(dataset) make -c $(DATASETS_DIR)/$(dataset)/config.yml --full
+	ftm-lakehouse -d $(dataset) make -c $(DATASETS_DIR)/$(dataset)/config.yml
