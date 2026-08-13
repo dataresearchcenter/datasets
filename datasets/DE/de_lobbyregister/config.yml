@@ -11,10 +11,6 @@ coverage:
     - de
   frequency: weekly
 category: poi
-resources:
-  - name: entities.ftm.json
-    url: https://data.ftm.store/de_lobbyregister/entities.ftm.json
-    mime_type: application/json+ftm
 publisher:
   name: Deutscher Bundestag
   description: German Parliament
