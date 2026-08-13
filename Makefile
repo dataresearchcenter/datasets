@@ -1,7 +1,6 @@
 CATALOG_NAMES := opensanctions worldbank investigraph-eu reference-dach index
 CATALOGS := $(CATALOG_NAMES:%=catalogs/%.json)
-BUCKET := data.openaleph.org
-LAKEHOUSE_URI := s3://$(BUCKET)
+LAKEHOUSE_URI := https://data.openaleph.org
 DATASETS_DIR ?= ./datasets
 CONCURRENCY ?= 2
 
@@ -18,9 +17,9 @@ install:
 clean:
 	rm -rf catalogs/*.json
 
-publish: catalogs
-	aws --endpoint-url https://s3.investigativedata.org s3 sync --exclude "*" --include "*.json" catalogs s3://$(BUCKET)/catalogs/
-	aws --endpoint-url https://s3.investigativedata.org s3 cp catalogs/index.json s3://$(BUCKET)/index.json
+# publish: catalogs
+# 	aws --endpoint-url https://s3.investigativedata.org s3 sync --exclude "*" --include "*.json" catalogs s3://$(BUCKET)/catalogs/
+# 	aws --endpoint-url https://s3.investigativedata.org s3 cp catalogs/index.json s3://$(BUCKET)/index.json
 
 check_dataset:
 	@test -n "$(dataset)" || (echo "dataset is required. Usage: make <target> dataset=<name>" && exit 1)

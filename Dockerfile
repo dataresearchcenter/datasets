@@ -10,7 +10,6 @@ COPY common /datasets/common
 # Create required structure and install
 RUN mkdir -p /datasets/datasets && \
     pip install -q --no-cache-dir --no-deps -r /datasets/requirements.txt && \
-    pip install -q --no-cache-dir awscli && \
     pip install -q --no-cache-dir psycopg-binary==3.3.2 && \
     pip install -q --no-cache-dir --no-deps /datasets && \
     chown -R 1000 /datasets
@@ -48,8 +47,6 @@ ENV HOME=/home/1000
 
 ENV AWS_REGION=eu-central-1
 ENV MEMORIOUS_HTTP_TIMEOUT=3600
-ENV MEMORIOUS_MAX_RUNTIME=18000  
-ENV FTM_STATEMENT_STORE=leveldb:///tmp/statements.db
-ENV LAKEHOUSE_JOURNAL_URI=sqlite:////tmp/journal.db
-ENV LAKEHOUSE_URI=s3://data.openaleph.org
+ENV MEMORIOUS_MAX_RUNTIME=18000
+ENV LAKEHOUSE_URI=https://data.openaleph.org
 ENV LAKEHOUSE_PUBLIC_URL_PREFIX="https://data.openaleph.org/{{ dataset }}"
