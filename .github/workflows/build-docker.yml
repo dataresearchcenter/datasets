@@ -19,7 +19,7 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/dataresearchcenter/datasets
           tags: |
