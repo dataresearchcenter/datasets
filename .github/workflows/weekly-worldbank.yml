@@ -2,7 +2,7 @@ name: datasets_weekly
 
 on:
   schedule:
-    - cron: "0 6 * * 0"  # Every Sunday at 06:00 UTC
+    - cron: "0 6 * * 1"  # Every Monday at 06:00 UTC
   workflow_dispatch: {}
 
 jobs:
@@ -18,10 +18,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dataset: de_bnetza_mastr
+          - dataset: worldbank_ifc_advisory_services
             runner: investigraph
-          - dataset: de_fragdenstaat
-            runner: memorious
+          - dataset: worldbank_ifc_investment_services
+            runner: investigraph
+          - dataset: worldbank_procurement_awards
+            runner: investigraph
+          - dataset: worldbank_procurement_projects
+            runner: investigraph
+          - dataset: worldbank_procurement_notices
+            runner: investigraph
     steps:
       - name: Run ${{ matrix.runner }} for ${{ matrix.dataset }}
         run: make ${{ matrix.runner }} dataset=${{ matrix.dataset }} DATASETS_DIR=.
