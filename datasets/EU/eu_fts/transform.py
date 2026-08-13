@@ -240,11 +240,11 @@ def handle(ctx: SourceContext, record: Record, ix: int) -> RecordGenerator:
                 )
         yield payment
     elif record["beneficiary_name"] == "*****":
-        with open("redacted.txt", "a") as f:
-            f.write(f"{record}\n")
+        # with open("redacted.txt", "a") as f:
+        #     f.write(f"{record}\n")
         checksum = make_data_checksum(record)
         prefix = checksum[:12]
-        ctx.log.error("redacted record")
+        # ctx.log.error("redacted record")
         record["beneficiary_name"] = f"REDACTED_{prefix}"
         beneficiary = make_beneficiary(ctx, record)
         address = make_address(ctx, record)
@@ -277,5 +277,3 @@ def handle(ctx: SourceContext, record: Record, ix: int) -> RecordGenerator:
                     ctx, payer, project, record, role="Responsible department"
                 )
         yield payment
-    else:
-        ctx.log.error("redacted record: not *****")
