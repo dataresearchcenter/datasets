@@ -1,5 +1,5 @@
 # Stage 1: Install Python dependencies (rarely changes)
-FROM ghcr.io/dataresearchcenter/investigraph:0.8.0 AS base
+FROM ghcr.io/dataresearchcenter/investigraph:main AS base
 
 USER root
 
@@ -9,6 +9,7 @@ COPY common /datasets/common
 
 # Create required structure and install
 RUN mkdir -p /datasets/datasets && \
+    pip uninstall -y -q investigraph \  # force re-install with most recent version
     pip install -q --no-cache-dir --no-deps -r /datasets/requirements.txt && \
     pip install -q --no-cache-dir psycopg-binary==3.3.2 && \
     pip install -q --no-cache-dir --no-deps /datasets && \
