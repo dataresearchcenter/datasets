@@ -9,7 +9,7 @@ COPY common /datasets/common
 
 # Create required structure and install
 RUN mkdir -p /datasets/datasets && \
-    pip uninstall -y -q investigraph && \
+    pip uninstall -y -q investigraph ftmq memorious4 && \
     pip install -q --no-cache-dir --no-deps -r /datasets/requirements.txt && \
     pip install -q --no-cache-dir psycopg-binary==3.3.2 && \
     pip install -q --no-cache-dir --no-deps /datasets && \
