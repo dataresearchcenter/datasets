@@ -37,6 +37,9 @@ PAGE_COUNT = re.compile(r"Page\s+\d+\s+of\s+(\d+)")
 # a trailing acronym the rendered table appends but the export leaves out - it
 # can nest one level itself ("... (NSC-FoE Hu (MTVSZ))")
 ACRONYM = re.compile(r"\s*\((?:[^()]|\([^()]*\))*\)$")
+# what the export joins the organisations with - nominally ", ", but a name
+# that carries trailing whitespace keeps it ("... Alliance\xa0, ...")
+SEPARATOR = re.compile(r"\s*,\s*")
 
 INTEREST = "Interest representative(s)"
 MINUTES = "Minutes"
@@ -221,7 +224,12 @@ def split_organisations(exported: str, rendered: list[str]) -> list[str]:
             return []
         taken.add(match[0])
         names.append(match[1])
-        pos += len(match[1]) + 2  # ", "
+        pos += len(match[1])
+        if pos < len(exported):
+            separator = SEPARATOR.match(exported, pos)
+            if separator is None:
+                return []
+            pos = separator.end()
     return names
 
 
