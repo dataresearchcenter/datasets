@@ -681,14 +681,14 @@ crt = ["awscrt (==0.36.0)"]
 
 [[package]]
 name = "bumpver"
-version = "2025.1131"
+version = "2026.1132"
 description = "Bump version numbers in project files."
 optional = false
 python-versions = ">=2.7"
 groups = ["dev"]
 files = [
-    {file = "bumpver-2025.1131-py2.py3-none-any.whl", hash = "sha256:c02527f6ed7887afbc06c07630047b24a9f9d02d544a65639e99bf8b92aaa674"},
-    {file = "bumpver-2025.1131.tar.gz", hash = "sha256:a35fd2d43a5f65f014035c094866bd3bd6c739606f29fd41246d6ec6e839d3f9"},
+    {file = "bumpver-2026.1132-py2.py3-none-any.whl", hash = "sha256:b060170e7ff5d9ad7043a9d3d6288c7175f9c126744d08a2d6ef9b8377f6bd60"},
+    {file = "bumpver-2026.1132.tar.gz", hash = "sha256:80b223c23fca9bc9dd569b7a44680949d34bee23a738860d9a9b36f1abe3b0e0"},
 ]
 
 [package.dependencies]
@@ -5836,4 +5836,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.15"
-content-hash = "b13b74f6aa9e6f617f9c3644d01e7173d8f1de22d814c7bc590c8422fb6ed533"
+content-hash = "c68058138256a9da582cd4a2f43c0689373ccd3ab1419bddfc17762293a2e314"
