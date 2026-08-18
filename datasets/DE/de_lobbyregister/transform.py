@@ -60,6 +60,20 @@ def lobbyist_folders(org: E) -> list[str]:
     return ["Lobbyisten", join_text(org.first("idNumber"), "-", org.caption)]
 
 
+def archive_name(proxy: E, title: str, url: str) -> str:
+    """The file name a document is archived and displayed under.
+
+    Titles are cut to keep paths sane, and a lot of them only start to differ
+    after the cut - every statement one lobbyist hands in carries the same
+    "Stellungnahme <lobbyist> zu ..." head. The files stay apart in the archive
+    either way (they are stored by their entity id), but the names need a short
+    digest of that id to be told apart when displayed.
+    """
+    suffix = url.rsplit("/", 1)[-1].rsplit(".", 1)
+    extension = suffix[-1] if len(suffix) > 1 else "pdf"
+    return f"{clean_path(title, 120)} ({make_entity_id(proxy.id)[:8]}).{extension}"
+
+
 def archive_document(
     context: TaskContext, proxy: E, url: str, title: str, folders: list[str]
 ) -> None:
@@ -70,8 +84,7 @@ def archive_document(
     """
     if not os.environ.get("LAKEHOUSE_URI"):
         return
-    suffix = url.rsplit("/", 1)[-1].rsplit(".", 1)
-    name = f"{clean_path(title, 120)}.{suffix[-1] if len(suffix) > 1 else 'pdf'}"
+    name = archive_name(proxy, title, url)
     path = "/".join([*(clean_path(f) for f in folders), name])
     options = None
     metadata = {}
