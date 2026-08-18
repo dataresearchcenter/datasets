@@ -32,6 +32,19 @@ def format_euro_range(amounts: dict | None) -> str | None:
 
 DEFAULT_COUNTRY = {"code": "de"}
 
+REGISTER_URL = "https://www.lobbyregister.bundestag.de"
+
+# Uploaded statements and expert opinions may contain third party copyright, so
+# the register puts its own media urls behind a notice page with an
+# "Akzeptieren & Dokument herunterladen" button. That button is a GET form
+# setting a cookie, and apache additionally requires a referer from the register
+# (`Vary: Referer`) - without both, the media url redirects to the notice page
+# and we archive its html instead of the pdf.
+COPYRIGHT_ACKNOWLEDGEMENT = {
+    "Cookie": "copyrightAcknowledgement=true",
+    "Referer": f"{REGISTER_URL}/",
+}
+
 
 def clean_path(value: str, limit: int | None = None) -> str:
     """A single archive path component - no separators, no runaway length."""
@@ -60,21 +73,33 @@ def archive_document(
     suffix = url.rsplit("/", 1)[-1].rsplit(".", 1)
     name = f"{clean_path(title, 120)}.{suffix[-1] if len(suffix) > 1 else 'pdf'}"
     path = "/".join([*(clean_path(f) for f in folders), name])
+    options = None
+    metadata = {}
+    if url.startswith(REGISTER_URL):
+        options = {"headers": COPYRIGHT_ACKNOWLEDGEMENT}
+        # the archive describes the file with a request of its own that doesn't
+        # carry these headers and would therefore describe the notice page -
+        # everything the register hosts itself is a pdf
+        metadata["mimetype"] = "application/pdf"
     try:
         file = context.fetch(
             url,
+            fetch_options=options,
             cache_key=proxy.id,
             id=proxy.id,
             key=path,
             name=name,
             title=title,
             sourceUrl=url,
+            **metadata,
         )
     except Exception as exc:
         context.log.warning("Cannot archive document", url=url, error=str(exc))
         return
     proxy.add("contentHash", file.checksum)
-    proxy.add("fileSize", file.size)
+    # the archive's own request is what reports the size, so it stays unknown
+    # for the files behind the notice page - better than claiming zero bytes
+    proxy.add("fileSize", file.size or None)
     proxy.add("mimeType", file.mimetype)
     proxy.add("parent", file.parent)
     for folder in file.make_parents():
