@@ -25,7 +25,7 @@ check_dataset:
 	@test -n "$(dataset)" || (echo "dataset is required. Usage: make <target> dataset=<name>" && exit 1)
 
 memorious: check_dataset
-	memorious run $(DATASETS_DIR)/$(dataset)/config.yml -c $(CONCURRENCY)
+	memorious run -c $(DATASETS_DIR)/$(dataset)/config.yml --concurrency $(CONCURRENCY)
 	ftm-lakehouse -d $(dataset) make -c $(DATASETS_DIR)/$(dataset)/config.yml
 
 investigraph: check_dataset
