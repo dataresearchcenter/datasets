@@ -2002,7 +2002,7 @@ sql = ["sqlalchemy (>=2.0.36,<3.0.0)"]
 type = "git"
 url = "https://github.com/dataresearchcenter/investigraph-etl.git"
 reference = "HEAD"
-resolved_reference = "b14d4807d43a412feca86377f83ac359b835a93e"
+resolved_reference = "d78b70706c78f4ef05c3d7f06d689a4972a8412e"
 
 [[package]]
 name = "ipdb"
