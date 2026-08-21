@@ -1613,7 +1613,7 @@ s3 = ["s3fs (>2024.2.0)"]
 type = "git"
 url = "https://github.com/openaleph/ftm-lakehouse.git"
 reference = "HEAD"
-resolved_reference = "bbf9777588f2a24b43832ff8048d53c81fe49021"
+resolved_reference = "2f1062130c068009402645c0464c8f872a82445b"
 
 [[package]]
 name = "ftmq"
