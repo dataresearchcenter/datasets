@@ -68,7 +68,11 @@ extract:
             "City": beneficiary_city
             "Postal code": beneficiary_postcode
             "Beneficiary country": beneficiary_country
-            "Beneficiary’s contracted amount (EUR)": payment_amount
+            # "Beneficiary’s contracted amount (EUR)": payment_amount
+            "Beneficiary’s contracted amount (EUR)": contracted_amount
+            "Commitment contracted amount (EUR) (A)": commitment_contracted_amount
+            "Commitment  total amount (EUR) (A+B)": commitment_total_amount
+            "Commitment consumed amount (EUR)": commitment_consumed_amount
             "Subject of grant or contract": project_identifier
             "Budget line name": project_name
             "Programme name": program

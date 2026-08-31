@@ -8,6 +8,7 @@ Use it by calling handle() with an investigraph context.
 import logging
 from banal import is_mapping, ensure_list
 from investigraph.helpers.addresses import make_address
+from common.ocds.eu_ted import model
 
 log = logging.getLogger(__name__)
 
@@ -27,6 +28,50 @@ DEFAULT_IDENTIFIER_PROP = "registrationNumber"
 # Field name mappings for flexible extraction
 NAME_FIELDS = ["name", "legalName", "entityName", "businessName", "title"]
 DESCRIPTION_FIELDS = ["description", "summary"]
+
+LEGAL_TYPE = {
+    # eFORMS
+    "cga":"PublicBody",             # Central government authority
+    "ra":"PublicBody",              # Regional authority
+    "la":"PublicBody",              # Local authority
+    "body-pl":"PublicBody",         # Body governed by public law
+    "body-pl-cga":"PublicBody",     # Body governed by public law, controlled by a central government authority
+    "body-pl-ra":"PublicBody",      # Body governed by public law, controlled by a regional authority
+    "body-pl-la":"PublicBody",      # Body governed by public law, controlled by a local authority
+    "eu-ins-bod-ag":"PublicBody",   # EU institution, body or agency
+    "grp-p-aut":"PublicBody",       # Group of public authorities
+
+    #"pub-undert":"Company",         # Public undertaking
+    #"pub-undert-cga":"Company",     # Public undertaking, controlled by a central government authority
+    #"pub-undert-ra":"Company",      # Public undertaking, controlled by a regional authority
+    #"pub-undert-la":"Company",      # Public undertaking, controlled by a local authority
+    #"spec-rights-entity":"Company", # Entity with special or exclusive rights
+    
+    "pub-undert":"PublicBody",         # Public undertaking
+    "pub-undert-cga":"PublicBody",     # Public undertaking, controlled by a central government authority
+    "pub-undert-ra":"PublicBody",      # Public undertaking, controlled by a regional authority
+    "pub-undert-la":"PublicBody",      # Public undertaking, controlled by a local authority
+    "spec-rights-entity":"PublicBody", # Entity with special or exclusive rights
+
+    "def-cont":"Company",           # Defence contractor
+    
+    "int-org":"LegalEntity",        # International organisation
+    "org-sub":"LegalEntity",        # Organisation awarding a contract subsidised by a contracting authority
+    "org-sub-cga":"LegalEntity",    # Organisation awarding a contract subsidised by a central government authority
+    "org-sub-ra":"LegalEntity",     # Organisation awarding a contract subsidised by a regional authority
+    "org-sub-la":"LegalEntity",     # Organisation awarding a contract subsidised by a local authority
+
+
+    #OLD format
+    "BODY_PUBLIC":"PublicBody",
+    "MINISTRY":"PublicBody",
+    "REGIONAL_AUTHORITY":"PublicBody",
+    "EU_INSTITUTION":"PublicBody",
+    "REGIONAL_AGENCY":"PublicBody",
+    "NATIONAL_AGENCY":"PublicBody",
+
+
+}
 
 
 def clean_date(date):
@@ -61,15 +106,33 @@ def get_field_value(data, fields):
     return None
 
 
-def determine_org_schema(party_data):
+def determine_org_schema(party_data:model.Organization):
     """Determine appropriate FTM schema based on OCDS party roles."""
+    # roles = ensure_list(party_data.get("roles", []))
+    # if "buyer" in roles or "procuringEntity" in roles:
+    #     return "PublicBody"
+    # return "LegalEntity"
     roles = ensure_list(party_data.get("roles", []))
-    if "buyer" in roles or "procuringEntity" in roles:
+    
+    # try to retrieve original legal status for buyers
+    legal_type = None
+    item = party_data.get("details")
+    if item is not None:
+        classifications = item.get("classification", {})
+        if classifications is not None:
+            for classi in classifications:
+                if classi.get("scheme") == "TED_CA_TYPE":
+                    legal_type = classi.get("id")
+                    break
+    if "buyer" in roles:
+        if legal_type is not None and LEGAL_TYPE.get(legal_type):
+            return LEGAL_TYPE.get(legal_type)
+        return "PublicBody"
+    if "procuringEntity" in roles:
         return "PublicBody"
     return "LegalEntity"
 
-
-def make_organization(ctx, party_data):
+def make_organization(ctx, party_data:model.Organization):
     """Create an Organization entity from OCDS party data.
 
     Returns:
@@ -166,7 +229,11 @@ def make_organization(ctx, party_data):
         # Add contact info to organization
         org.add("email", contact_data.get("email"))
         org.add("phone", contact_data.get("telephone") or contact_data.get("phone"))
+        org.add("phone", contact_data.get("faxNumber"))
         org.add("website", party_data.get("details", {}).get("url"))
+        org.add("email", party_data.get("details", {}).get("email"))
+        org.add("phone", party_data.get("details", {}).get("telephone"))
+        org.add("phone", party_data.get("details", {}).get("telefax"))
 
         # Create contact person entity if name is present
         if contact_name:
@@ -196,7 +263,7 @@ def make_organization(ctx, party_data):
     return org, identification, address_entity, contact, representation
 
 
-def make_call_for_tenders(ctx, ocid, tender_data, buyer_entity):
+def make_call_for_tenders(ctx, ocid, tender_data, buyer_entity, record):
     """Create CallForTenders entity from OCDS tender data."""
     if not is_mapping(tender_data):
         return None
@@ -218,18 +285,33 @@ def make_call_for_tenders(ctx, ocid, tender_data, buyer_entity):
     # Add submission URL
     cft.add("sourceUrl", tender_data.get("submissionMethodDetails"))
 
+    # Add viewing url from TED
+    publisher_file = record.get("__fl")
+    if publisher_file:
+        cft.add(
+            "publisherUrl",
+            "https://ted.europa.eu/en/notice/-/detail/"
+            + "-".join(publisher_file.split(".xml")[0].split("/")[1].split("_")),
+        )
+
     # Add dates from tender period
     tender_period = tender_data.get("tenderPeriod", {})
     if is_mapping(tender_period):
         cft.add("publicationDate", clean_date(tender_period.get("startDate")))
         cft.add("submissionDeadline", clean_date(tender_period.get("endDate")))
 
-    # Add CPV codes from tender items
-    for item in ensure_list(tender_data.get("items", [])):
-        if is_mapping(item):
-            classification = item.get("classification", {})
-            if is_mapping(classification) and classification.get("scheme") == "CPV":
-                cft.add("cpvCode", classification.get("id"))
+    # # Add CPV codes from tender items - tender class does not have items
+    # for item in ensure_list(tender_data.get("items", [])):
+    #     if is_mapping(item):
+    #         classification = item.get("classification", {})
+    #         if is_mapping(classification) and classification.get("scheme") == "CPV":
+    #             cft.add("cpvCode", classification.get("id"))
+
+    # Add CPV for old format
+    if cft.get("cpvCode") is None or len(cft.get("cpvCode")) < 1:
+        cpv_code = tender_data.get("cpvCode")
+        if cpv_code is not None:
+            cft.add("cpvCode", cpv_code)
 
     return cft
 
@@ -256,6 +338,23 @@ def make_contract(ctx, ocid, contract_id, contract_data, call_for_tenders):
     if is_mapping(value_data):
         contract.add("amount", value_data.get("amount"))
         contract.add("currency", value_data.get("currency"))
+
+    # Add viewing url from TED
+    publisher_file = contract_data.get("__fl")
+    if publisher_file:
+        contract.add(
+            "publisherUrl",
+            "https://ted.europa.eu/en/notice/-/detail/"
+            + "-".join(publisher_file.split(".xml")[0].split("/")[1].split("_")),
+        )
+
+    for item in ensure_list(contract_data.get("items", [])):
+        if is_mapping(item):
+            classification = item.get("classification", {})
+            #if is_mapping(classification) and 
+            if classification.get("scheme") == "FUNDING":
+                if classification.get("id") is not None:
+                    contract.add("summary", classification.get("id"))
 
     return contract
 
@@ -284,6 +383,11 @@ def make_contract_award(
     award.add("date", clean_date(award_data.get("date") or award_data.get("awardDate")))
     award.add("status", award_data.get("status"))
 
+    # Add lot number
+    lot_list = award_data.get("documents")
+    if lot_list is not None and len(lot_list) == 1:
+        award.add("lotNumber", lot_list[0])
+
     # Add value
     value_data = award_data.get("value", {})
     if is_mapping(value_data):
@@ -302,6 +406,9 @@ def make_contract_award(
             classification = item.get("classification", {})
             if is_mapping(classification) and classification.get("scheme") == "CPV":
                 award.add("cpvCode", classification.get("id"))
+    
+    # Add decision reason (if no winner?)
+    award.add("decisionReason", award_data.get("decisionReason"))
 
     return award
 
@@ -363,7 +470,9 @@ def handle(ctx, record, ix):
     call_for_tenders = None
     tender_data = record.get("tender", {})
     if is_mapping(tender_data):
-        call_for_tenders = make_call_for_tenders(ctx, ocid, tender_data, buyer_entity)
+        call_for_tenders = make_call_for_tenders(
+            ctx, ocid, tender_data, buyer_entity, record
+        )
         if call_for_tenders:
             yield call_for_tenders
 
