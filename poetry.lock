@@ -1679,14 +1679,14 @@ wcwidth = "*"
 
 [[package]]
 name = "ftm-lakehouse"
-version = "0.5.1"
+version = "0.5.2"
 description = "Data standard, storage and retrieval for structured and unstructured FollowTheMoney data"
 optional = false
 python-versions = "<3.15,>=3.11"
 groups = ["main"]
 files = [
-    {file = "ftm_lakehouse-0.5.1-py3-none-any.whl", hash = "sha256:1bf00094830e40f17ca67059d5930c5df7f836163b54ced4ed9dcde6890a8dcf"},
-    {file = "ftm_lakehouse-0.5.1.tar.gz", hash = "sha256:9948cb06e89124c785b45fa794f673272e27a624ff49cb582db2793162dc2751"},
+    {file = "ftm_lakehouse-0.5.2-py3-none-any.whl", hash = "sha256:d9562d89dc1a839450cf625a2ea63a7fc395939ca5b4bb064439ad88b622bbcf"},
+    {file = "ftm_lakehouse-0.5.2.tar.gz", hash = "sha256:fc9426b0b33ae7a9b7fd45f078fb475f1745a097cfbb7ef26a5a3b4765388493"},
 ]
 
 [package.dependencies]
@@ -6227,4 +6227,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.15"
-content-hash = "50c5c44709d7bc31332724f5735ea4a5eea8d4918bd76f3ac09f5052792cffec"
+content-hash = "8c115e1db2ac62b3bace517449ac760d04e55521678f560578c2a1f53ce39121"
