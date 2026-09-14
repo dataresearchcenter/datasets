@@ -344,20 +344,21 @@ trio = ["trio (>=0.32.0)"]
 
 [[package]]
 name = "anystore"
-version = "1.3.1"
+version = "1.4.1"
 description = "Store and cache things anywhere"
 optional = false
 python-versions = "<3.15,>=3.11"
 groups = ["main"]
 files = [
-    {file = "anystore-1.3.1-py3-none-any.whl", hash = "sha256:94372fbe107bcfea9fae6e32354fc76d51f2149f0edf7426523bd1a8983ab706"},
-    {file = "anystore-1.3.1.tar.gz", hash = "sha256:8531fd6310cae855f15dfad412d26686cc28023c30e7649f058676696c51c38e"},
+    {file = "anystore-1.4.1-py3-none-any.whl", hash = "sha256:0a47973f58cd1978dba778ec76ad4fe0bdbc1993b08ca5f8519f4ac2912c7090"},
+    {file = "anystore-1.4.1.tar.gz", hash = "sha256:94f9aa207857e2f63f6359367a41a4758430096bc4f9c95f004fac71c0d3422b"},
 ]
 
 [package.dependencies]
+"backports.zstd" = {version = "*", markers = "python_version < \"3.14\""}
 banal = ">=1.1.2,<2.0.0"
 cloudpickle = ">=3.1.0,<4.0.0"
-dateparser = ">=1.2.2,<2.0.0"
+dateparser = ">=1.4.3,<2.0.0"
 fsspec = [
     {version = ">2023.10,<2027"},
     {version = ">2023.10,<2027", extras = ["http"], optional = true, markers = "extra == \"http\""},
@@ -368,7 +369,7 @@ pyaml = ">=26.7.0,<27.0.0"
 pydantic = ">=2.13.4,<3.0.0"
 pydantic-settings = ">=2.15.0,<3.0.0"
 rich = ">=10.0.0,<16.0.0"
-rigour = ">=2.3.1,<3.0.0"
+rigour = ">=2.4.1,<3.0.0"
 s3fs = {version = ">2023.10,<2027", optional = true, markers = "extra == \"s3\""}
 structlog = ">=22.0.0"
 tqdm = ">=4.70.0,<5.0.0"
@@ -377,6 +378,7 @@ uuid7 = ">=0.1.0,<0.2.0"
 
 [package.extras]
 http = ["fsspec[http] (>2023.10,<2027)"]
+lz4 = ["lz4 (>=4.4.0,<5.0.0)"]
 putfs = ["putfs (>=0.4.2,<0.5.0)"]
 redis = ["fakeredis (>=2.37.1,<3.0.0)", "redis (>=8.1.0)"]
 s3 = ["s3fs (>2023.10,<2027)"]
@@ -1229,14 +1231,14 @@ dev = ["black", "build", "bump2version", "flake8", "isort", "mypy", "pytest", "p
 
 [[package]]
 name = "dateparser"
-version = "1.4.2"
+version = "1.4.3"
 description = "Date parsing library designed to parse dates from HTML pages"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "dateparser-1.4.2-py3-none-any.whl", hash = "sha256:752f3d49d477cf7f60a7a9c8bcb19c882496ede0e377d5a3d80014cdfeca7050"},
-    {file = "dateparser-1.4.2.tar.gz", hash = "sha256:bed2a3fd9bad8f2fb2d72b57748bada260b3a9349a264c22ffc23c3249d7049a"},
+    {file = "dateparser-1.4.3-py3-none-any.whl", hash = "sha256:cbce86c64e0cea5c54c84c015d34c903d46c51bfad50632bf2f05a6141d10c05"},
+    {file = "dateparser-1.4.3.tar.gz", hash = "sha256:bab8c43a746266e68142f4926e69438ce551441aa88e54e78bb6410bf3ee7000"},
 ]
 
 [package.dependencies]
@@ -2757,6 +2759,13 @@ files = [
     {file = "lxml-6.1.3-cp315-cp315t-win32.whl", hash = "sha256:ace1d2c83b2bd24db5940600541140e87a325e119cb32d5fa9ad720d7e76648e"},
     {file = "lxml-6.1.3-cp315-cp315t-win_amd64.whl", hash = "sha256:b49638355ea3bebba70da783ccbc630fd72afa16bc46c54474bfa1f9a915bbc6"},
     {file = "lxml-6.1.3-cp315-cp315t-win_arm64.whl", hash = "sha256:5a721a98c649855963811b59b55755b30566e7f7fc40bdc9803d66dee9f811cf"},
+    {file = "lxml-6.1.3-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:13a620a3fcc20023f9e6ed5c383e00e826f1c2d5db554df2f67240760f9118e8"},
+    {file = "lxml-6.1.3-cp38-cp38-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:fbfb70ba01355251faf6b293171df49f73a88a1b6494db109ffea85442574458"},
+    {file = "lxml-6.1.3-cp38-cp38-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:302f72413251c03f671e063c9414bed5dc8c927069e5abb69245521e51a4e81b"},
+    {file = "lxml-6.1.3-cp38-cp38-manylinux_2_28_i686.whl", hash = "sha256:ce1f220114959941170e22b8ad44279f6dee2dcef7591814d01ae805dc058889"},
+    {file = "lxml-6.1.3-cp38-cp38-musllinux_1_2_x86_64.whl", hash = "sha256:170773d8a3cdc76259065523ddd978c44f9806e28605f08812e8f86783e44ac6"},
+    {file = "lxml-6.1.3-cp38-cp38-win32.whl", hash = "sha256:92d96586376fb79a33474797186bf993250152ee5c32650b67db78d54b92e6f3"},
+    {file = "lxml-6.1.3-cp38-cp38-win_amd64.whl", hash = "sha256:d44442effeb8781f392340c5dc8c6716fba41dbeacb82fd4c0f09026fb5ff682"},
     {file = "lxml-6.1.3-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:869dfcd4d381cb0ea87085cc4f011b9171b494ef21e76ad8665f6d5e2d1dc8a1"},
     {file = "lxml-6.1.3-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:6ba4fe5bfbef6811a8e49b3719cde373ad399006c0c1ac184b7297116ecbba5d"},
     {file = "lxml-6.1.3-cp39-cp39-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:61116cec57ed69aebc70f37a545eec095339bb829efbdabcfb97c51e9536e158"},
@@ -5446,48 +5455,48 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "rigour"
-version = "2.4.0"
+version = "2.5.0"
 description = "Financial crime domain data validation and normalization library."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "rigour-2.4.0-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:e5b45cd30abf9df4f70a6c693de90205f37c6196d97e7be4ccf09a908c1f05c7"},
-    {file = "rigour-2.4.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ce611d2a47dea40fa5b1c1c0215a08452e3f49ca8847d9d2ed96e6df6081a614"},
-    {file = "rigour-2.4.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3db56587b477486264626a4c239bb07ecc42dd0022e06f8b1f0cdd4aa2831baf"},
-    {file = "rigour-2.4.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:17d8ac3afa9cf96ecf5295d218bf5fbf13b77245bc0cd2d4b25872e71ab6f2a4"},
-    {file = "rigour-2.4.0-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:1a90d6c1c420e3951f5e296fc92fa5700a6716309900b8cccad048f1b7826d49"},
-    {file = "rigour-2.4.0-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:9f63b88f7638d378d514cb046212621a84a3e2dec2cf177674b0ad5249cce69f"},
-    {file = "rigour-2.4.0-cp310-cp310-win_amd64.whl", hash = "sha256:2d4080d7e3944b6c66f0e40da0705b6f29f4d00cb8d751e9993e442244dd166a"},
-    {file = "rigour-2.4.0-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:f9706db66c94b4eddd7cf15c0e902aaf7d4b18d4dc6a802300a64ebdc6abe576"},
-    {file = "rigour-2.4.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:fb4e525575520617cf26e6243c56cf43198c76ec1da74787569d2918f57aa87b"},
-    {file = "rigour-2.4.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0ff729bdf4493fd2633b16fc2ecbef9a22589f962d89c6854ceca90e6415b03f"},
-    {file = "rigour-2.4.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1f2f3125fa48965070f9250e288fab605596f112e7f1440b78de4ea562a17cc4"},
-    {file = "rigour-2.4.0-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:703b6f74ea852134c9d0a1f32ac2d745745f58fc1cb3dddc1571958ddc35b1eb"},
-    {file = "rigour-2.4.0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:6e012ababe148beac4bbbdbe82ce3ed74ce117d452be8486357603a0fa56039e"},
-    {file = "rigour-2.4.0-cp311-cp311-win_amd64.whl", hash = "sha256:0a255cb8d2165c4140740b731aac149cbd46e11e29960880faeb35b06120ba6c"},
-    {file = "rigour-2.4.0-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:eaef1d84cc81bdd57530138705e5a3963bf3b810fb749487dc7cdd78ed8d96ce"},
-    {file = "rigour-2.4.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:c729f61f619eebda92c3814d661e37f96df08c9f89ac9f533e8b51dd5e337c09"},
-    {file = "rigour-2.4.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e9cff0bdeb2cd45779f19f0814777e6d2e3bac6c8f19bb2da3f870e352f34b60"},
-    {file = "rigour-2.4.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ad313a598f804c771e80b67a6bdc2867bee3b281be0f0a26ebb892b226bb6d92"},
-    {file = "rigour-2.4.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:a6248dded32897b236531a39683ceccb772a38ffa251c485a1d11c19ebe63c04"},
-    {file = "rigour-2.4.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:691e252709b24685209021c1e7aef63d0ce9cf65f7b225e38b98c2cdd8391e51"},
-    {file = "rigour-2.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:fd76cce436d006b5fea76e71c4d2672864e6d0ffd862b8e5bcaac098a062f810"},
-    {file = "rigour-2.4.0-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:442c5be84912a37a431fbea1565dd3d446a61e21fef1b4d99863d11e2e3f33eb"},
-    {file = "rigour-2.4.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:3ac03914a5e20f362afc0bd9e110b7fd8197339aa019cc042c3fa8a66d46038b"},
-    {file = "rigour-2.4.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9e146f605b6cd3d76745025aa26c94993d8a4b4479b3d1c6d257fa962e612b9c"},
-    {file = "rigour-2.4.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ecef2f2b2c439978f3abfdb036f80575f9f61d6970d23b9af60e2ceedc8076e5"},
-    {file = "rigour-2.4.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:f30b2052d6f12386c70902125f57d24159a87b0cf623521d799b423df759b630"},
-    {file = "rigour-2.4.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:bd8934c5479582b57ddb9a896d2c65f19856517b17fb7860b2ae856473ad88f0"},
-    {file = "rigour-2.4.0-cp313-cp313-win_amd64.whl", hash = "sha256:97cec4d7cc56024c6c67a44964323da0c8fc1925dba84f27c0b352c5748cfa6a"},
-    {file = "rigour-2.4.0-cp314-cp314-macosx_10_12_x86_64.whl", hash = "sha256:60b56d4d662cf11921bf4b931aaa4f4b193226312b02ea69611ae7b3ca0b90ee"},
-    {file = "rigour-2.4.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:d78b2374dc177caf287b8179be1c3d96d92d4e104ec87773c57d520f3410bfb0"},
-    {file = "rigour-2.4.0-cp314-cp314-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0212747b124c4ed1542ce6c2c230392739b6bfe27a387849286a653007247189"},
-    {file = "rigour-2.4.0-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b9326e98327fe8052f17c4881cb6ac5f9ffa31eaf7f93fe2a0c4ad2308d583dc"},
-    {file = "rigour-2.4.0-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:7292992a145832981e3fd53a167516ffea0355ff688eae1bb4bbb26d5b095bc8"},
-    {file = "rigour-2.4.0-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:e5cc9d80a25fcb6b74224b4d4fac8ccba4c8aa52e980f24b719f11d267178259"},
-    {file = "rigour-2.4.0-cp314-cp314-win_amd64.whl", hash = "sha256:01afbb88e352556dcf20022c5d6bfd6d4544a04beffa758a87fa224d86db2acd"},
-    {file = "rigour-2.4.0.tar.gz", hash = "sha256:fa456fa9e4ee1d57bf9a8a78d0627db14669ca2e1ab06f5ff8cde93755beed0d"},
+    {file = "rigour-2.5.0-cp310-cp310-macosx_10_12_x86_64.whl", hash = "sha256:57bfbeee45c8ce6478a52c13ee145cdc868ee28d5cf4addd770fb2342d4ddd12"},
+    {file = "rigour-2.5.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:be67c6adf1db8c3430fe0c81b4ad9826e9be186fbeb172bd91e2bf7d6e1ef722"},
+    {file = "rigour-2.5.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:564c20b6f3ef76712e072f553ee605a464dc57e171614e155cb1a5cc3f6a720e"},
+    {file = "rigour-2.5.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:30b2aa22c7b5d0c74ee3846d45811a461e80598af6525fd17fcc793ddf68d805"},
+    {file = "rigour-2.5.0-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:70e61660dda645b881fd64385bed1f69c1a97d55e2805f43b3b07c2b1db9ab5a"},
+    {file = "rigour-2.5.0-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:037ab4b6936a1859b816ea65d566d753133e22b2a3ef278f8fb748a597ad71f8"},
+    {file = "rigour-2.5.0-cp310-cp310-win_amd64.whl", hash = "sha256:04124baafc783b7d0aebd3b8a55ae04939a529afffad2b3ff65076c7a05b6e23"},
+    {file = "rigour-2.5.0-cp311-cp311-macosx_10_12_x86_64.whl", hash = "sha256:34147ab012c994e31e0193776758e69065e570d73f49275ebe6eaa73bbc93268"},
+    {file = "rigour-2.5.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:1acf84f3edf166ed53d3f3c89c5660e6d04bfe0eea8b64f4d68775c70251142d"},
+    {file = "rigour-2.5.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:961ba5921dfeae75235837443a2986a7b449b59d48c4a41eecfc980447a5ef48"},
+    {file = "rigour-2.5.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:345c3a20c7dc7ad18730247fd3cf6539888a4134c2b53d45399ec6cb599c3168"},
+    {file = "rigour-2.5.0-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:1b7fff5001377a995a803e7237d4e9570099ddd36c1d71730bc85c2b8994e7b2"},
+    {file = "rigour-2.5.0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:945bbf0b5d29b8c94cc79d8c0f9d5846b0608d0a98b73063fd96973e7f843e46"},
+    {file = "rigour-2.5.0-cp311-cp311-win_amd64.whl", hash = "sha256:ad8710d0a2ab81840fb08ce0a75eb0c7cf4f4141b7019be68cd45e6918945ec6"},
+    {file = "rigour-2.5.0-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:49ff40bef994e9a2e3c2c10411d3d06f976a887cd20a8344eb6750a94f2ef659"},
+    {file = "rigour-2.5.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:418d5d0e8262f44c01c4186445cae78a6391c95be7f3945d8de7ccaafaf363e0"},
+    {file = "rigour-2.5.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b06fd4f20b9b9bc11bdf9f8b74cebce84d643e7166065f9f5e1e40498effd783"},
+    {file = "rigour-2.5.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2019f7c17b5aed5d3e5fcf73448cd00bf0ee7c6d703601f1e887ba52c6ea3791"},
+    {file = "rigour-2.5.0-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:1bcaab7802d7497d1dbd5a8517752ba061377d51f05be0cac3648bb0f984bd4c"},
+    {file = "rigour-2.5.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:bf0ea415f509a7b275b4e7e369772e2168b1fa9c1a9c06e843bc4c8b5ae3d2e3"},
+    {file = "rigour-2.5.0-cp312-cp312-win_amd64.whl", hash = "sha256:d824c291a3428e900532714365558af288eb0899e411a6c4a9c8de6e1ed09f71"},
+    {file = "rigour-2.5.0-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:c424ea8ab0db2d7bc9a6c702d04aed432b756960b739d47affbb76e7a0903134"},
+    {file = "rigour-2.5.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:949897fe4b5280291f094ca199807984a1dd8e99ba074dbe30bf890852616886"},
+    {file = "rigour-2.5.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:49399da2e73eea7f79c3895eaafa80b090dafb32d0fc2d134d1d88c22724d601"},
+    {file = "rigour-2.5.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:085c7379cb2495011e2970b99946e44abeee018c687a64163baa58f20fae8eec"},
+    {file = "rigour-2.5.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:fc93552dd79899b2618c31b07cc12a51d8a2703fc008b4047eede25eb14e8da2"},
+    {file = "rigour-2.5.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:e6ee2b7386b5c0ccbfe6ed7eaeaeba7a3d350a4e3795e449cb686323a442d65c"},
+    {file = "rigour-2.5.0-cp313-cp313-win_amd64.whl", hash = "sha256:24e3c22ea64715ab53c950c48bb2b620801a8a91ca04c1c7b51d3ee106767cb7"},
+    {file = "rigour-2.5.0-cp314-cp314-macosx_10_12_x86_64.whl", hash = "sha256:fe9c597dc0a8875d42314511584f43afc5b07dd5c649db46ea8230e22497d183"},
+    {file = "rigour-2.5.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:4a1edff193f5b91efcf67f674ce9902c52e1785d5a3317df01b9a1fcdd29bb1d"},
+    {file = "rigour-2.5.0-cp314-cp314-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:da5c7394e4d38ee020e0d1251c503998cff28226d7ba22b4e490ef5be62833b0"},
+    {file = "rigour-2.5.0-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4e6ccdb020a59e259072e0af1daa7d6748e6d65dd9183b27d3dc3038d6cee268"},
+    {file = "rigour-2.5.0-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:fc4038d1096c790978b8e640b3b44396fe2733945de97897f7b2aa09ef27de5f"},
+    {file = "rigour-2.5.0-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:6a32d1025fdd9530a123e268095645a17ced4d5f70590391abc665319ed07fbd"},
+    {file = "rigour-2.5.0-cp314-cp314-win_amd64.whl", hash = "sha256:58721384eb9c4817673ac9a1ae80d425ad40affddacebcf6922f2c5e2f9ced45"},
+    {file = "rigour-2.5.0.tar.gz", hash = "sha256:c03c4a7b7389604240330071cf461aa2a9c85e3c59011c661ecaddd075e9cf82"},
 ]
 
 [package.dependencies]
@@ -6464,4 +6473,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.15"
-content-hash = "763b30b9ca93fec0431fc90def3d392d16d16f6a4f877824c5632c0b5265a782"
+content-hash = "65bb616299bbf98f84b6eab4cd4ea9944fa0041d1b7c246181de931e07c3857e"
