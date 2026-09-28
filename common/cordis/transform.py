@@ -108,10 +108,13 @@ def parse_organization(ctx: SourceContext, record: SDict):
         country = "gb"
     country = get_country_code(country)
     name = record.pop("name")
-    vat_id, org_id = record.pop("organisationID"), record.pop("vatNumber")
+    org_id, vat_id = record.pop("organisationID"), record.pop("vatNumber")
     if vat_id:
         if country and not vat_id.lower().startswith(country):
-            vat_id = f"{country.upper()}{vat_id}"
+            if country and vat_id.lower().startswith("el"):
+                pass
+            else:
+                vat_id = f"{country.upper()}{vat_id}"
         proxy.id = ctx.make_slug(vat_id)
         proxy.add("taxNumber", vat_id)
         proxy.add("vatCode", vat_id)

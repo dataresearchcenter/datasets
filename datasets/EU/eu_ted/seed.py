@@ -21,6 +21,7 @@ from datetime import datetime
 from typing import Generator
 
 from investigraph.model import DatasetContext, Source
+import traceback
 
 # ~22 business days per month (safe upper bound incl. padding for edge cases)
 ISSUES_PER_MONTH = 23
@@ -100,3 +101,4 @@ def handle(ctx: DatasetContext) -> Generator[Source, None, None]:
     # Yield in reverse order (newest first)
     for source in reversed(sources):
         yield source
+    traceback.print_exc()

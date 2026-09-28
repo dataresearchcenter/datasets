@@ -133,6 +133,10 @@ class Tender(BaseModel):
     documents: Optional[List[Any]] = None
     milestones: Optional[List[Any]] = None
     amendments: Optional[List[Any]] = None
+    # extra
+    cpvCode: Optional[List[str]] = None
+    cpvName: Optional[List[str]] = None
+
 
 
 class Award(BaseModel):
@@ -149,6 +153,8 @@ class Award(BaseModel):
     contractPeriod: Optional[Any] = None
     documents: Optional[List[Any]] = None
     amendments: Optional[List[Any]] = None
+    # extra
+    decisionReason: Optional[str] = None
 
 
 class Contract(BaseModel):
