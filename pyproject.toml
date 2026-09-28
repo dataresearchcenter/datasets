@@ -31,7 +31,7 @@ dependencies = [
     "memorious4 @ git+https://github.com/dataresearchcenter/memorious",
     "investigraph @ git+https://github.com/dataresearchcenter/investigraph-etl.git",
     "ftm-lakehouse (>=0.7.1,<0.8.0)",
-    "anystore (>=1.3.1,<2.0.0)",
+    "anystore (>=1.4.2,<2.0.0)",
     "ftmq (>=5.0.0,<6.0.0)",
     "python-calamine (>=0.8.2,<1.0.0)",
 ]
